@@ -1,5 +1,5 @@
 [project]
-name = "tok-jira"
+name = "kira"
 version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.13"

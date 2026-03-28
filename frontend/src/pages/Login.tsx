@@ -38,7 +38,7 @@ export function Login() {
           width: "320px",
         }}
       >
-        <h2 style={{ color: "#4a9eff", marginBottom: "24px", textAlign: "center" }}>tok-jira</h2>
+        <h2 style={{ color: "#4a9eff", marginBottom: "24px", textAlign: "center" }}>Kira</h2>
         {error && (
           <div style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px", textAlign: "center" }}>
             {error}

@@ -1,4 +1,4 @@
-# tok-jira — Ticket Troubleshooting App Design Spec
+# Kira — Ticket Troubleshooting App Design Spec
 
 ## Purpose
 
@@ -27,7 +27,7 @@ Target environment: teaching, lab, and demo scenarios. Simplicity and readabilit
            │ Header: X-API-Key
            ▼
 ┌─────────────────────────────────────────┐
-│  tok-jira (this project)                │
+│  Kira (this project)                    │
 │                                         │
 │  ┌──────────────────────┐               │
 │  │ api/ — FastAPI Core  │               │
@@ -53,7 +53,7 @@ The API is the single entry point. Agents POST tickets via API key auth. The Rea
 ### Monorepo Structure
 
 ```
-tok-jira/
+kira/
 ├── api/                    # FastAPI application
 │   ├── routes/             # Endpoint handlers
 │   ├── models/             # Pydantic V2 request/response schemas
@@ -204,7 +204,7 @@ Every state-changing operation on a ticket automatically creates an audit_log en
 
 ## Authentication & Authorization
 
-**Agents**: API key passed via `X-API-Key` header. The key is configured via environment variable (`TOK_JIRA_API_KEY`). Single shared key — appropriate for demo/lab use.
+**Agents**: API key passed via `X-API-Key` header. The key is configured via environment variable (`KIRA_API_KEY`). Single shared key — appropriate for demo/lab use.
 
 **Humans**: Username/password login, session stored in a server-side cookie. Passwords hashed with bcrypt.
 
@@ -269,7 +269,7 @@ Lozenges display both the label and numeric value (e.g., "high 0.9").
 - API: `uv run uvicorn api.main:app --reload` on port 8000
 - Frontend: `npm run dev` (Vite) on port 5173, proxied to API
 - Postgres: `podman run postgres:16` on port 5432
-- Config via `.env` file: `DATABASE_URL`, `TOK_JIRA_API_KEY`, `SECRET_KEY`
+- Config via `.env` file: `DATABASE_URL`, `KIRA_API_KEY`, `SECRET_KEY`
 
 ### Local with Compose
 

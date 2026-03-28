@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import HTTPException, Request
 
-SESSION_COOKIE_NAME = "tok_jira_session"
+SESSION_COOKIE_NAME = "kira_session"
 
 
 def set_session(request: Request, user_id: UUID, username: str) -> None:

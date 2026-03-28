@@ -32,7 +32,7 @@ export function Layout() {
       >
         <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
           <Link to="/" style={{ fontWeight: "bold", fontSize: "16px", color: "#4a9eff", textDecoration: "none" }}>
-            tok-jira
+            Kira
           </Link>
           <Link to="/" style={{ color: "#ccc", fontSize: "13px", textDecoration: "none" }}>
             Dashboard

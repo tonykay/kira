@@ -4,7 +4,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from api.core.config import settings
 from api.routes import artifacts, auth, audit, comments, dashboard, enums, tickets, users, webhooks
 
-app = FastAPI(title="tok-jira", version="0.1.0")
+app = FastAPI(title="Kira", version="0.1.0")
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
 
 app.include_router(auth.router, prefix="/api/v1")

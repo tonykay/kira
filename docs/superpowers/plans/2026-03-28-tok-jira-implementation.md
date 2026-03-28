@@ -1,4 +1,4 @@
-# tok-jira Implementation Plan
+# Kira Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -13,7 +13,7 @@
 ## File Structure
 
 ```
-tok-jira/
+Kira/
 ├── api/
 │   ├── __init__.py
 │   ├── main.py                    # FastAPI app factory, lifespan, CORS, router mounting
@@ -123,7 +123,7 @@ tok-jira/
 - [ ] **Step 1: Create `pyproject.toml` with uv**
 
 ```bash
-cd /Users/tok/Dropbox/PARAL/Projects/tok-jira/tok-jira
+cd /Users/tok/Dropbox/PARAL/Projects/Kira/Kira
 uv init --no-readme --python 3.13
 ```
 
@@ -152,12 +152,12 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    database_url: str = "postgresql://tokjira:tokjira@localhost:5432/tokjira"
+    database_url: str = "postgresql://kira:kira@localhost:5432/kira"
     api_key: str = "dev-api-key"
     secret_key: str = "dev-secret-key-change-in-production"
     artifact_storage_path: str = "./artifacts"
 
-    model_config = {"env_prefix": "TOK_JIRA_"}
+    model_config = {"env_prefix": "KIRA_"}
 
 
 settings = Settings()
@@ -166,10 +166,10 @@ settings = Settings()
 - [ ] **Step 5: Create `.env.example`**
 
 ```
-TOK_JIRA_DATABASE_URL=postgresql://tokjira:tokjira@localhost:5432/tokjira
-TOK_JIRA_API_KEY=dev-api-key
-TOK_JIRA_SECRET_KEY=dev-secret-key-change-in-production
-TOK_JIRA_ARTIFACT_STORAGE_PATH=./artifacts
+KIRA_DATABASE_URL=postgresql://kira:kira@localhost:5432/kira
+KIRA_API_KEY=dev-api-key
+KIRA_SECRET_KEY=dev-secret-key-change-in-production
+KIRA_ARTIFACT_STORAGE_PATH=./artifacts
 ```
 
 - [ ] **Step 6: Update `.gitignore`**
@@ -193,7 +193,7 @@ dist/
 uv run python -c "from api.core.config import settings; print(settings.database_url)"
 ```
 
-Expected: `postgresql://tokjira:tokjira@localhost:5432/tokjira`
+Expected: `postgresql://kira:kira@localhost:5432/kira`
 
 - [ ] **Step 8: Commit**
 
@@ -661,7 +661,7 @@ git commit -m "feat: add SQLAlchemy ORM models and session factory"
 - [ ] **Step 1: Initialize Alembic**
 
 ```bash
-cd /Users/tok/Dropbox/PARAL/Projects/tok-jira/tok-jira
+cd /Users/tok/Dropbox/PARAL/Projects/Kira/Kira
 uv run alembic init api/db/alembic
 ```
 
@@ -672,7 +672,7 @@ Set `script_location` and `sqlalchemy.url`:
 In `alembic.ini`, set:
 ```ini
 script_location = api/db/alembic
-sqlalchemy.url = postgresql://tokjira:tokjira@localhost:5432/tokjira
+sqlalchemy.url = postgresql://kira:kira@localhost:5432/kira
 ```
 
 - [ ] **Step 3: Edit `api/db/alembic/env.py`**
@@ -691,10 +691,10 @@ target_metadata = Base.metadata
 - [ ] **Step 4: Start a local Postgres for development**
 
 ```bash
-podman run -d --name tokjira-postgres \
-  -e POSTGRES_USER=tokjira \
-  -e POSTGRES_PASSWORD=tokjira \
-  -e POSTGRES_DB=tokjira \
+podman run -d --name kira-postgres \
+  -e POSTGRES_USER=kira \
+  -e POSTGRES_PASSWORD=kira \
+  -e POSTGRES_DB=kira \
   -p 5432:5432 \
   postgres:16
 ```
@@ -714,7 +714,7 @@ uv run alembic upgrade head
 - [ ] **Step 7: Verify tables exist**
 
 ```bash
-podman exec tokjira-postgres psql -U tokjira -c "\dt"
+podman exec kira-postgres psql -U kira -c "\dt"
 ```
 
 Expected: tables `users`, `tickets`, `audit_log`, `comments`, `artifacts`, `alembic_version`
@@ -936,7 +936,7 @@ from uuid import UUID
 
 from fastapi import HTTPException, Request
 
-SESSION_COOKIE_NAME = "tok_jira_session"
+SESSION_COOKIE_NAME = "kira_session"
 
 
 def set_session(request: Request, user_id: UUID, username: str) -> None:
@@ -1070,10 +1070,10 @@ from starlette.middleware.sessions import SessionMiddleware
 from api.core.config import settings
 from api.routes import auth, enums
 
-app = FastAPI(title="tok-jira", version="0.1.0")
+app = FastAPI(title="Kira", version="0.1.0")
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
 
-api_v1 = FastAPI(title="tok-jira API v1")
+api_v1 = FastAPI(title="Kira API v1")
 api_v1.include_router(auth.router)
 api_v1.include_router(enums.router)
 
@@ -1454,10 +1454,10 @@ from starlette.middleware.sessions import SessionMiddleware
 from api.core.config import settings
 from api.routes import auth, audit, enums, tickets
 
-app = FastAPI(title="tok-jira", version="0.1.0")
+app = FastAPI(title="Kira", version="0.1.0")
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
 
-api_v1 = FastAPI(title="tok-jira API v1")
+api_v1 = FastAPI(title="Kira API v1")
 api_v1.include_router(auth.router)
 api_v1.include_router(enums.router)
 api_v1.include_router(tickets.router)
@@ -1691,7 +1691,7 @@ def _create_ticket(client, api_key_headers):
 
 
 def test_upload_artifact(client, api_key_headers, tmp_path, monkeypatch):
-    monkeypatch.setenv("TOK_JIRA_ARTIFACT_STORAGE_PATH", str(tmp_path))
+    monkeypatch.setenv("KIRA_ARTIFACT_STORAGE_PATH", str(tmp_path))
     ticket_id = _create_ticket(client, api_key_headers)
     resp = client.post(
         f"/api/v1/tickets/{ticket_id}/artifacts",
@@ -1704,7 +1704,7 @@ def test_upload_artifact(client, api_key_headers, tmp_path, monkeypatch):
 
 
 def test_list_artifacts(client, api_key_headers, tmp_path, monkeypatch):
-    monkeypatch.setenv("TOK_JIRA_ARTIFACT_STORAGE_PATH", str(tmp_path))
+    monkeypatch.setenv("KIRA_ARTIFACT_STORAGE_PATH", str(tmp_path))
     ticket_id = _create_ticket(client, api_key_headers)
     client.post(
         f"/api/v1/tickets/{ticket_id}/artifacts",
@@ -1717,7 +1717,7 @@ def test_list_artifacts(client, api_key_headers, tmp_path, monkeypatch):
 
 
 def test_download_artifact(client, api_key_headers, tmp_path, monkeypatch):
-    monkeypatch.setenv("TOK_JIRA_ARTIFACT_STORAGE_PATH", str(tmp_path))
+    monkeypatch.setenv("KIRA_ARTIFACT_STORAGE_PATH", str(tmp_path))
     ticket_id = _create_ticket(client, api_key_headers)
     upload_resp = client.post(
         f"/api/v1/tickets/{ticket_id}/artifacts",
@@ -2462,7 +2462,7 @@ git commit -m "feat: add seed script with demo users and sample tickets"
 - [ ] **Step 1: Scaffold React app with Vite**
 
 ```bash
-cd /Users/tok/Dropbox/PARAL/Projects/tok-jira/tok-jira
+cd /Users/tok/Dropbox/PARAL/Projects/Kira/Kira
 npm create vite@latest frontend -- --template react-ts
 cd frontend && npm install
 ```
@@ -2470,7 +2470,7 @@ cd frontend && npm install
 - [ ] **Step 2: Install frontend dependencies**
 
 ```bash
-cd /Users/tok/Dropbox/PARAL/Projects/tok-jira/tok-jira/frontend
+cd /Users/tok/Dropbox/PARAL/Projects/Kira/Kira/frontend
 npm install react-router-dom recharts
 npm install -D @types/react-router-dom
 ```
@@ -2657,7 +2657,7 @@ export const api = {
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /Users/tok/Dropbox/PARAL/Projects/tok-jira/tok-jira
+cd /Users/tok/Dropbox/PARAL/Projects/Kira/Kira
 git add frontend/
 git commit -m "feat: scaffold React frontend with Vite, types, and API client"
 ```
@@ -2803,7 +2803,7 @@ export function Layout() {
       >
         <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
           <Link to="/" style={{ fontWeight: "bold", fontSize: "16px", color: "#4a9eff", textDecoration: "none" }}>
-            tok-jira
+            Kira
           </Link>
           <Link to="/" style={{ color: "#ccc", fontSize: "13px", textDecoration: "none" }}>
             Dashboard
@@ -2902,7 +2902,7 @@ export function Login() {
           width: "320px",
         }}
       >
-        <h2 style={{ color: "#4a9eff", marginBottom: "24px", textAlign: "center" }}>tok-jira</h2>
+        <h2 style={{ color: "#4a9eff", marginBottom: "24px", textAlign: "center" }}>Kira</h2>
         {error && (
           <div style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px", textAlign: "center" }}>
             {error}
@@ -3571,7 +3571,7 @@ export function TicketDetail() {
 - [ ] **Step 4: Verify frontend builds**
 
 ```bash
-cd /Users/tok/Dropbox/PARAL/Projects/tok-jira/tok-jira/frontend
+cd /Users/tok/Dropbox/PARAL/Projects/Kira/Kira/frontend
 npm run build
 ```
 
@@ -3580,7 +3580,7 @@ Expected: Build succeeds with no TypeScript errors
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /Users/tok/Dropbox/PARAL/Projects/tok-jira/tok-jira
+cd /Users/tok/Dropbox/PARAL/Projects/Kira/Kira
 git add frontend/src/
 git commit -m "feat: add TicketList, TicketDetail pages and AuditTimeline component"
 ```
@@ -3666,9 +3666,9 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_USER: tokjira
-      POSTGRES_PASSWORD: tokjira
-      POSTGRES_DB: tokjira
+      POSTGRES_USER: kira
+      POSTGRES_PASSWORD: kira
+      POSTGRES_DB: kira
     ports:
       - "5432:5432"
     volumes:
@@ -3681,10 +3681,10 @@ services:
     ports:
       - "8000:8000"
     environment:
-      TOK_JIRA_DATABASE_URL: postgresql://tokjira:tokjira@postgres:5432/tokjira
-      TOK_JIRA_API_KEY: dev-api-key
-      TOK_JIRA_SECRET_KEY: dev-secret-key-change-in-production
-      TOK_JIRA_ARTIFACT_STORAGE_PATH: /app/artifacts
+      KIRA_DATABASE_URL: postgresql://kira:kira@postgres:5432/kira
+      KIRA_API_KEY: dev-api-key
+      KIRA_SECRET_KEY: dev-secret-key-change-in-production
+      KIRA_ARTIFACT_STORAGE_PATH: /app/artifacts
     volumes:
       - artifacts:/app/artifacts
     depends_on:
@@ -3707,7 +3707,7 @@ volumes:
 - [ ] **Step 5: Test compose builds**
 
 ```bash
-cd /Users/tok/Dropbox/PARAL/Projects/tok-jira/tok-jira
+cd /Users/tok/Dropbox/PARAL/Projects/Kira/Kira
 podman compose build
 ```
 
@@ -3740,7 +3740,7 @@ git commit -m "feat: add Dockerfiles, nginx config, and compose.yaml for contain
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: tok-jira
+  name: Kira
 ```
 
 - [ ] **Step 2: Create configmap**
@@ -3751,11 +3751,11 @@ metadata:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: tok-jira-config
-  namespace: tok-jira
+  name: Kira-config
+  namespace: Kira
 data:
-  TOK_JIRA_DATABASE_URL: "postgresql://tokjira:tokjira@postgres:5432/tokjira"
-  TOK_JIRA_ARTIFACT_STORAGE_PATH: "/app/artifacts"
+  KIRA_DATABASE_URL: "postgresql://kira:kira@postgres:5432/kira"
+  KIRA_ARTIFACT_STORAGE_PATH: "/app/artifacts"
 ```
 
 - [ ] **Step 3: Create secret**
@@ -3766,13 +3766,13 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: tok-jira-secrets
-  namespace: tok-jira
+  name: Kira-secrets
+  namespace: Kira
 type: Opaque
 stringData:
-  TOK_JIRA_API_KEY: "dev-api-key"
-  TOK_JIRA_SECRET_KEY: "dev-secret-key-change-in-production"
-  POSTGRES_PASSWORD: "tokjira"
+  KIRA_API_KEY: "dev-api-key"
+  KIRA_SECRET_KEY: "dev-secret-key-change-in-production"
+  POSTGRES_PASSWORD: "kira"
 ```
 
 - [ ] **Step 4: Create postgres manifest**
@@ -3784,7 +3784,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-pvc
-  namespace: tok-jira
+  namespace: Kira
 spec:
   accessModes:
     - ReadWriteOnce
@@ -3796,7 +3796,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
-  namespace: tok-jira
+  namespace: Kira
 spec:
   replicas: 1
   selector:
@@ -3814,13 +3814,13 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_USER
-              value: tokjira
+              value: kira
             - name: POSTGRES_DB
-              value: tokjira
+              value: kira
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: tok-jira-secrets
+                  name: Kira-secrets
                   key: POSTGRES_PASSWORD
           volumeMounts:
             - name: pgdata
@@ -3834,7 +3834,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres
-  namespace: tok-jira
+  namespace: Kira
 spec:
   selector:
     app: postgres
@@ -3852,7 +3852,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: artifacts-pvc
-  namespace: tok-jira
+  namespace: Kira
 spec:
   accessModes:
     - ReadWriteOnce
@@ -3864,7 +3864,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api
-  namespace: tok-jira
+  namespace: Kira
 spec:
   replicas: 1
   selector:
@@ -3877,15 +3877,15 @@ spec:
     spec:
       containers:
         - name: api
-          image: tok-jira-api:latest
+          image: Kira-api:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
           envFrom:
             - configMapRef:
-                name: tok-jira-config
+                name: Kira-config
             - secretRef:
-                name: tok-jira-secrets
+                name: Kira-secrets
           volumeMounts:
             - name: artifacts
               mountPath: /app/artifacts
@@ -3898,7 +3898,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: api
-  namespace: tok-jira
+  namespace: Kira
 spec:
   selector:
     app: api
@@ -3916,7 +3916,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
-  namespace: tok-jira
+  namespace: Kira
 spec:
   replicas: 1
   selector:
@@ -3929,7 +3929,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: tok-jira-frontend:latest
+          image: Kira-frontend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -3938,7 +3938,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend
-  namespace: tok-jira
+  namespace: Kira
 spec:
   type: NodePort
   selector:
@@ -3963,10 +3963,10 @@ git commit -m "feat: add Kubernetes manifests for postgres, api, and frontend"
 - [ ] **Step 1: Start Postgres (if not running)**
 
 ```bash
-podman start tokjira-postgres 2>/dev/null || podman run -d --name tokjira-postgres \
-  -e POSTGRES_USER=tokjira \
-  -e POSTGRES_PASSWORD=tokjira \
-  -e POSTGRES_DB=tokjira \
+podman start kira-postgres 2>/dev/null || podman run -d --name kira-postgres \
+  -e POSTGRES_USER=kira \
+  -e POSTGRES_PASSWORD=kira \
+  -e POSTGRES_DB=kira \
   -p 5432:5432 \
   postgres:16
 ```
@@ -3974,7 +3974,7 @@ podman start tokjira-postgres 2>/dev/null || podman run -d --name tokjira-postgr
 - [ ] **Step 2: Run migrations**
 
 ```bash
-cd /Users/tok/Dropbox/PARAL/Projects/tok-jira/tok-jira
+cd /Users/tok/Dropbox/PARAL/Projects/Kira/Kira
 uv run alembic upgrade head
 ```
 
@@ -4009,7 +4009,7 @@ Expected: JSON response with ticket data, status `open`
 - [ ] **Step 6: Start frontend**
 
 ```bash
-cd /Users/tok/Dropbox/PARAL/Projects/tok-jira/tok-jira/frontend
+cd /Users/tok/Dropbox/PARAL/Projects/Kira/Kira/frontend
 npm run dev
 ```
 
@@ -4018,7 +4018,7 @@ Verify: Open `http://localhost:5173` — login page loads. Login with `admin` / 
 - [ ] **Step 7: Run full test suite**
 
 ```bash
-cd /Users/tok/Dropbox/PARAL/Projects/tok-jira/tok-jira
+cd /Users/tok/Dropbox/PARAL/Projects/Kira/Kira
 uv run pytest tests/ -v
 ```
 
@@ -4028,5 +4028,5 @@ Expected: All tests PASSED
 
 ```bash
 git add -A
-git commit -m "feat: tok-jira v0.1.0 — complete ticket troubleshooting app"
+git commit -m "feat: Kira v0.1.0 — complete ticket troubleshooting app"
 ```

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
-  namespace: tok-jira
+  namespace: kira
 spec:
   replicas: 1
   selector:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: tok-jira-frontend:latest
+          image: kira-frontend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -24,7 +24,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend
-  namespace: tok-jira
+  namespace: kira
 spec:
   type: NodePort
   selector:
