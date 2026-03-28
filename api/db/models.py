@@ -96,3 +96,12 @@ class Artifact(Base):
     uploaded_at: Mapped[datetime] = mapped_column(default=utcnow)
 
     ticket: Mapped[Ticket] = relationship("Ticket", back_populates="artifacts")
+
+
+class Webhook(Base):
+    __tablename__ = "webhooks"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    url: Mapped[str] = mapped_column(String(500), nullable=False)
+    events: Mapped[list[str]] = mapped_column(JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
