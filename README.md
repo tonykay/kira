@@ -2,6 +2,8 @@
 
 A lightweight ticket troubleshooting application designed for AIOps teams. External AI agents (e.g., LangChain Deep Agents, agentic SREs) perform root cause analysis and submit diagnostic tickets via API. Human SME operators review, validate, and action the recommendations through an optional React dashboard.
 
+![Kira Dashboard](docs/images/kira-dashboard.png)
+
 ## Architecture
 
 ```
