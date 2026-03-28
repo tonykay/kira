@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "../api/client";
 import { AreaLozenge, ConfidenceLozenge, RiskLozenge, StatusLozenge } from "../components/Lozenge";
+import { SkillTag } from "../components/SkillTag";
 import type { Ticket, Area, Status } from "../types";
 
 export function TicketList() {
@@ -70,6 +71,7 @@ export function TicketList() {
             <tr style={{ color: "var(--kira-text-muted)", textTransform: "uppercase", fontSize: "11px" }}>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Title</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Area</th>
+              <th style={{ textAlign: "left", padding: "8px 12px" }}>Skills</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Risk</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Confidence</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Status</th>
@@ -85,6 +87,11 @@ export function TicketList() {
                   </Link>
                 </td>
                 <td style={{ padding: "10px 12px" }}><AreaLozenge area={t.area} /></td>
+                <td style={{ padding: "10px 12px" }}>
+                  <div style={{ display: "flex", gap: "3px", flexWrap: "wrap" }}>
+                    {t.skills.map((s) => <SkillTag key={s} skill={s} />)}
+                  </div>
+                </td>
                 <td style={{ padding: "10px 12px" }}><RiskLozenge value={t.risk} /></td>
                 <td style={{ padding: "10px 12px" }}><ConfidenceLozenge value={t.confidence} /></td>
                 <td style={{ padding: "10px 12px" }}><StatusLozenge status={t.status} /></td>

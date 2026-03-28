@@ -10,6 +10,7 @@ import {
 import { AuditTimeline } from "../components/AuditTimeline";
 import { ValueEditDialog } from "../components/ValueEditDialog";
 import { InfoPopover } from "../components/InfoPopover";
+import { SkillEditor } from "../components/SkillEditor";
 import type { Ticket, Comment, AuditEntry, Artifact, Status } from "../types";
 
 const STATUSES: Status[] = ["open", "acknowledged", "in_progress", "resolved", "closed"];
@@ -110,6 +111,17 @@ export function TicketDetail() {
               onClick={() => setEditDialog({ type: "confidence", value: ticket.confidence })}
             />
             <InfoPopover type="confidence" />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <span style={{ color: "var(--kira-text-muted)" }}>Skills: </span>
+            <SkillEditor
+              skills={ticket.skills}
+              onSave={async (skills) => {
+                const updated = await api.updateTicket(ticket.id, { skills });
+                setTicket(updated);
+                api.getAudit(ticket.id).then(setAudit);
+              }}
+            />
           </div>
           <div>
             <span style={{ color: "var(--kira-text-muted)" }}>Source: </span>
