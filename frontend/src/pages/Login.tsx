@@ -23,7 +23,7 @@ export function Login() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#0f0f1a",
+        background: "var(--kira-bg-page)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -32,13 +32,13 @@ export function Login() {
       <form
         onSubmit={handleSubmit}
         style={{
-          background: "#1a1a2e",
+          background: "var(--kira-bg-card)",
           padding: "32px",
           borderRadius: "8px",
           width: "320px",
         }}
       >
-        <h2 style={{ color: "#4a9eff", marginBottom: "24px", textAlign: "center" }}>Kira</h2>
+        <h2 style={{ color: "var(--kira-accent)", marginBottom: "24px", textAlign: "center" }}>Kira</h2>
         {error && (
           <div style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px", textAlign: "center" }}>
             {error}
@@ -53,10 +53,10 @@ export function Login() {
             width: "100%",
             padding: "10px",
             marginBottom: "12px",
-            background: "#0f0f1a",
-            border: "1px solid #333",
+            background: "var(--kira-bg-input)",
+            border: "1px solid var(--kira-border)",
             borderRadius: "4px",
-            color: "#e0e0e0",
+            color: "var(--kira-text-primary)",
             fontSize: "14px",
             boxSizing: "border-box",
           }}
@@ -70,10 +70,10 @@ export function Login() {
             width: "100%",
             padding: "10px",
             marginBottom: "16px",
-            background: "#0f0f1a",
-            border: "1px solid #333",
+            background: "var(--kira-bg-input)",
+            border: "1px solid var(--kira-border)",
             borderRadius: "4px",
-            color: "#e0e0e0",
+            color: "var(--kira-text-primary)",
             fontSize: "14px",
             boxSizing: "border-box",
           }}
@@ -83,7 +83,7 @@ export function Login() {
           style={{
             width: "100%",
             padding: "10px",
-            background: "#4a9eff",
+            background: "var(--kira-accent)",
             color: "white",
             border: "none",
             borderRadius: "4px",
