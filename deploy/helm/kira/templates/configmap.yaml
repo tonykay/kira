@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kira.fullname" . }}-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "kira.labels" . | nindent 4 }}
+data:
+  KIRA_DATABASE_URL: {{ include "kira.databaseUrl" . | quote }}
+  KIRA_ARTIFACT_STORAGE_PATH: {{ .Values.kira.artifactStoragePath | quote }}
