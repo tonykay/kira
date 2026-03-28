@@ -107,6 +107,7 @@ curl -X POST http://localhost:8000/api/v1/tickets \
     "risk": 0.8,
     "recommended_action": "Increase memory limits from 512Mi to 1Gi",
     "affected_systems": ["payment-service-7d4b8c"],
+    "skills": ["kubernetes", "helm"],
     "source": "agent"
   }'
 ```

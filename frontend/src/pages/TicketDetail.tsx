@@ -112,17 +112,6 @@ export function TicketDetail() {
             />
             <InfoPopover type="confidence" />
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            <span style={{ color: "var(--kira-text-muted)" }}>Skills: </span>
-            <SkillEditor
-              skills={ticket.skills}
-              onSave={async (skills) => {
-                const updated = await api.updateTicket(ticket.id, { skills });
-                setTicket(updated);
-                api.getAudit(ticket.id).then(setAudit);
-              }}
-            />
-          </div>
           <div>
             <span style={{ color: "var(--kira-text-muted)" }}>Source: </span>
             <span>{ticket.created_by_source}</span>
@@ -131,6 +120,18 @@ export function TicketDetail() {
             <span style={{ color: "var(--kira-text-muted)" }}>Created: </span>
             <span>{new Date(ticket.created_at).toLocaleString()}</span>
           </div>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "4px", marginBottom: "16px", fontSize: "13px" }}>
+          <span style={{ color: "var(--kira-text-muted)" }}>Skills: </span>
+          <SkillEditor
+            skills={ticket.skills}
+            onSave={async (skills) => {
+              const updated = await api.updateTicket(ticket.id, { skills });
+              setTicket(updated);
+              api.getAudit(ticket.id).then(setAudit);
+            }}
+          />
         </div>
 
         {ticket.affected_systems.length > 0 && (
