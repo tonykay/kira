@@ -1,0 +1,44 @@
+# Example ArgoCD Application manifest for Kira
+#
+# Prerequisites:
+#   - ArgoCD installed on the target cluster
+#   - This Git repository accessible from ArgoCD
+#
+# Usage:
+#   kubectl apply -f deploy/argocd/application.yaml
+#
+# To use custom values, create a values override file and reference it:
+#   helm.valueFiles:
+#     - values.yaml
+#     - values-production.yaml
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kira
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: kira
+    app.kubernetes.io/part-of: kira
+spec:
+  project: default
+
+  source:
+    # Update this to your fork/repo URL
+    repoURL: https://github.com/tonykay/kira.git
+    targetRevision: main
+    path: deploy/helm/kira
+    helm:
+      valueFiles:
+        - values.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kira
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

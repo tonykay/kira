@@ -1,0 +1,36 @@
+=== Kira Ticket Troubleshooting App ===
+
+Kira has been deployed to namespace: {{ .Values.namespace }}
+
+--- Access the Frontend ---
+
+{{- if eq .Values.frontend.service.type "NodePort" }}
+  Frontend URL: http://<node-ip>:{{ .Values.frontend.service.nodePort }}
+{{- else }}
+  kubectl port-forward -n {{ .Values.namespace }} svc/frontend {{ .Values.frontend.port }}:{{ .Values.frontend.port }}
+  Frontend URL: http://localhost:{{ .Values.frontend.port }}
+{{- end }}
+
+--- Access the API ---
+
+  kubectl port-forward -n {{ .Values.namespace }} svc/api {{ .Values.api.port }}:{{ .Values.api.port }}
+  API docs: http://localhost:{{ .Values.api.port }}/api/v1/docs
+
+--- Demo Credentials ---
+
+  After running migrations and seeding:
+    admin / admin123      (admin)
+    jsmith / password      (operator, kubernetes)
+    akhan / password       (operator, linux)
+
+--- Post-Install Steps ---
+
+  1. Run migrations:
+     kubectl exec -n {{ .Values.namespace }} deploy/{{ include "kira.fullname" . }}-api -- uv run alembic upgrade head
+
+  2. Seed demo data (optional):
+     kubectl exec -n {{ .Values.namespace }} deploy/{{ include "kira.fullname" . }}-api -- uv run python -m api.seed
+
+--- API Key ---
+
+  Agent API key: {{ .Values.kira.apiKey }}
