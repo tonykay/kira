@@ -28,6 +28,7 @@ export interface Ticket {
   risk: number;
   recommended_action: string;
   affected_systems: string[];
+  skills: string[];
   assigned_to: string | null;
   created_by_source: Source;
   created_at: string;
