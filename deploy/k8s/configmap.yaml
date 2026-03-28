@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tok-jira-config
+  namespace: tok-jira
+data:
+  TOK_JIRA_DATABASE_URL: "postgresql://tokjira:tokjira@postgres:5432/tokjira"
+  TOK_JIRA_ARTIFACT_STORAGE_PATH: "/app/artifacts"
