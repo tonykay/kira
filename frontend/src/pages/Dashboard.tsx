@@ -14,7 +14,7 @@ export function Dashboard() {
     api.getTickets("per_page=10").then((r) => setTickets(r.items));
   }, []);
 
-  if (!stats) return <div style={{ color: "#888" }}>Loading...</div>;
+  if (!stats) return <div style={{ color: "var(--kira-text-muted)" }}>Loading...</div>;
 
   const areaData = Object.entries(stats.by_area).map(([name, count]) => ({ name, count }));
   const riskData = [
@@ -27,7 +27,7 @@ export function Dashboard() {
     { label: "Open", value: stats.open, color: "#ef4444" },
     { label: "In Progress", value: stats.in_progress, color: "#f59e0b" },
     { label: "Resolved", value: stats.resolved, color: "#22c55e" },
-    { label: "Avg Confidence", value: stats.avg_confidence?.toFixed(2) ?? "—", color: "#4a9eff" },
+    { label: "Avg Confidence", value: stats.avg_confidence?.toFixed(2) ?? "\u2014", color: "var(--kira-accent)" },
   ];
 
   return (
@@ -39,36 +39,36 @@ export function Dashboard() {
             style={{
               flex: 1,
               minWidth: "120px",
-              background: "#1a1a2e",
+              background: "var(--kira-bg-card)",
               borderRadius: "6px",
               padding: "14px",
               borderLeft: `3px solid ${c.color}`,
             }}
           >
-            <div style={{ fontSize: "11px", color: "#999", textTransform: "uppercase" }}>{c.label}</div>
+            <div style={{ fontSize: "11px", color: "var(--kira-text-muted)", textTransform: "uppercase" }}>{c.label}</div>
             <div style={{ fontSize: "28px", fontWeight: "bold", color: c.color }}>{c.value}</div>
           </div>
         ))}
       </div>
 
       <div style={{ display: "flex", gap: "12px", marginBottom: "16px", flexWrap: "wrap" }}>
-        <div style={{ flex: 1, minWidth: "300px", background: "#1a1a2e", borderRadius: "6px", padding: "14px" }}>
-          <div style={{ fontSize: "12px", color: "#999", marginBottom: "12px" }}>Tickets by Area</div>
+        <div style={{ flex: 1, minWidth: "300px", background: "var(--kira-bg-card)", borderRadius: "6px", padding: "14px" }}>
+          <div style={{ fontSize: "12px", color: "var(--kira-text-muted)", marginBottom: "12px" }}>Tickets by Area</div>
           <ResponsiveContainer width="100%" height={120}>
             <BarChart data={areaData}>
-              <XAxis dataKey="name" tick={{ fill: "#888", fontSize: 10 }} />
-              <YAxis tick={{ fill: "#888", fontSize: 10 }} allowDecimals={false} />
+              <XAxis dataKey="name" tick={{ fill: "var(--kira-text-muted)", fontSize: 10 }} />
+              <YAxis tick={{ fill: "var(--kira-text-muted)", fontSize: 10 }} allowDecimals={false} />
               <Tooltip />
-              <Bar dataKey="count" fill="#4a9eff" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="count" fill="var(--kira-accent)" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div style={{ flex: 1, minWidth: "300px", background: "#1a1a2e", borderRadius: "6px", padding: "14px" }}>
-          <div style={{ fontSize: "12px", color: "#999", marginBottom: "12px" }}>Risk Distribution</div>
+        <div style={{ flex: 1, minWidth: "300px", background: "var(--kira-bg-card)", borderRadius: "6px", padding: "14px" }}>
+          <div style={{ fontSize: "12px", color: "var(--kira-text-muted)", marginBottom: "12px" }}>Risk Distribution</div>
           <ResponsiveContainer width="100%" height={120}>
             <BarChart data={riskData} layout="vertical">
-              <XAxis type="number" tick={{ fill: "#888", fontSize: 10 }} allowDecimals={false} />
-              <YAxis type="category" dataKey="name" tick={{ fill: "#888", fontSize: 10 }} width={40} />
+              <XAxis type="number" tick={{ fill: "var(--kira-text-muted)", fontSize: 10 }} allowDecimals={false} />
+              <YAxis type="category" dataKey="name" tick={{ fill: "var(--kira-text-muted)", fontSize: 10 }} width={40} />
               <Tooltip />
               <Bar dataKey="count" radius={[0, 3, 3, 0]}>
                 {riskData.map((entry, index) => (
@@ -80,13 +80,13 @@ export function Dashboard() {
         </div>
       </div>
 
-      <div style={{ background: "#1a1a2e", borderRadius: "6px", overflow: "hidden" }}>
-        <div style={{ fontSize: "12px", color: "#999", padding: "12px", borderBottom: "1px solid #333" }}>
+      <div style={{ background: "var(--kira-bg-card)", borderRadius: "6px", overflow: "hidden" }}>
+        <div style={{ fontSize: "12px", color: "var(--kira-text-muted)", padding: "12px", borderBottom: "1px solid var(--kira-border)" }}>
           Recent Tickets
         </div>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
           <thead>
-            <tr style={{ color: "#666", textTransform: "uppercase", fontSize: "11px" }}>
+            <tr style={{ color: "var(--kira-text-muted)", textTransform: "uppercase", fontSize: "11px" }}>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Title</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Area</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Risk</th>
@@ -96,24 +96,16 @@ export function Dashboard() {
           </thead>
           <tbody>
             {tickets.map((t) => (
-              <tr key={t.id} style={{ borderTop: "1px solid #222" }}>
+              <tr key={t.id} style={{ borderTop: "1px solid var(--kira-border-subtle)" }}>
                 <td style={{ padding: "10px 12px" }}>
-                  <Link to={`/tickets/${t.id}`} style={{ color: "#ddd", textDecoration: "none" }}>
+                  <Link to={`/tickets/${t.id}`} style={{ color: "var(--kira-link)", textDecoration: "none" }}>
                     {t.title}
                   </Link>
                 </td>
-                <td style={{ padding: "10px 12px" }}>
-                  <AreaLozenge area={t.area} />
-                </td>
-                <td style={{ padding: "10px 12px" }}>
-                  <RiskLozenge value={t.risk} />
-                </td>
-                <td style={{ padding: "10px 12px" }}>
-                  <ConfidenceLozenge value={t.confidence} />
-                </td>
-                <td style={{ padding: "10px 12px" }}>
-                  <StatusLozenge status={t.status} />
-                </td>
+                <td style={{ padding: "10px 12px" }}><AreaLozenge area={t.area} /></td>
+                <td style={{ padding: "10px 12px" }}><RiskLozenge value={t.risk} /></td>
+                <td style={{ padding: "10px 12px" }}><ConfidenceLozenge value={t.confidence} /></td>
+                <td style={{ padding: "10px 12px" }}><StatusLozenge status={t.status} /></td>
               </tr>
             ))}
           </tbody>
