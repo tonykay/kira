@@ -154,6 +154,15 @@ Services:
 
 ## Deploying to Kubernetes
 
+Kira provides two Kubernetes deployment options:
+
+| Method | Location | Best for |
+|--------|----------|----------|
+| Plain manifests | `deploy/k8s/` | Learning, quick demos, understanding the resources |
+| Helm chart | `deploy/helm/kira/` | Production, GitOps, ArgoCD, configurable deployments |
+
+### Plain Manifests (quick start)
+
 ```bash
 kubectl apply -f deploy/k8s/namespace.yaml
 kubectl apply -f deploy/k8s/configmap.yaml
@@ -163,7 +172,44 @@ kubectl apply -f deploy/k8s/api.yaml
 kubectl apply -f deploy/k8s/frontend.yaml
 ```
 
-Frontend accessible on NodePort 30300.
+### Deploying with Helm
+
+```bash
+helm install kira deploy/helm/kira/
+```
+
+Override values for your environment:
+
+```bash
+helm install kira deploy/helm/kira/ \
+  --set kira.apiKey=my-secure-key \
+  --set kira.secretKey=my-secret \
+  --set postgres.credentials.password=secure-password
+```
+
+Or use a custom values file:
+
+```bash
+helm install kira deploy/helm/kira/ -f my-values.yaml
+```
+
+Post-install — run migrations and seed:
+
+```bash
+kubectl exec -n kira deploy/kira-api -- uv run alembic upgrade head
+kubectl exec -n kira deploy/kira-api -- uv run python -m api.seed
+```
+
+### Deploying with ArgoCD
+
+An example ArgoCD Application manifest is provided at `deploy/argocd/application.yaml`.
+
+```bash
+# Update the repoURL in the manifest to point to your fork, then:
+kubectl apply -f deploy/argocd/application.yaml
+```
+
+ArgoCD will sync the Helm chart from the repository with automated pruning and self-healing. To customize values, add a `values-production.yaml` alongside the chart and reference it in the Application spec.
 
 ## Testing
 
