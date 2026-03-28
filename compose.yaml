@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: tokjira
+      POSTGRES_PASSWORD: tokjira
+      POSTGRES_DB: tokjira
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.api
+    ports:
+      - "8000:8000"
+    environment:
+      TOK_JIRA_DATABASE_URL: postgresql://tokjira:tokjira@postgres:5432/tokjira
+      TOK_JIRA_API_KEY: dev-api-key
+      TOK_JIRA_SECRET_KEY: dev-secret-key-change-in-production
+      TOK_JIRA_ARTIFACT_STORAGE_PATH: /app/artifacts
+    volumes:
+      - artifacts:/app/artifacts
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  artifacts:
