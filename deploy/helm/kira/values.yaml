@@ -1,0 +1,55 @@
+# Kira Helm Chart Values
+# Override these values for your environment
+
+namespace: kira
+
+# --- API ---
+api:
+  image:
+    repository: kira-api
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 8000
+  resources: {}
+  #  requests:
+  #    cpu: 100m
+  #    memory: 256Mi
+  #  limits:
+  #    cpu: 500m
+  #    memory: 512Mi
+
+# --- Frontend ---
+frontend:
+  image:
+    repository: kira-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 3000
+  service:
+    type: NodePort
+    nodePort: 30300
+
+# --- PostgreSQL ---
+postgres:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "16"
+    pullPolicy: IfNotPresent
+  storage: 1Gi
+  credentials:
+    user: kira
+    password: kira
+    database: kira
+
+# --- Kira Application Config ---
+kira:
+  apiKey: dev-api-key
+  secretKey: dev-secret-key-change-in-production
+  artifactStoragePath: /app/artifacts
+
+# --- Artifact Storage ---
+artifacts:
+  storage: 5Gi

@@ -1,0 +1,8 @@
+apiVersion: v2
+name: kira
+description: A lightweight ticket troubleshooting application for AIOps teams
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+maintainers:
+  - name: tonykay
