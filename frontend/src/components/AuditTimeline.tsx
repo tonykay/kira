@@ -10,11 +10,11 @@ export function AuditTimeline({ entries }: { entries: AuditEntry[] }) {
             display: "flex",
             gap: "12px",
             padding: "10px 0",
-            borderBottom: "1px solid #222",
+            borderBottom: "1px solid var(--kira-border-subtle)",
             fontSize: "12px",
           }}
         >
-          <div style={{ color: "#888", minWidth: "140px", whiteSpace: "nowrap" }}>
+          <div style={{ color: "var(--kira-text-muted)", minWidth: "140px", whiteSpace: "nowrap" }}>
             {new Date(entry.timestamp).toLocaleString()}
           </div>
           <div>
@@ -30,15 +30,15 @@ export function AuditTimeline({ entries }: { entries: AuditEntry[] }) {
             >
               {entry.actor_source}
             </span>
-            <span style={{ color: "#ccc" }}>{entry.actor_name}</span>
+            <span style={{ color: "var(--kira-text-secondary)" }}>{entry.actor_name}</span>
             {entry.actor_tier && (
-              <span style={{ color: "#666", marginLeft: "4px" }}>({entry.actor_tier})</span>
+              <span style={{ color: "var(--kira-text-muted)", marginLeft: "4px" }}>({entry.actor_tier})</span>
             )}
-            <span style={{ color: "#999", marginLeft: "8px" }}>
+            <span style={{ color: "var(--kira-text-muted)", marginLeft: "8px" }}>
               {entry.action.replace(/_/g, " ")}
             </span>
             {entry.old_value && entry.new_value && (
-              <span style={{ color: "#666", marginLeft: "8px" }}>
+              <span style={{ color: "var(--kira-text-muted)", marginLeft: "8px" }}>
                 {JSON.stringify(entry.old_value)} → {JSON.stringify(entry.new_value)}
               </span>
             )}

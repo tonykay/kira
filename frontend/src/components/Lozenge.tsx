@@ -60,21 +60,28 @@ export function ConfidenceLozenge({ value }: { value: number }) {
   );
 }
 
-const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  open: { bg: "#ef444422", text: "#ef4444" },
-  acknowledged: { bg: "#f59e0b22", text: "#f59e0b" },
-  in_progress: { bg: "#3b82f622", text: "#3b82f6" },
-  resolved: { bg: "#22c55e22", text: "#22c55e" },
-  closed: { bg: "#6b728022", text: "#6b7280" },
+const STATUS_TEXT_COLORS: Record<string, string> = {
+  open: "#ef4444",
+  acknowledged: "#f59e0b",
+  in_progress: "#3b82f6",
+  resolved: "#22c55e",
+  closed: "#6b7280",
 };
 
+function hexToRgb(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `${r}, ${g}, ${b}`;
+}
+
 export function StatusLozenge({ status }: { status: string }) {
-  const colors = STATUS_COLORS[status] || STATUS_COLORS.open;
+  const textColor = STATUS_TEXT_COLORS[status] || STATUS_TEXT_COLORS.open;
   return (
     <span
       style={{
-        background: colors.bg,
-        color: colors.text,
+        background: `rgba(${hexToRgb(textColor)}, var(--kira-status-opacity))`,
+        color: textColor,
         padding: "2px 8px",
         borderRadius: "10px",
         fontSize: "11px",
