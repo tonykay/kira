@@ -24,7 +24,7 @@ export function TicketDetail() {
     api.getArtifacts(id).then(setArtifacts);
   }, [id]);
 
-  if (!ticket) return <div style={{ color: "#888" }}>Loading...</div>;
+  if (!ticket) return <div style={{ color: "var(--kira-text-muted)" }}>Loading...</div>;
 
   const handleStatusChange = async (status: Status) => {
     const updated = await api.updateTicket(ticket.id, { status });
@@ -41,7 +41,7 @@ export function TicketDetail() {
   };
 
   const sectionStyle = {
-    background: "#1a1a2e",
+    background: "var(--kira-bg-card)",
     borderRadius: "6px",
     padding: "16px",
     marginBottom: "12px",
@@ -60,28 +60,28 @@ export function TicketDetail() {
 
         <div style={{ display: "flex", gap: "24px", marginBottom: "16px", fontSize: "13px", flexWrap: "wrap" }}>
           <div>
-            <span style={{ color: "#888" }}>Risk: </span>
+            <span style={{ color: "var(--kira-text-muted)" }}>Risk: </span>
             <RiskLozenge value={ticket.risk} />
           </div>
           <div>
-            <span style={{ color: "#888" }}>Confidence: </span>
+            <span style={{ color: "var(--kira-text-muted)" }}>Confidence: </span>
             <ConfidenceLozenge value={ticket.confidence} />
           </div>
           <div>
-            <span style={{ color: "#888" }}>Source: </span>
+            <span style={{ color: "var(--kira-text-muted)" }}>Source: </span>
             <span>{ticket.created_by_source}</span>
           </div>
           <div>
-            <span style={{ color: "#888" }}>Created: </span>
+            <span style={{ color: "var(--kira-text-muted)" }}>Created: </span>
             <span>{new Date(ticket.created_at).toLocaleString()}</span>
           </div>
         </div>
 
         {ticket.affected_systems.length > 0 && (
           <div style={{ marginBottom: "12px", fontSize: "13px" }}>
-            <span style={{ color: "#888" }}>Affected: </span>
+            <span style={{ color: "var(--kira-text-muted)" }}>Affected: </span>
             {ticket.affected_systems.map((s) => (
-              <code key={s} style={{ background: "#0f0f1a", padding: "2px 6px", borderRadius: "3px", marginRight: "4px", fontSize: "11px" }}>
+              <code key={s} style={{ background: "var(--kira-bg-input)", padding: "2px 6px", borderRadius: "3px", marginRight: "4px", fontSize: "11px" }}>
                 {s}
               </code>
             ))}
@@ -97,14 +97,14 @@ export function TicketDetail() {
       </div>
 
       <div style={{ ...sectionStyle }}>
-        <div style={{ fontSize: "11px", color: "#888", textTransform: "uppercase", marginBottom: "8px" }}>
+        <div style={{ fontSize: "11px", color: "var(--kira-text-muted)", textTransform: "uppercase", marginBottom: "8px" }}>
           Analysis
         </div>
         <div style={{ fontSize: "13px", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{ticket.description}</div>
       </div>
 
       <div style={{ ...sectionStyle }}>
-        <div style={{ fontSize: "11px", color: "#888", textTransform: "uppercase", marginBottom: "8px" }}>
+        <div style={{ fontSize: "11px", color: "var(--kira-text-muted)", textTransform: "uppercase", marginBottom: "8px" }}>
           Update Status
         </div>
         <div style={{ display: "flex", gap: "6px" }}>
@@ -116,9 +116,9 @@ export function TicketDetail() {
               style={{
                 padding: "6px 12px",
                 borderRadius: "4px",
-                border: "1px solid #333",
-                background: s === ticket.status ? "#333" : "#0f0f1a",
-                color: s === ticket.status ? "#fff" : "#999",
+                border: "1px solid var(--kira-border)",
+                background: s === ticket.status ? "var(--kira-border)" : "var(--kira-bg-input)",
+                color: s === ticket.status ? "var(--kira-text-primary)" : "var(--kira-text-muted)",
                 cursor: s === ticket.status ? "default" : "pointer",
                 fontSize: "12px",
               }}
@@ -136,10 +136,10 @@ export function TicketDetail() {
             onClick={() => setActiveTab(tab)}
             style={{
               padding: "8px 16px",
-              background: activeTab === tab ? "#1a1a2e" : "transparent",
-              color: activeTab === tab ? "#4a9eff" : "#888",
+              background: activeTab === tab ? "var(--kira-bg-card)" : "transparent",
+              color: activeTab === tab ? "var(--kira-accent)" : "var(--kira-text-muted)",
               border: "none",
-              borderBottom: activeTab === tab ? "2px solid #4a9eff" : "2px solid transparent",
+              borderBottom: activeTab === tab ? "2px solid var(--kira-accent)" : "2px solid transparent",
               cursor: "pointer",
               fontSize: "13px",
               textTransform: "capitalize",
@@ -154,9 +154,9 @@ export function TicketDetail() {
         {activeTab === "comments" && (
           <div>
             {comments.map((c) => (
-              <div key={c.id} style={{ padding: "10px 0", borderBottom: "1px solid #222", fontSize: "13px" }}>
+              <div key={c.id} style={{ padding: "10px 0", borderBottom: "1px solid var(--kira-border-subtle)", fontSize: "13px" }}>
                 <div style={{ display: "flex", gap: "8px", marginBottom: "4px" }}>
-                  <span style={{ color: "#ccc", fontWeight: 500 }}>{c.author_name}</span>
+                  <span style={{ color: "var(--kira-text-secondary)", fontWeight: 500 }}>{c.author_name}</span>
                   <span
                     style={{
                       background: c.author_source === "agent" ? "#2563eb22" : "#7c3aed22",
@@ -168,9 +168,9 @@ export function TicketDetail() {
                   >
                     {c.author_source}
                   </span>
-                  <span style={{ color: "#666" }}>{new Date(c.created_at).toLocaleString()}</span>
+                  <span style={{ color: "var(--kira-text-muted)" }}>{new Date(c.created_at).toLocaleString()}</span>
                 </div>
-                <div style={{ color: "#bbb", whiteSpace: "pre-wrap" }}>{c.body}</div>
+                <div style={{ color: "var(--kira-text-secondary)", whiteSpace: "pre-wrap" }}>{c.body}</div>
               </div>
             ))}
             <div style={{ marginTop: "12px", display: "flex", gap: "8px" }}>
@@ -180,10 +180,10 @@ export function TicketDetail() {
                 placeholder="Add a comment..."
                 style={{
                   flex: 1,
-                  background: "#0f0f1a",
-                  border: "1px solid #333",
+                  background: "var(--kira-bg-input)",
+                  border: "1px solid var(--kira-border)",
                   borderRadius: "4px",
-                  color: "#e0e0e0",
+                  color: "var(--kira-text-primary)",
                   padding: "8px",
                   fontSize: "13px",
                   minHeight: "60px",
@@ -195,7 +195,7 @@ export function TicketDetail() {
                 style={{
                   alignSelf: "flex-end",
                   padding: "8px 16px",
-                  background: "#4a9eff",
+                  background: "var(--kira-accent)",
                   color: "white",
                   border: "none",
                   borderRadius: "4px",
@@ -213,16 +213,16 @@ export function TicketDetail() {
 
         {activeTab === "artifacts" && (
           <div>
-            {artifacts.length === 0 && <div style={{ color: "#666", fontSize: "13px" }}>No artifacts</div>}
+            {artifacts.length === 0 && <div style={{ color: "var(--kira-text-muted)", fontSize: "13px" }}>No artifacts</div>}
             {artifacts.map((a) => (
-              <div key={a.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #222", fontSize: "12px" }}>
+              <div key={a.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid var(--kira-border-subtle)", fontSize: "12px" }}>
                 <div>
-                  <span style={{ color: "#ccc" }}>{a.filename}</span>
-                  <span style={{ color: "#666", marginLeft: "8px" }}>{a.content_type}</span>
+                  <span style={{ color: "var(--kira-text-secondary)" }}>{a.filename}</span>
+                  <span style={{ color: "var(--kira-text-muted)", marginLeft: "8px" }}>{a.content_type}</span>
                 </div>
                 <a
                   href={`/api/v1/artifacts/${a.id}/download`}
-                  style={{ color: "#4a9eff", textDecoration: "none" }}
+                  style={{ color: "var(--kira-accent)", textDecoration: "none" }}
                 >
                   Download
                 </a>

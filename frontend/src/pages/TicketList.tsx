@@ -38,7 +38,7 @@ export function TicketList() {
           <select
             value={area || ""}
             onChange={(e) => setFilter("area", e.target.value || null)}
-            style={{ background: "#1a1a2e", color: "#ccc", border: "1px solid #333", borderRadius: "4px", padding: "6px" }}
+            style={{ background: "var(--kira-bg-card)", color: "var(--kira-text-secondary)", border: "1px solid var(--kira-border)", borderRadius: "4px", padding: "6px" }}
           >
             <option value="">All Areas</option>
             <option value="linux">Linux</option>
@@ -52,7 +52,7 @@ export function TicketList() {
           <select
             value={status || ""}
             onChange={(e) => setFilter("status", e.target.value || null)}
-            style={{ background: "#1a1a2e", color: "#ccc", border: "1px solid #333", borderRadius: "4px", padding: "6px" }}
+            style={{ background: "var(--kira-bg-card)", color: "var(--kira-text-secondary)", border: "1px solid var(--kira-border)", borderRadius: "4px", padding: "6px" }}
           >
             <option value="">All Statuses</option>
             <option value="open">Open</option>
@@ -64,10 +64,10 @@ export function TicketList() {
         </div>
       </div>
 
-      <div style={{ background: "#1a1a2e", borderRadius: "6px", overflow: "hidden" }}>
+      <div style={{ background: "var(--kira-bg-card)", borderRadius: "6px", overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
           <thead>
-            <tr style={{ color: "#666", textTransform: "uppercase", fontSize: "11px" }}>
+            <tr style={{ color: "var(--kira-text-muted)", textTransform: "uppercase", fontSize: "11px" }}>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Title</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Area</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Risk</th>
@@ -78,9 +78,9 @@ export function TicketList() {
           </thead>
           <tbody>
             {tickets.map((t) => (
-              <tr key={t.id} style={{ borderTop: "1px solid #222" }}>
+              <tr key={t.id} style={{ borderTop: "1px solid var(--kira-border-subtle)" }}>
                 <td style={{ padding: "10px 12px" }}>
-                  <Link to={`/tickets/${t.id}`} style={{ color: "#ddd", textDecoration: "none" }}>
+                  <Link to={`/tickets/${t.id}`} style={{ color: "var(--kira-link)", textDecoration: "none" }}>
                     {t.title}
                   </Link>
                 </td>
@@ -88,7 +88,7 @@ export function TicketList() {
                 <td style={{ padding: "10px 12px" }}><RiskLozenge value={t.risk} /></td>
                 <td style={{ padding: "10px 12px" }}><ConfidenceLozenge value={t.confidence} /></td>
                 <td style={{ padding: "10px 12px" }}><StatusLozenge status={t.status} /></td>
-                <td style={{ padding: "10px 12px", color: "#888" }}>
+                <td style={{ padding: "10px 12px", color: "var(--kira-text-muted)" }}>
                   {new Date(t.created_at).toLocaleDateString()}
                 </td>
               </tr>
