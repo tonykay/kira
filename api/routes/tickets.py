@@ -13,6 +13,10 @@ from api.services.audit import create_audit_entry
 router = APIRouter(prefix="/tickets", tags=["tickets"])
 
 
+def normalize_skills(skills: list[str]) -> list[str]:
+    return list(dict.fromkeys(s.strip().lower() for s in skills if s.strip()))
+
+
 @router.post("", response_model=TicketResponse, status_code=201)
 def create_ticket(
     body: TicketCreate,
@@ -27,6 +31,7 @@ def create_ticket(
         risk=body.risk,
         recommended_action=body.recommended_action,
         affected_systems=body.affected_systems,
+        skills=normalize_skills(body.skills),
         created_by_source=body.source.value,
     )
     db.add(ticket)
@@ -98,7 +103,15 @@ def update_ticket(
     updates = body.model_dump(exclude_unset=True)
     for field, new_value in updates.items():
         old_value = getattr(ticket, field)
-        if field == "assigned_to":
+        if field == "skills":
+            normalized = normalize_skills(new_value)
+            create_audit_entry(
+                db, ticket.id, "skills_changed", user,
+                old_value={"skills": old_value},
+                new_value={"skills": normalized},
+            )
+            setattr(ticket, field, normalized)
+        elif field == "assigned_to":
             old_value = str(old_value) if old_value else None
             new_value_str = str(new_value) if new_value else None
             setattr(ticket, field, new_value)

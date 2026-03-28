@@ -14,6 +14,7 @@ class TicketCreate(BaseModel):
     risk: float = Field(ge=0.0, le=1.0)
     recommended_action: str
     affected_systems: list[str] = Field(default_factory=list)
+    skills: list[str] = Field(default_factory=list)
     source: SourceEnum = SourceEnum.AGENT
 
 
@@ -22,6 +23,7 @@ class TicketUpdate(BaseModel):
     confidence: float | None = Field(default=None, ge=0.0, le=1.0)
     risk: float | None = Field(default=None, ge=0.0, le=1.0)
     assigned_to: UUID | None = None
+    skills: list[str] | None = None
 
 
 class TicketResponse(BaseModel):
@@ -34,6 +36,7 @@ class TicketResponse(BaseModel):
     risk: float
     recommended_action: str
     affected_systems: list[str]
+    skills: list[str]
     assigned_to: UUID | None
     created_by_source: SourceEnum
     created_at: datetime

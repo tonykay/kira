@@ -36,6 +36,7 @@ class Ticket(Base):
     risk: Mapped[float] = mapped_column(nullable=False)
     recommended_action: Mapped[str] = mapped_column(Text, nullable=False)
     affected_systems: Mapped[list[str]] = mapped_column(JSON, default=list)
+    skills: Mapped[list[str]] = mapped_column(JSON, default=list)
     assigned_to: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=True
     )

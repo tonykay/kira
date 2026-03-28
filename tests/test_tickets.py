@@ -98,3 +98,34 @@ def test_update_ticket_creates_audit_entry(auth_client, client, api_key_headers)
     actions = [e["action"] for e in entries]
     assert "created" in actions
     assert "status_changed" in actions
+
+
+def test_create_ticket_with_skills(client, api_key_headers):
+    payload = {**TICKET_PAYLOAD, "skills": ["Kubernetes", " helm ", "ARGOCD"]}
+    resp = client.post("/api/v1/tickets", json=payload, headers=api_key_headers)
+    assert resp.status_code == 201
+    assert resp.json()["skills"] == ["kubernetes", "helm", "argocd"]
+
+
+def test_create_ticket_default_empty_skills(client, api_key_headers):
+    resp = client.post("/api/v1/tickets", json=TICKET_PAYLOAD, headers=api_key_headers)
+    assert resp.status_code == 201
+    assert resp.json()["skills"] == []
+
+
+def test_update_ticket_skills(auth_client, client, api_key_headers):
+    create_resp = client.post("/api/v1/tickets", json=TICKET_PAYLOAD, headers=api_key_headers)
+    ticket_id = create_resp.json()["id"]
+    resp = auth_client.patch(
+        f"/api/v1/tickets/{ticket_id}",
+        json={"skills": ["Docker", " kubernetes"]},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["skills"] == ["docker", "kubernetes"]
+
+
+def test_skills_deduplication(client, api_key_headers):
+    payload = {**TICKET_PAYLOAD, "skills": ["helm", "Helm", "HELM"]}
+    resp = client.post("/api/v1/tickets", json=payload, headers=api_key_headers)
+    assert resp.status_code == 201
+    assert resp.json()["skills"] == ["helm"]
