@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../api/client";
-import { AreaLozenge, ConfidenceLozenge, RiskLozenge, StatusLozenge } from "../components/Lozenge";
+import {
+  AreaLozenge,
+  EditableConfidenceLozenge,
+  EditableRiskLozenge,
+  StatusLozenge,
+} from "../components/Lozenge";
 import { AuditTimeline } from "../components/AuditTimeline";
+import { ValueEditDialog } from "../components/ValueEditDialog";
+import { InfoPopover } from "../components/InfoPopover";
 import type { Ticket, Comment, AuditEntry, Artifact, Status } from "../types";
 
 const STATUSES: Status[] = ["open", "acknowledged", "in_progress", "resolved", "closed"];
@@ -15,6 +22,14 @@ export function TicketDetail() {
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const [newComment, setNewComment] = useState("");
   const [activeTab, setActiveTab] = useState<"comments" | "audit" | "artifacts">("comments");
+  const [editDialog, setEditDialog] = useState<{ type: "risk" | "confidence"; value: number } | null>(null);
+
+  const refreshAll = () => {
+    if (!id) return;
+    api.getTicket(id).then(setTicket);
+    api.getComments(id).then(setComments);
+    api.getAudit(id).then(setAudit);
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -36,8 +51,20 @@ export function TicketDetail() {
     if (!newComment.trim()) return;
     await api.addComment(ticket.id, newComment);
     setNewComment("");
-    api.getComments(ticket.id).then(setComments);
-    api.getAudit(ticket.id).then(setAudit);
+    refreshAll();
+  };
+
+  const handleValueSave = async (newValue: number, comment: string) => {
+    if (!editDialog) return;
+    const field = editDialog.type;
+    const oldValue = editDialog.value;
+    const prefix = field === "risk" ? "Risk" : "Confidence";
+    const fullComment = `[${prefix} updated: ${oldValue.toFixed(2)} → ${newValue.toFixed(2)}] ${comment}`;
+
+    await api.updateTicket(ticket.id, { [field]: newValue });
+    await api.addComment(ticket.id, fullComment);
+    setEditDialog(null);
+    refreshAll();
   };
 
   const sectionStyle = {
@@ -49,6 +76,15 @@ export function TicketDetail() {
 
   return (
     <div>
+      {editDialog && (
+        <ValueEditDialog
+          type={editDialog.type}
+          currentValue={editDialog.value}
+          onSave={handleValueSave}
+          onCancel={() => setEditDialog(null)}
+        />
+      )}
+
       <div style={{ ...sectionStyle }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "12px" }}>
           <h2 style={{ margin: 0, fontSize: "18px" }}>{ticket.title}</h2>
@@ -59,13 +95,21 @@ export function TicketDetail() {
         </div>
 
         <div style={{ display: "flex", gap: "24px", marginBottom: "16px", fontSize: "13px", flexWrap: "wrap" }}>
-          <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <span style={{ color: "var(--kira-text-muted)" }}>Risk: </span>
-            <RiskLozenge value={ticket.risk} />
+            <EditableRiskLozenge
+              value={ticket.risk}
+              onClick={() => setEditDialog({ type: "risk", value: ticket.risk })}
+            />
+            <InfoPopover type="risk" />
           </div>
-          <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <span style={{ color: "var(--kira-text-muted)" }}>Confidence: </span>
-            <ConfidenceLozenge value={ticket.confidence} />
+            <EditableConfidenceLozenge
+              value={ticket.confidence}
+              onClick={() => setEditDialog({ type: "confidence", value: ticket.confidence })}
+            />
+            <InfoPopover type="confidence" />
           </div>
           <div>
             <span style={{ color: "var(--kira-text-muted)" }}>Source: </span>
