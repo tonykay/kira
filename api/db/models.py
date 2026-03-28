@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import ForeignKey, Text, String
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
+from sqlalchemy import ForeignKey, Text, String, JSON
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.db.base import Base
@@ -35,7 +35,7 @@ class Ticket(Base):
     confidence: Mapped[float] = mapped_column(nullable=False)
     risk: Mapped[float] = mapped_column(nullable=False)
     recommended_action: Mapped[str] = mapped_column(Text, nullable=False)
-    affected_systems: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
+    affected_systems: Mapped[list[str]] = mapped_column(JSON, default=list)
     assigned_to: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=True
     )
@@ -60,8 +60,8 @@ class AuditLog(Base):
     actor_source: Mapped[str] = mapped_column(String(20), nullable=False)
     actor_name: Mapped[str] = mapped_column(String(100), nullable=False)
     actor_tier: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    old_value: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
-    new_value: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    old_value: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    new_value: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     timestamp: Mapped[datetime] = mapped_column(default=utcnow)
 
     ticket: Mapped[Ticket] = relationship("Ticket", back_populates="audit_entries")
