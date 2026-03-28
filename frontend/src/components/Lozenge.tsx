@@ -92,3 +92,45 @@ export function StatusLozenge({ status }: { status: string }) {
     </span>
   );
 }
+
+// --- Exported utilities for ValueEditDialog ---
+export { riskColor, confidenceColor, label as valueLabel };
+
+// --- Editable variants (TicketDetail only) ---
+
+interface EditableLozengeProps {
+  value: number;
+  onClick: () => void;
+}
+
+export function EditableRiskLozenge({ value, onClick }: EditableLozengeProps) {
+  return (
+    <span
+      onClick={onClick}
+      style={{
+        ...style(riskColor(value)),
+        cursor: "pointer",
+        position: "relative",
+      }}
+      title="Click to edit risk"
+    >
+      {label(value)} {value.toFixed(1)} &#9998;
+    </span>
+  );
+}
+
+export function EditableConfidenceLozenge({ value, onClick }: EditableLozengeProps) {
+  return (
+    <span
+      onClick={onClick}
+      style={{
+        ...style(confidenceColor(value)),
+        cursor: "pointer",
+        position: "relative",
+      }}
+      title="Click to edit confidence"
+    >
+      {label(value)} {value.toFixed(1)} &#9998;
+    </span>
+  );
+}
