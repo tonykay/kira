@@ -58,6 +58,7 @@ def seed():
                 "created_by_source": "agent",
                 "status": "in_progress",
                 "assigned_to": op1.id,
+                "skills": ["kubernetes", "helm", "java"],
             },
             {
                 "title": "SSH timeout on db-replica-03",
@@ -69,6 +70,7 @@ def seed():
                 "affected_systems": ["db-replica-03"],
                 "created_by_source": "agent",
                 "status": "open",
+                "skills": ["linux", "ssh", "firewall"],
             },
             {
                 "title": "DNS resolution failures in staging",
@@ -81,6 +83,7 @@ def seed():
                 "created_by_source": "agent",
                 "status": "resolved",
                 "assigned_to": op2.id,
+                "skills": ["kubernetes", "coredns", "networking"],
             },
             {
                 "title": "PostgreSQL replication lag exceeding 30s",
@@ -92,6 +95,7 @@ def seed():
                 "affected_systems": ["db-replica-02", "db-primary-01"],
                 "created_by_source": "agent",
                 "status": "open",
+                "skills": ["postgresql", "linux", "storage"],
             },
             {
                 "title": "Unauthorized S3 bucket access attempts",
@@ -104,6 +108,7 @@ def seed():
                 "created_by_source": "agent",
                 "status": "acknowledged",
                 "assigned_to": op1.id,
+                "skills": ["aws", "iam", "security"],
             },
         ]
 
