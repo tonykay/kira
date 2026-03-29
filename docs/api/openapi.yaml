@@ -1,0 +1,1223 @@
+openapi: 3.1.0
+info:
+  title: Kira
+  description: A lightweight ticket troubleshooting API for AIOps teams. External
+    AI agents submit diagnostic tickets; human SRE operators review, validate, and
+    action recommendations.
+  contact:
+    name: tonykay
+    url: https://github.com/tonykay/kira
+  license:
+    name: MIT
+  version: 0.1.0
+paths:
+  /api/v1/auth/login:
+    post:
+      tags:
+      - auth
+      summary: Login
+      operationId: login_api_v1_auth_login_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/auth/logout:
+    post:
+      tags:
+      - auth
+      summary: Logout
+      operationId: logout_api_v1_auth_logout_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/auth/me:
+    get:
+      tags:
+      - auth
+      summary: Me
+      operationId: me_api_v1_auth_me_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+  /api/v1/enums:
+    get:
+      tags:
+      - enums
+      summary: Get Enums
+      operationId: get_enums_api_v1_enums_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/tickets:
+    post:
+      tags:
+      - tickets
+      summary: Create Ticket
+      operationId: create_ticket_api_v1_tickets_post
+      security:
+      - APIKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - tickets
+      summary: List Tickets
+      operationId: list_tickets_api_v1_tickets_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: area
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/AreaEnum'
+          - type: 'null'
+          title: Area
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          - type: 'null'
+          title: Status
+      - name: min_risk
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Min Risk
+      - name: assigned_to
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Assigned To
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Per Page
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketListResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/tickets/{ticket_id}:
+    get:
+      tags:
+      - tickets
+      summary: Get Ticket
+      operationId: get_ticket_api_v1_tickets__ticket_id__get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Ticket Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - tickets
+      summary: Update Ticket
+      operationId: update_ticket_api_v1_tickets__ticket_id__patch
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Ticket Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/tickets/{ticket_id}/audit:
+    get:
+      tags:
+      - audit
+      summary: Get Ticket Audit
+      operationId: get_ticket_audit_api_v1_tickets__ticket_id__audit_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Ticket Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLogResponse'
+                title: Response Get Ticket Audit Api V1 Tickets  Ticket Id  Audit
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/tickets/{ticket_id}/comments:
+    post:
+      tags:
+      - comments
+      summary: Add Comment
+      operationId: add_comment_api_v1_tickets__ticket_id__comments_post
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Ticket Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - comments
+      summary: List Comments
+      operationId: list_comments_api_v1_tickets__ticket_id__comments_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Ticket Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentResponse'
+                title: Response List Comments Api V1 Tickets  Ticket Id  Comments
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/tickets/{ticket_id}/artifacts:
+    post:
+      tags:
+      - artifacts
+      summary: Upload Artifact
+      operationId: upload_artifact_api_v1_tickets__ticket_id__artifacts_post
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Ticket Id
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_upload_artifact_api_v1_tickets__ticket_id__artifacts_post'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtifactResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - artifacts
+      summary: List Artifacts
+      operationId: list_artifacts_api_v1_tickets__ticket_id__artifacts_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Ticket Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArtifactResponse'
+                title: Response List Artifacts Api V1 Tickets  Ticket Id  Artifacts
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/artifacts/{artifact_id}/download:
+    get:
+      tags:
+      - artifacts
+      summary: Download Artifact
+      operationId: download_artifact_api_v1_artifacts__artifact_id__download_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: artifact_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Artifact Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/users:
+    get:
+      tags:
+      - users
+      summary: List Users
+      operationId: list_users_api_v1_users_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+                type: array
+                title: Response List Users Api V1 Users Get
+    post:
+      tags:
+      - users
+      summary: Create User
+      operationId: create_user_api_v1_users_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/dashboard/stats:
+    get:
+      tags:
+      - dashboard
+      summary: Get Dashboard Stats
+      operationId: get_dashboard_stats_api_v1_dashboard_stats_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - APIKeyHeader: []
+  /api/v1/webhooks:
+    get:
+      tags:
+      - webhooks
+      summary: List Webhooks
+      operationId: list_webhooks_api_v1_webhooks_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WebhookResponse'
+                type: array
+                title: Response List Webhooks Api V1 Webhooks Get
+    post:
+      tags:
+      - webhooks
+      summary: Register Webhook
+      operationId: register_webhook_api_v1_webhooks_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookCreate'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/webhooks/{webhook_id}:
+    delete:
+      tags:
+      - webhooks
+      summary: Delete Webhook
+      operationId: delete_webhook_api_v1_webhooks__webhook_id__delete
+      parameters:
+      - name: webhook_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Webhook Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/chat/info:
+    get:
+      tags:
+      - chat
+      summary: Chat Info
+      operationId: chat_info_api_v1_chat_info_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatInfoResponse'
+  /api/v1/chat/{ticket_id}/history:
+    get:
+      tags:
+      - chat
+      summary: Chat History
+      operationId: chat_history_api_v1_chat__ticket_id__history_get
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Ticket Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatMessageResponse'
+                title: Response Chat History Api V1 Chat  Ticket Id  History Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - chat
+      summary: Clear Chat History
+      operationId: clear_chat_history_api_v1_chat__ticket_id__history_delete
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Ticket Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/chat/{ticket_id}/send:
+    post:
+      tags:
+      - chat
+      summary: Chat Send
+      operationId: chat_send_api_v1_chat__ticket_id__send_post
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Ticket Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatSendRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    AreaEnum:
+      type: string
+      enum:
+      - linux
+      - kubernetes
+      - networking
+      - database
+      - storage
+      - security
+      - application
+      title: AreaEnum
+    ArtifactResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        ticket_id:
+          type: string
+          format: uuid
+          title: Ticket Id
+        filename:
+          type: string
+          title: Filename
+        content_type:
+          type: string
+          title: Content Type
+        uploaded_by_source:
+          $ref: '#/components/schemas/SourceEnum'
+        uploaded_at:
+          type: string
+          format: date-time
+          title: Uploaded At
+      type: object
+      required:
+      - id
+      - ticket_id
+      - filename
+      - content_type
+      - uploaded_by_source
+      - uploaded_at
+      title: ArtifactResponse
+    AuditLogResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        ticket_id:
+          type: string
+          format: uuid
+          title: Ticket Id
+        action:
+          type: string
+          title: Action
+        actor_source:
+          $ref: '#/components/schemas/SourceEnum'
+        actor_name:
+          type: string
+          title: Actor Name
+        actor_tier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Actor Tier
+        old_value:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Old Value
+        new_value:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: New Value
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+      type: object
+      required:
+      - id
+      - ticket_id
+      - action
+      - actor_source
+      - actor_name
+      - actor_tier
+      - old_value
+      - new_value
+      - timestamp
+      title: AuditLogResponse
+    Body_upload_artifact_api_v1_tickets__ticket_id__artifacts_post:
+      properties:
+        file:
+          type: string
+          contentMediaType: application/octet-stream
+          title: File
+      type: object
+      required:
+      - file
+      title: Body_upload_artifact_api_v1_tickets__ticket_id__artifacts_post
+    ChatInfoResponse:
+      properties:
+        enabled:
+          type: boolean
+          title: Enabled
+        model:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Model
+      type: object
+      required:
+      - enabled
+      title: ChatInfoResponse
+    ChatMessageResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        ticket_id:
+          type: string
+          format: uuid
+          title: Ticket Id
+        role:
+          type: string
+          title: Role
+        content:
+          type: string
+          title: Content
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - ticket_id
+      - role
+      - content
+      - created_at
+      title: ChatMessageResponse
+    ChatSendRequest:
+      properties:
+        message:
+          type: string
+          title: Message
+        include_context:
+          type: boolean
+          title: Include Context
+          default: true
+      type: object
+      required:
+      - message
+      title: ChatSendRequest
+    CommentCreate:
+      properties:
+        body:
+          type: string
+          title: Body
+        source:
+          $ref: '#/components/schemas/SourceEnum'
+          default: human
+      type: object
+      required:
+      - body
+      title: CommentCreate
+    CommentResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        ticket_id:
+          type: string
+          format: uuid
+          title: Ticket Id
+        body:
+          type: string
+          title: Body
+        author_source:
+          $ref: '#/components/schemas/SourceEnum'
+        author_name:
+          type: string
+          title: Author Name
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - ticket_id
+      - body
+      - author_source
+      - author_name
+      - created_at
+      title: CommentResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    LoginRequest:
+      properties:
+        username:
+          type: string
+          title: Username
+        password:
+          type: string
+          title: Password
+      type: object
+      required:
+      - username
+      - password
+      title: LoginRequest
+    RoleEnum:
+      type: string
+      enum:
+      - admin
+      - operator
+      - viewer
+      title: RoleEnum
+    SourceEnum:
+      type: string
+      enum:
+      - agent
+      - human
+      title: SourceEnum
+    StatusEnum:
+      type: string
+      enum:
+      - open
+      - acknowledged
+      - in_progress
+      - resolved
+      - closed
+      title: StatusEnum
+    TicketCreate:
+      properties:
+        title:
+          type: string
+          maxLength: 255
+          title: Title
+        description:
+          type: string
+          title: Description
+        area:
+          $ref: '#/components/schemas/AreaEnum'
+        confidence:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          title: Confidence
+        risk:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          title: Risk
+        recommended_action:
+          type: string
+          title: Recommended Action
+        affected_systems:
+          items:
+            type: string
+          type: array
+          title: Affected Systems
+        skills:
+          items:
+            type: string
+          type: array
+          title: Skills
+        source:
+          $ref: '#/components/schemas/SourceEnum'
+          default: agent
+      type: object
+      required:
+      - title
+      - description
+      - area
+      - confidence
+      - risk
+      - recommended_action
+      title: TicketCreate
+    TicketListResponse:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/TicketResponse'
+          type: array
+          title: Items
+        total:
+          type: integer
+          title: Total
+        page:
+          type: integer
+          title: Page
+        per_page:
+          type: integer
+          title: Per Page
+      type: object
+      required:
+      - items
+      - total
+      - page
+      - per_page
+      title: TicketListResponse
+    TicketResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        title:
+          type: string
+          title: Title
+        description:
+          type: string
+          title: Description
+        area:
+          $ref: '#/components/schemas/AreaEnum'
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        confidence:
+          type: number
+          title: Confidence
+        risk:
+          type: number
+          title: Risk
+        recommended_action:
+          type: string
+          title: Recommended Action
+        affected_systems:
+          items:
+            type: string
+          type: array
+          title: Affected Systems
+        skills:
+          items:
+            type: string
+          type: array
+          title: Skills
+        assigned_to:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Assigned To
+        created_by_source:
+          $ref: '#/components/schemas/SourceEnum'
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - title
+      - description
+      - area
+      - status
+      - confidence
+      - risk
+      - recommended_action
+      - affected_systems
+      - skills
+      - assigned_to
+      - created_by_source
+      - created_at
+      - updated_at
+      title: TicketResponse
+    TicketUpdate:
+      properties:
+        status:
+          anyOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          - type: 'null'
+        confidence:
+          anyOf:
+          - type: number
+            maximum: 1.0
+            minimum: 0.0
+          - type: 'null'
+          title: Confidence
+        risk:
+          anyOf:
+          - type: number
+            maximum: 1.0
+            minimum: 0.0
+          - type: 'null'
+          title: Risk
+        assigned_to:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Assigned To
+        skills:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Skills
+      type: object
+      title: TicketUpdate
+    UserCreate:
+      properties:
+        username:
+          type: string
+          maxLength: 50
+          title: Username
+        password:
+          type: string
+          minLength: 6
+          title: Password
+        display_name:
+          type: string
+          maxLength: 100
+          title: Display Name
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+          default: operator
+        expertise_area:
+          anyOf:
+          - $ref: '#/components/schemas/AreaEnum'
+          - type: 'null'
+        tier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tier
+      type: object
+      required:
+      - username
+      - password
+      - display_name
+      title: UserCreate
+    UserResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        username:
+          type: string
+          title: Username
+        display_name:
+          type: string
+          title: Display Name
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        expertise_area:
+          anyOf:
+          - $ref: '#/components/schemas/AreaEnum'
+          - type: 'null'
+        tier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tier
+      type: object
+      required:
+      - id
+      - username
+      - display_name
+      - role
+      - expertise_area
+      - tier
+      title: UserResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    WebhookCreate:
+      properties:
+        url:
+          type: string
+          maxLength: 500
+          title: Url
+        events:
+          items:
+            type: string
+          type: array
+          title: Events
+          description: 'Events to trigger on: ticket.created, ticket.status_changed,
+            ticket.risk_changed'
+      type: object
+      required:
+      - url
+      - events
+      title: WebhookCreate
+    WebhookResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        url:
+          type: string
+          title: Url
+        events:
+          items:
+            type: string
+          type: array
+          title: Events
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - url
+      - events
+      - created_at
+      title: WebhookResponse
+  securitySchemes:
+    APIKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+tags:
+- name: auth
+  description: Authentication — login, logout, session info
+- name: tickets
+  description: Ticket CRUD with filtering and pagination
+- name: comments
+  description: Comments on tickets
+- name: artifacts
+  description: File attachments on tickets
+- name: audit
+  description: Audit trail for ticket changes
+- name: users
+  description: User management (admin only)
+- name: dashboard
+  description: Dashboard statistics
+- name: enums
+  description: Valid values for areas, statuses, roles
+- name: webhooks
+  description: Webhook registration (dispatcher not yet implemented)
+- name: chat
+  description: AI chat assistant with streaming LLM proxy

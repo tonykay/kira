@@ -53,6 +53,12 @@ dev: dev-db ## Start full dev stack (Postgres + migrate + seed + API)
 	@$(MAKE) seed
 	@$(MAKE) dev-api
 
+# --- API Spec ---
+
+.PHONY: openapi
+openapi: ## Export OpenAPI spec to docs/api/openapi.yaml
+	uv run python scripts/export-openapi.py
+
 # --- Testing ---
 
 .PHONY: test
