@@ -103,6 +103,21 @@ helm-lint: ## Lint Helm chart
 helm-template: ## Render Helm templates (dry run)
 	helm template kira deploy/helm/kira/
 
+# --- OpenShift ---
+
+.PHONY: deploy-openshift
+deploy-openshift: ## Deploy to OpenShift with Helm
+	helm install kira deploy/helm/kira/ -f deploy/helm/kira/values-openshift.yaml
+
+.PHONY: upgrade-openshift
+upgrade-openshift: ## Upgrade OpenShift deployment
+	helm upgrade kira deploy/helm/kira/ -f deploy/helm/kira/values-openshift.yaml
+
+.PHONY: undeploy-openshift
+undeploy-openshift: ## Remove Kira from OpenShift
+	helm uninstall kira
+	oc delete namespace kira 2>/dev/null || kubectl delete namespace kira 2>/dev/null || true
+
 # --- Cleanup ---
 
 .PHONY: clean

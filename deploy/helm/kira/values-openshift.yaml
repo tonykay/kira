@@ -1,0 +1,22 @@
+# OpenShift-specific value overrides
+# Usage: helm install kira deploy/helm/kira/ -f deploy/helm/kira/values-openshift.yaml
+
+# Use ClusterIP instead of NodePort (OpenShift Routes handle external access)
+frontend:
+  service:
+    type: ClusterIP
+
+# Enable OpenShift Route for frontend
+route:
+  enabled: true
+  # host: kira.apps.your-cluster.example.com  # Leave empty for auto-generated
+
+# Container images — update these to your registry
+# api:
+#   image:
+#     repository: quay.io/tonykay/kira-api
+#     tag: latest
+# frontend:
+#   image:
+#     repository: quay.io/tonykay/kira-frontend
+#     tag: latest

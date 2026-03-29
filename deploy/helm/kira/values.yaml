@@ -53,3 +53,8 @@ kira:
 # --- Artifact Storage ---
 artifacts:
   storage: 5Gi
+
+# --- OpenShift Route ---
+route:
+  enabled: false
+  host: ""  # Leave empty for auto-generated hostname
