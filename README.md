@@ -212,10 +212,38 @@ kubectl apply -f deploy/argocd/application.yaml
 
 ArgoCD will sync the Helm chart from the repository with automated pruning and self-healing. To customize values, add a `values-production.yaml` alongside the chart and reference it in the Application spec.
 
+## Make Targets
+
+Run `make` to see all available targets:
+
+```
+  dev-db            Start Postgres container (podman)
+  dev-db-stop       Stop Postgres container
+  migrate           Run database migrations
+  seed              Seed database with demo data
+  dev-api           Start API server with hot reload
+  dev-frontend      Start frontend dev server
+  dev               Start full dev stack (Postgres + migrate + seed + API)
+  test              Run backend tests
+  build-frontend    Build frontend (TypeScript check + production build)
+  check             Run all checks (tests + frontend build)
+  compose-up        Start all services with Compose
+  compose-down      Stop all Compose services
+  compose-logs      Follow Compose service logs
+  helm-install      Install Helm chart
+  helm-upgrade      Upgrade Helm release
+  helm-uninstall    Uninstall Helm release
+  helm-lint         Lint Helm chart
+  helm-template     Render Helm templates (dry run)
+  clean             Remove build artifacts and caches
+  reset-db          Reset database (destroy + recreate + migrate + seed)
+```
+
 ## Testing
 
 ```bash
-uv run pytest tests/ -v
+make test                         # or: uv run pytest tests/ -v
+make check                        # tests + frontend build
 ```
 
 ## Project Structure
