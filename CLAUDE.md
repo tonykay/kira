@@ -46,6 +46,7 @@ cd frontend && npm run build      # TypeScript check + build
 - Skills are freeform but normalized (lowercase, trimmed, deduplicated)
 - All ticket state changes create audit log entries automatically
 - Frontend uses inline styles with CSS custom properties (`var(--kira-*)`) for theming
+- After any API changes (new endpoints, schema changes), regenerate the OpenAPI spec: `make openapi`
 
 ## LLM Chat (optional)
 
