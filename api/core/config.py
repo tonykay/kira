@@ -6,6 +6,9 @@ class Settings(BaseSettings):
     api_key: str = "dev-api-key"
     secret_key: str = "dev-secret-key-change-in-production"
     artifact_storage_path: str = "./artifacts"
+    llm_base_url: str | None = None
+    llm_api_key: str | None = None
+    llm_model: str = "gpt-4o"
 
     model_config = {"env_prefix": "KIRA_"}
 
