@@ -139,6 +139,9 @@ All configuration via environment variables (prefix `KIRA_`):
 | `KIRA_API_KEY` | `dev-api-key` | API key for agent authentication |
 | `KIRA_SECRET_KEY` | `dev-secret-key-change-in-production` | Session signing key |
 | `KIRA_ARTIFACT_STORAGE_PATH` | `./artifacts` | Local path for uploaded artifacts |
+| `KIRA_LLM_BASE_URL` | `None` | OpenAI-compatible LLM endpoint (enables AI chat) |
+| `KIRA_LLM_API_KEY` | `None` | API key for the LLM provider |
+| `KIRA_LLM_MODEL` | `gpt-4o` | Model identifier |
 
 Copy `.env.example` to `.env` to override defaults.
 
@@ -212,6 +215,15 @@ kubectl apply -f deploy/argocd/application.yaml
 
 ArgoCD will sync the Helm chart from the repository with automated pruning and self-healing. To customize values, add a `values-production.yaml` alongside the chart and reference it in the Application spec.
 
+### Deploying to OpenShift
+
+See [docs/deploying-to-openshift.md](docs/deploying-to-openshift.md) for a step-by-step guide, or use the Makefile shortcut:
+
+```bash
+oc login --server=https://api.your-cluster.example.com:6443
+make deploy-openshift
+```
+
 ## Make Targets
 
 Run `make` to see all available targets:
@@ -235,6 +247,9 @@ Run `make` to see all available targets:
   helm-uninstall    Uninstall Helm release
   helm-lint         Lint Helm chart
   helm-template     Render Helm templates (dry run)
+  deploy-openshift  Deploy to OpenShift with Helm
+  upgrade-openshift Upgrade OpenShift deployment
+  undeploy-openshift Remove Kira from OpenShift
   clean             Remove build artifacts and caches
   reset-db          Reset database (destroy + recreate + migrate + seed)
 ```
