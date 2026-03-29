@@ -1,0 +1,114 @@
+# Kira
+
+> A lightweight ticket troubleshooting application for AIOps teams. External AI agents submit diagnostic tickets via API; human SRE operators review, validate, and action recommendations via an optional React dashboard.
+
+## Key Facts
+
+- Monorepo: Python 3.13+ backend (FastAPI) + React 19 frontend (Vite)
+- Database: PostgreSQL 16, ORM via SQLAlchemy 2.0, migrations via Alembic
+- Package manager: uv (not pip)
+- Auth: API key for agents (X-API-Key header), session/password for humans
+- Env var prefix: KIRA_
+- 44 tests (pytest, SQLite in-memory), frontend build check via npm run build
+- OpenAPI 3.1 spec: docs/api/openapi.yaml
+
+## Project Instructions
+
+- [CLAUDE.md](CLAUDE.md): Conventions, how to run, key gotchas
+
+## Documentation
+
+- [README.md](README.md): Full getting started guide, API usage, configuration, deployment options
+- [docs/deploying-to-openshift.md](docs/deploying-to-openshift.md): OpenShift/Kubernetes deployment guide
+- [docs/api/openapi.yaml](docs/api/openapi.yaml): OpenAPI 3.1 spec (YAML) — regenerate with `make openapi`
+
+## Backend — Core
+
+- [api/main.py](api/main.py): FastAPI app factory, middleware, router mounting
+- [api/core/config.py](api/core/config.py): Pydantic Settings (KIRA_ env vars)
+- [api/core/deps.py](api/core/deps.py): Dependency injection (current user, auth)
+- [api/db/models.py](api/db/models.py): SQLAlchemy ORM models (User, Ticket, AuditLog, Comment, Artifact, ChatMessage, Webhook)
+- [api/db/session.py](api/db/session.py): Database engine and session factory
+- [api/seed.py](api/seed.py): Demo data seeder (4 users, 5 tickets)
+
+## Backend — Pydantic Schemas
+
+- [api/models/enums.py](api/models/enums.py): AreaEnum, StatusEnum, SourceEnum, RoleEnum
+- [api/models/tickets.py](api/models/tickets.py): TicketCreate, TicketUpdate, TicketResponse
+- [api/models/comments.py](api/models/comments.py): CommentCreate, CommentResponse
+- [api/models/artifacts.py](api/models/artifacts.py): ArtifactResponse
+- [api/models/users.py](api/models/users.py): UserCreate, UserResponse
+- [api/models/audit.py](api/models/audit.py): AuditLogResponse
+- [api/models/chat.py](api/models/chat.py): ChatSendRequest, ChatMessageResponse, ChatInfoResponse
+- [api/models/auth.py](api/models/auth.py): LoginRequest
+
+## Backend — Routes
+
+- [api/routes/tickets.py](api/routes/tickets.py): Ticket CRUD with filtering, skills normalization, audit trail
+- [api/routes/comments.py](api/routes/comments.py): Add/list comments on tickets
+- [api/routes/artifacts.py](api/routes/artifacts.py): Upload/list/download file attachments
+- [api/routes/audit.py](api/routes/audit.py): Query audit trail per ticket
+- [api/routes/auth.py](api/routes/auth.py): Login, logout, session info
+- [api/routes/users.py](api/routes/users.py): Admin user management
+- [api/routes/dashboard.py](api/routes/dashboard.py): Aggregated statistics
+- [api/routes/enums.py](api/routes/enums.py): Valid values for areas, statuses, roles
+- [api/routes/chat.py](api/routes/chat.py): Streaming LLM proxy with per-ticket history
+- [api/routes/webhooks.py](api/routes/webhooks.py): Webhook registration (dispatcher not yet implemented)
+
+## Backend — Services
+
+- [api/services/audit.py](api/services/audit.py): Audit log entry creation helper
+- [api/services/artifacts.py](api/services/artifacts.py): Filesystem artifact storage
+
+## Backend — Auth
+
+- [api/auth/api_key.py](api/auth/api_key.py): X-API-Key header validation
+- [api/auth/passwords.py](api/auth/passwords.py): bcrypt hash/verify
+- [api/auth/session.py](api/auth/session.py): Cookie session management
+
+## Frontend
+
+- [frontend/src/App.tsx](frontend/src/App.tsx): React Router setup with ThemeProvider
+- [frontend/src/types.ts](frontend/src/types.ts): TypeScript interfaces matching API schemas
+- [frontend/src/api/client.ts](frontend/src/api/client.ts): Fetch wrapper for all API endpoints
+- [frontend/src/theme/themes.ts](frontend/src/theme/themes.ts): Solarized dark/light theme tokens
+- [frontend/src/theme/ThemeProvider.tsx](frontend/src/theme/ThemeProvider.tsx): Theme context + CSS variable injection
+
+## Frontend — Pages
+
+- [frontend/src/pages/Login.tsx](frontend/src/pages/Login.tsx): Login form
+- [frontend/src/pages/Dashboard.tsx](frontend/src/pages/Dashboard.tsx): Summary cards, charts, recent tickets
+- [frontend/src/pages/TicketList.tsx](frontend/src/pages/TicketList.tsx): Filterable ticket table
+- [frontend/src/pages/TicketDetail.tsx](frontend/src/pages/TicketDetail.tsx): Full ticket view with editable lozenges, skills, comments, audit, chat
+
+## Frontend — Components
+
+- [frontend/src/components/Layout.tsx](frontend/src/components/Layout.tsx): Nav bar with theme toggle
+- [frontend/src/components/Lozenge.tsx](frontend/src/components/Lozenge.tsx): Color-coded tags for area, risk, confidence, status
+- [frontend/src/components/ValueEditDialog.tsx](frontend/src/components/ValueEditDialog.tsx): Slider + comment dialog for risk/confidence editing
+- [frontend/src/components/InfoPopover.tsx](frontend/src/components/InfoPopover.tsx): Scale guideline popovers
+- [frontend/src/components/SkillTag.tsx](frontend/src/components/SkillTag.tsx): Compact skill tag
+- [frontend/src/components/SkillEditor.tsx](frontend/src/components/SkillEditor.tsx): Inline skill add/remove editor
+- [frontend/src/components/AuditTimeline.tsx](frontend/src/components/AuditTimeline.tsx): Audit history display
+- [frontend/src/components/ChatWidget.tsx](frontend/src/components/ChatWidget.tsx): Floating AI chat assistant
+
+## Deployment
+
+- [compose.yaml](compose.yaml): Podman/Docker Compose (api + frontend + postgres)
+- [deploy/Dockerfile.api](deploy/Dockerfile.api): Multi-stage Python 3.13 + uv
+- [deploy/Dockerfile.frontend](deploy/Dockerfile.frontend): Node build + nginx
+- [deploy/nginx.conf](deploy/nginx.conf): Frontend nginx with API proxy
+- [deploy/helm/kira/](deploy/helm/kira/): Helm chart with OpenShift Route support
+- [deploy/helm/kira/values.yaml](deploy/helm/kira/values.yaml): Default Helm values
+- [deploy/helm/kira/values-openshift.yaml](deploy/helm/kira/values-openshift.yaml): OpenShift overrides
+- [deploy/k8s/](deploy/k8s/): Plain Kubernetes manifests (teaching/quick start)
+- [deploy/argocd/application.yaml](deploy/argocd/application.yaml): Example ArgoCD Application
+
+## Quick Commands
+
+- `make dev` — Start full local dev stack
+- `make test` — Run backend tests
+- `make check` — Tests + frontend build
+- `make openapi` — Regenerate OpenAPI spec
+- `make deploy-openshift` — Deploy to OpenShift via Helm
+- `make help` — Show all available targets
