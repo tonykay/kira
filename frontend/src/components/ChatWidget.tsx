@@ -7,7 +7,7 @@ interface ChatWidgetProps {
   ticket: Ticket;
 }
 
-export function ChatWidget({ ticketId, ticket }: ChatWidgetProps) {
+export function ChatWidget({ ticketId }: ChatWidgetProps) {
   const [info, setInfo] = useState<ChatInfo | null>(null);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);

@@ -11,6 +11,7 @@ import { AuditTimeline } from "../components/AuditTimeline";
 import { ValueEditDialog } from "../components/ValueEditDialog";
 import { InfoPopover } from "../components/InfoPopover";
 import { SkillEditor } from "../components/SkillEditor";
+import { ChatWidget } from "../components/ChatWidget";
 import type { Ticket, Comment, AuditEntry, Artifact, Status } from "../types";
 
 const STATUSES: Status[] = ["open", "acknowledged", "in_progress", "resolved", "closed"];
@@ -288,6 +289,8 @@ export function TicketDetail() {
           </div>
         )}
       </div>
+
+      <ChatWidget ticketId={ticket.id} ticket={ticket} />
     </div>
   );
 }
