@@ -83,6 +83,7 @@ def api_key_headers():
 @pytest.fixture
 def auth_client(client, test_user):
     client.post("/api/v1/auth/login", json={"username": "testuser", "password": "testpass123"})
+    client.__test_user_id__ = test_user.id
     return client
 
 
