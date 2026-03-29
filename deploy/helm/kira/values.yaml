@@ -49,6 +49,8 @@ kira:
   apiKey: dev-api-key
   secretKey: dev-secret-key-change-in-production
   artifactStoragePath: /app/artifacts
+  allowIframe: false
+  corsOrigins: ""  # comma-separated origins, e.g. "https://showroom.example.com"
 
 # --- Artifact Storage ---
 artifacts:

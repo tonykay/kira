@@ -20,6 +20,7 @@
 
 - [README.md](README.md): Full getting started guide, API usage, configuration, deployment options
 - [docs/deploying-to-openshift.md](docs/deploying-to-openshift.md): OpenShift/Kubernetes deployment guide
+- [docs/iframe-embedding.md](docs/iframe-embedding.md): Iframe embedding for Showroom/lab environments
 - [docs/api/openapi.yaml](docs/api/openapi.yaml): OpenAPI 3.1 spec (YAML) — regenerate with `make openapi`
 
 ## Backend — Core
@@ -97,7 +98,8 @@
 - [compose.yaml](compose.yaml): Podman/Docker Compose (api + frontend + postgres)
 - [deploy/Dockerfile.api](deploy/Dockerfile.api): Multi-stage Python 3.13 + uv
 - [deploy/Dockerfile.frontend](deploy/Dockerfile.frontend): Node build + nginx
-- [deploy/nginx.conf](deploy/nginx.conf): Frontend nginx with API proxy
+- [deploy/nginx.conf](deploy/nginx.conf): Frontend nginx with API proxy (blocks iframing by default)
+- [deploy/nginx-iframe.conf](deploy/nginx-iframe.conf): Iframe-friendly nginx config for lab/Showroom environments
 - [deploy/helm/kira/](deploy/helm/kira/): Helm chart with OpenShift Route support
 - [deploy/helm/kira/values.yaml](deploy/helm/kira/values.yaml): Default Helm values
 - [deploy/helm/kira/values-openshift.yaml](deploy/helm/kira/values-openshift.yaml): OpenShift overrides

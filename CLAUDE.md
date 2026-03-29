@@ -59,6 +59,10 @@ export KIRA_LLM_API_KEY=sk-...
 export KIRA_LLM_MODEL=gpt-4o
 ```
 
+## Iframe Embedding (optional)
+
+For Showroom/lab environments where Kira is displayed in a side-by-side iframe, see [docs/iframe-embedding.md](docs/iframe-embedding.md). Set `KIRA_ALLOW_IFRAME=true` and `KIRA_CORS_ORIGINS` to enable.
+
 ## Common Gotcha
 
 If login fails after a Postgres container restart, the database was likely recreated empty:

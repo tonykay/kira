@@ -1,5 +1,9 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
 
 from api.core.config import settings
 from api.routes import artifacts, auth, audit, chat, comments, dashboard, enums, tickets, users, webhooks
@@ -25,6 +29,33 @@ app = FastAPI(
     ],
 )
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
+
+
+# --- Iframe and CORS support ---
+class FrameHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response: Response = await call_next(request)
+        if settings.allow_iframe:
+            response.headers["X-Frame-Options"] = "ALLOWALL"
+            response.headers["Content-Security-Policy"] = "frame-ancestors *"
+        else:
+            response.headers["X-Frame-Options"] = "DENY"
+            response.headers["Content-Security-Policy"] = "frame-ancestors 'none'"
+        return response
+
+
+app.add_middleware(FrameHeadersMiddleware)
+
+if settings.allow_iframe and settings.cors_origins:
+    origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
 
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(enums.router, prefix="/api/v1")

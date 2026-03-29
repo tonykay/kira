@@ -8,3 +8,5 @@ metadata:
 data:
   KIRA_DATABASE_URL: {{ include "kira.databaseUrl" . | quote }}
   KIRA_ARTIFACT_STORAGE_PATH: {{ .Values.kira.artifactStoragePath | quote }}
+  KIRA_ALLOW_IFRAME: {{ .Values.kira.allowIframe | quote }}
+  KIRA_CORS_ORIGINS: {{ .Values.kira.corsOrigins | quote }}

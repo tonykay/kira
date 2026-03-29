@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     llm_base_url: str | None = None
     llm_api_key: str | None = None
     llm_model: str = "gpt-4o"
+    allow_iframe: bool = False
+    cors_origins: str = ""
 
     model_config = {"env_prefix": "KIRA_"}
 
