@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 
 from api.core.config import settings
-from api.routes import artifacts, auth, audit, comments, dashboard, enums, tickets, users, webhooks
+from api.routes import artifacts, auth, audit, chat, comments, dashboard, enums, tickets, users, webhooks
 
 app = FastAPI(title="Kira", version="0.1.0")
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
@@ -16,3 +16,4 @@ app.include_router(artifacts.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(dashboard.router, prefix="/api/v1")
 app.include_router(webhooks.router, prefix="/api/v1")
+app.include_router(chat.router, prefix="/api/v1")
