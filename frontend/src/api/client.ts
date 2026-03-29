@@ -48,4 +48,22 @@ export const api = {
   getArtifacts: (ticketId: string) =>
     request<import("../types").Artifact[]>(`/tickets/${ticketId}/artifacts`),
   getEnums: () => request<Record<string, string[]>>("/enums"),
+  chatInfo: () => request<import("../types").ChatInfo>("/chat/info"),
+  chatHistory: (ticketId: string) =>
+    request<import("../types").ChatMessage[]>(`/chat/${ticketId}/history`),
+  chatSend: async (ticketId: string, message: string, includeContext: boolean) => {
+    const resp = await fetch(`${BASE}/chat/${ticketId}/send`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, include_context: includeContext }),
+    });
+    if (!resp.ok) {
+      if (resp.status === 401) window.location.href = "/login";
+      throw new Error(`${resp.status}: ${await resp.text()}`);
+    }
+    return resp;
+  },
+  chatClear: (ticketId: string) =>
+    request(`/chat/${ticketId}/history`, { method: "DELETE" }),
 };

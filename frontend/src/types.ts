@@ -91,3 +91,15 @@ export interface DashboardStats {
   by_area: Record<string, number>;
   risk_distribution: { high: number; medium: number; low: number };
 }
+
+export interface ChatMessage {
+  id: string;
+  role: "user" | "assistant" | "system";
+  content: string;
+  created_at: string;
+}
+
+export interface ChatInfo {
+  enabled: boolean;
+  model: string | null;
+}
