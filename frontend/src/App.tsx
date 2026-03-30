@@ -4,6 +4,7 @@ import { Layout } from "./components/Layout";
 import { Login } from "./pages/Login";
 import { Dashboard } from "./pages/Dashboard";
 import { TicketList } from "./pages/TicketList";
+import { CreateTicket } from "./pages/CreateTicket";
 import { TicketDetail } from "./pages/TicketDetail";
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/tickets" element={<TicketList />} />
+            <Route path="/tickets/new" element={<CreateTicket />} />
             <Route path="/tickets/:id" element={<TicketDetail />} />
           </Route>
         </Routes>

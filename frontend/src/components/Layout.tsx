@@ -42,6 +42,22 @@ export function Layout() {
           <Link to="/tickets" style={{ color: "var(--kira-text-secondary)", fontSize: "13px", textDecoration: "none" }}>
             Tickets
           </Link>
+          {user.role !== "viewer" && (
+            <Link
+              to="/tickets/new"
+              style={{
+                background: "var(--kira-accent)",
+                color: "white",
+                padding: "4px 10px",
+                borderRadius: "4px",
+                fontSize: "12px",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+            >
+              + New Ticket
+            </Link>
+          )}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span style={{ color: "var(--kira-text-muted)", fontSize: "12px" }}>
