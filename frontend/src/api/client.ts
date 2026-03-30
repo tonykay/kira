@@ -47,6 +47,21 @@ export const api = {
     request<import("../types").AuditEntry[]>(`/tickets/${ticketId}/audit`),
   getArtifacts: (ticketId: string) =>
     request<import("../types").Artifact[]>(`/tickets/${ticketId}/artifacts`),
+  createTicket: (data: {
+    title: string;
+    description: string;
+    area: string;
+    confidence: number;
+    risk: number;
+    recommended_action: string;
+    skills: string[];
+    affected_systems: string[];
+    source: string;
+  }) =>
+    request<import("../types").Ticket>("/tickets", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
   getEnums: () => request<Record<string, string[]>>("/enums"),
   chatInfo: () => request<import("../types").ChatInfo>("/chat/info"),
   chatHistory: (ticketId: string) =>
