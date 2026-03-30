@@ -9,6 +9,8 @@ DB_PORT       := 5432
 DB_CONTAINER  := kira-postgres
 API_PORT      := 8000
 FRONTEND_PORT := 5173
+REGISTRY      := quay.io/tok
+IMAGE_TAG     := latest
 
 .DEFAULT_GOAL := help
 
@@ -72,6 +74,33 @@ build-frontend: ## Build frontend (TypeScript check + production build)
 .PHONY: check
 check: test build-frontend ## Run all checks (tests + frontend build)
 	@echo "All checks passed"
+
+# --- Container Images ---
+
+.PHONY: build-api
+build-api: ## Build API container image
+	podman build -t $(REGISTRY)/kira-api:$(IMAGE_TAG) -f deploy/Dockerfile.api .
+
+.PHONY: build-frontend-image
+build-frontend-image: ## Build frontend container image
+	podman build -t $(REGISTRY)/kira-frontend:$(IMAGE_TAG) -f deploy/Dockerfile.frontend .
+
+.PHONY: build-images
+build-images: build-api build-frontend-image ## Build all container images
+
+.PHONY: push-api
+push-api: ## Push API image to registry
+	podman push $(REGISTRY)/kira-api:$(IMAGE_TAG)
+
+.PHONY: push-frontend
+push-frontend: ## Push frontend image to registry
+	podman push $(REGISTRY)/kira-frontend:$(IMAGE_TAG)
+
+.PHONY: push-images
+push-images: push-api push-frontend ## Push all images to registry
+
+.PHONY: release
+release: build-images push-images ## Build and push all images
 
 # --- Compose ---
 
