@@ -2,7 +2,7 @@
 
 ## What is Kira
 
-A lightweight ticket troubleshooting app for AIOps teams. External AI agents submit diagnostic tickets via API; human SRE operators review, validate, and action recommendations via the React dashboard. The AIOps agent team is a **separate project** — Kira is a sink for their output.
+A lightweight ticket troubleshooting app for AIOps teams. External AI agents submit diagnostic tickets via API; human SRE operators review, validate, and action recommendations via the React dashboard. Humans can also create tickets manually via the "+ New Ticket" button (operators and admins only). The AIOps agent team is a **separate project** — Kira is a sink for their output.
 
 ## Tech Stack
 
