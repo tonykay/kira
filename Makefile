@@ -9,7 +9,7 @@ DB_PORT       := 5432
 DB_CONTAINER  := kira-postgres
 API_PORT      := 8000
 FRONTEND_PORT := 5173
-REGISTRY      := quay.io/tok
+REGISTRY      := quay.io/rhpds
 IMAGE_TAG     := latest
 
 .DEFAULT_GOAL := help
@@ -169,6 +169,13 @@ reset-db: ## Reset database (destroy + recreate + migrate + seed)
 	@$(MAKE) migrate
 	@$(MAKE) seed
 	@echo "Database reset complete"
+
+.PHONY: restart-all
+restart-all: ## Full restart — kill API, reset DB, start API
+	@lsof -ti :$(API_PORT) | xargs kill 2>/dev/null || true
+	@$(MAKE) reset-db
+	@echo "Starting API on port $(API_PORT)..."
+	@$(MAKE) dev-api
 
 # --- Help ---
 
