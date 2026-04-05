@@ -231,6 +231,170 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/issues:
+    get:
+      tags:
+      - issues
+      summary: List Issues
+      operationId: list_issues_api_v1_issues_get
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/IssueStatusEnum'
+          - type: 'null'
+          title: Status
+      - name: severity
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/SeverityEnum'
+          - type: 'null'
+          title: Severity
+      - name: priority
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 5
+            minimum: 1
+          - type: 'null'
+          title: Priority
+      - name: ticket_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Ticket Id
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Per Page
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueListResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/issues/{issue_id}:
+    get:
+      tags:
+      - issues
+      summary: Get Issue
+      operationId: get_issue_api_v1_issues__issue_id__get
+      parameters:
+      - name: issue_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Issue Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - issues
+      summary: Update Issue
+      operationId: update_issue_api_v1_issues__issue_id__patch
+      parameters:
+      - name: issue_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Issue Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/tickets/{ticket_id}/issues:
+    post:
+      tags:
+      - issues
+      summary: Create Issue On Ticket
+      operationId: create_issue_on_ticket_api_v1_tickets__ticket_id__issues_post
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Ticket Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/tickets/{ticket_id}/audit:
     get:
       tags:
@@ -855,6 +1019,147 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    IssueCreate:
+      properties:
+        title:
+          type: string
+          maxLength: 255
+          title: Title
+        severity:
+          $ref: '#/components/schemas/SeverityEnum'
+        description:
+          type: string
+          title: Description
+        fix:
+          type: string
+          title: Fix
+      type: object
+      required:
+      - title
+      - severity
+      - description
+      - fix
+      title: IssueCreate
+    IssueListResponse:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/IssueResponse'
+          type: array
+          title: Items
+        total:
+          type: integer
+          title: Total
+        page:
+          type: integer
+          title: Page
+        per_page:
+          type: integer
+          title: Per Page
+      type: object
+      required:
+      - items
+      - total
+      - page
+      - per_page
+      title: IssueListResponse
+    IssueResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        ticket_id:
+          type: string
+          format: uuid
+          title: Ticket Id
+        ticket_title:
+          type: string
+          title: Ticket Title
+        title:
+          type: string
+          title: Title
+        severity:
+          $ref: '#/components/schemas/SeverityEnum'
+        description:
+          type: string
+          title: Description
+        fix:
+          type: string
+          title: Fix
+        status:
+          $ref: '#/components/schemas/IssueStatusEnum'
+        priority:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Priority
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - ticket_id
+      - ticket_title
+      - title
+      - severity
+      - description
+      - fix
+      - status
+      - priority
+      - created_at
+      - updated_at
+      title: IssueResponse
+    IssueStatusEnum:
+      type: string
+      enum:
+      - identified
+      - backlog
+      - in_progress
+      - done
+      - dismissed
+      title: IssueStatusEnum
+    IssueUpdate:
+      properties:
+        title:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          title: Title
+        severity:
+          anyOf:
+          - $ref: '#/components/schemas/SeverityEnum'
+          - type: 'null'
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        fix:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Fix
+        status:
+          anyOf:
+          - $ref: '#/components/schemas/IssueStatusEnum'
+          - type: 'null'
+        priority:
+          anyOf:
+          - type: integer
+            maximum: 5.0
+            minimum: 1.0
+          - type: 'null'
+          title: Priority
+      type: object
+      title: IssueUpdate
     LoginRequest:
       properties:
         username:
@@ -875,6 +1180,15 @@ components:
       - operator
       - viewer
       title: RoleEnum
+    SeverityEnum:
+      type: string
+      enum:
+      - critical
+      - high
+      - medium
+      - low
+      - info
+      title: SeverityEnum
     SourceEnum:
       type: string
       enum:
@@ -927,6 +1241,11 @@ components:
         source:
           $ref: '#/components/schemas/SourceEnum'
           default: agent
+        issues:
+          items:
+            $ref: '#/components/schemas/IssueCreate'
+          type: array
+          title: Issues
       type: object
       required:
       - title
@@ -1010,6 +1329,11 @@ components:
           type: string
           format: date-time
           title: Updated At
+        issues:
+          items:
+            $ref: '#/components/schemas/IssueResponse'
+          type: array
+          title: Issues
       type: object
       required:
       - id
@@ -1205,6 +1529,8 @@ tags:
   description: Authentication — login, logout, session info
 - name: tickets
   description: Ticket CRUD with filtering and pagination
+- name: issues
+  description: Issue tracking — code quality findings from ticket analysis
 - name: comments
   description: Comments on tickets
 - name: artifacts

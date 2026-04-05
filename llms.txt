@@ -34,7 +34,7 @@
 
 ## Backend — Pydantic Schemas
 
-- [api/models/enums.py](api/models/enums.py): AreaEnum, StatusEnum, SourceEnum, RoleEnum
+- [api/models/enums.py](api/models/enums.py): AreaEnum, StatusEnum, SourceEnum, RoleEnum, SeverityEnum, IssueStatusEnum
 - [api/models/tickets.py](api/models/tickets.py): TicketCreate, TicketUpdate, TicketResponse
 - [api/models/comments.py](api/models/comments.py): CommentCreate, CommentResponse
 - [api/models/artifacts.py](api/models/artifacts.py): ArtifactResponse
@@ -42,6 +42,7 @@
 - [api/models/audit.py](api/models/audit.py): AuditLogResponse
 - [api/models/chat.py](api/models/chat.py): ChatSendRequest, ChatMessageResponse, ChatInfoResponse
 - [api/models/auth.py](api/models/auth.py): LoginRequest
+- [api/models/issues.py](api/models/issues.py): IssueCreate, IssueUpdate, IssueResponse, IssueListResponse
 
 ## Backend — Routes
 
@@ -54,6 +55,7 @@
 - [api/routes/dashboard.py](api/routes/dashboard.py): Aggregated statistics
 - [api/routes/enums.py](api/routes/enums.py): Valid values for areas, statuses, roles
 - [api/routes/chat.py](api/routes/chat.py): Streaming LLM proxy with per-ticket history
+- [api/routes/issues.py](api/routes/issues.py): Issue CRUD — list, get, patch issues; create issue on ticket
 - [api/routes/webhooks.py](api/routes/webhooks.py): Webhook registration (dispatcher not yet implemented)
 
 ## Backend — Services
@@ -80,7 +82,9 @@
 - [frontend/src/pages/Login.tsx](frontend/src/pages/Login.tsx): Login form
 - [frontend/src/pages/Dashboard.tsx](frontend/src/pages/Dashboard.tsx): Summary cards, charts, recent tickets
 - [frontend/src/pages/TicketList.tsx](frontend/src/pages/TicketList.tsx): Filterable ticket table
-- [frontend/src/pages/TicketDetail.tsx](frontend/src/pages/TicketDetail.tsx): Full ticket view with editable lozenges, skills, comments, audit, chat
+- [frontend/src/pages/TicketDetail.tsx](frontend/src/pages/TicketDetail.tsx): Full ticket view with editable lozenges, skills, comments, audit, chat, issues
+- [frontend/src/pages/IssueList.tsx](frontend/src/pages/IssueList.tsx): Filterable issue backlog table
+- [frontend/src/pages/IssueDetail.tsx](frontend/src/pages/IssueDetail.tsx): Full issue view with markdown rendering, edit, status/priority controls
 
 ## Frontend — Components
 
@@ -92,6 +96,8 @@
 - [frontend/src/components/SkillEditor.tsx](frontend/src/components/SkillEditor.tsx): Inline skill add/remove editor
 - [frontend/src/components/AuditTimeline.tsx](frontend/src/components/AuditTimeline.tsx): Audit history display
 - [frontend/src/components/ChatWidget.tsx](frontend/src/components/ChatWidget.tsx): Floating AI chat assistant
+- [frontend/src/components/IssueCard.tsx](frontend/src/components/IssueCard.tsx): Collapsible issue card with promote/dismiss/edit actions
+- [frontend/src/components/MarkdownRenderer.tsx](frontend/src/components/MarkdownRenderer.tsx): Shared markdown renderer with syntax highlighting
 
 ## Deployment
 
