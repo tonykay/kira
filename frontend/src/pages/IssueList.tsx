@@ -1,23 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "../api/client";
+import { SEVERITY_COLORS, STATUS_COLORS } from "../components/IssueCard";
 import type { Issue, Severity, IssueStatus } from "../types";
-
-const SEVERITY_COLORS: Record<Severity, string> = {
-  critical: "#ef4444",
-  high: "#f97316",
-  medium: "#f59e0b",
-  low: "#3b82f6",
-  info: "#6b7280",
-};
-
-const STATUS_COLORS: Record<IssueStatus, string> = {
-  identified: "#6b7280",
-  backlog: "#8b5cf6",
-  in_progress: "#3b82f6",
-  done: "#22c55e",
-  dismissed: "#9ca3af",
-};
 
 const ALL_SEVERITIES: Severity[] = ["critical", "high", "medium", "low", "info"];
 const ALL_STATUSES: IssueStatus[] = ["identified", "backlog", "in_progress", "done", "dismissed"];

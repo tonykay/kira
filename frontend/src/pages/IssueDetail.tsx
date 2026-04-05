@@ -2,23 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../api/client";
 import { MarkdownRenderer } from "../components/MarkdownRenderer";
+import { SEVERITY_COLORS, STATUS_COLORS } from "../components/IssueCard";
 import type { Issue, Severity, IssueStatus, User } from "../types";
-
-const SEVERITY_COLORS: Record<Severity, string> = {
-  critical: "#ef4444",
-  high: "#f97316",
-  medium: "#f59e0b",
-  low: "#3b82f6",
-  info: "#6b7280",
-};
-
-const STATUS_COLORS: Record<IssueStatus, string> = {
-  identified: "#6b7280",
-  backlog: "#8b5cf6",
-  in_progress: "#3b82f6",
-  done: "#22c55e",
-  dismissed: "#9ca3af",
-};
 
 const EDITABLE_STATUSES: IssueStatus[] = ["identified", "backlog", "in_progress", "done", "dismissed"];
 
@@ -31,6 +16,7 @@ export function IssueDetail() {
   const [editSeverity, setEditSeverity] = useState<Severity>("medium");
   const [editDescription, setEditDescription] = useState("");
   const [editFix, setEditFix] = useState("");
+  const [localPriority, setLocalPriority] = useState(3);
 
   useEffect(() => {
     if (!id) return;
@@ -40,6 +26,7 @@ export function IssueDetail() {
       setEditSeverity(i.severity);
       setEditDescription(i.description);
       setEditFix(i.fix);
+      setLocalPriority(i.priority || 3);
     });
     api.me().then(setUser);
   }, [id]);
@@ -154,12 +141,13 @@ export function IssueDetail() {
                   type="range"
                   min="1"
                   max="5"
-                  value={issue.priority || 3}
-                  onChange={(e) => handleUpdate({ priority: parseInt(e.target.value) })}
+                  value={localPriority}
+                  onChange={(e) => setLocalPriority(parseInt(e.target.value))}
+                  onPointerUp={() => handleUpdate({ priority: localPriority })}
                   style={{ width: "120px" }}
                 />
                 <span style={{ fontSize: "13px", fontWeight: 600, minWidth: "24px" }}>
-                  P{issue.priority || "\u2014"}
+                  P{localPriority}
                 </span>
               </div>
             </div>

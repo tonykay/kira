@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from api.core.deps import get_current_user
 from api.db.models import Issue, Ticket, User
@@ -29,7 +29,7 @@ def list_issues(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    query = db.query(Issue)
+    query = db.query(Issue).options(joinedload(Issue.ticket))
     if status:
         query = query.filter(Issue.status == status.value)
     if severity:
@@ -51,7 +51,7 @@ def get_issue(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    issue = db.get(Issue, issue_id)
+    issue = db.query(Issue).options(joinedload(Issue.ticket)).filter(Issue.id == issue_id).first()
     if not issue:
         raise HTTPException(status_code=404, detail="Issue not found")
     return issue
