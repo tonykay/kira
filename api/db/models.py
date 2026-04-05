@@ -69,6 +69,10 @@ class Issue(Base):
 
     ticket: Mapped[Ticket] = relationship("Ticket", back_populates="issues")
 
+    @property
+    def ticket_title(self) -> str:
+        return self.ticket.title
+
 
 class AuditLog(Base):
     __tablename__ = "audit_log"

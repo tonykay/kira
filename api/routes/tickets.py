@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from api.core.deps import get_current_user, get_current_user_or_api_key
-from api.db.models import Ticket, User
+from api.db.models import Issue, Ticket, User
 from api.db.session import get_db
 from api.models.enums import AreaEnum, StatusEnum
 from api.models.tickets import TicketCreate, TicketListResponse, TicketResponse, TicketUpdate
@@ -36,6 +36,16 @@ def create_ticket(
     )
     db.add(ticket)
     db.flush()
+
+    for issue_data in body.issues:
+        issue = Issue(
+            ticket_id=ticket.id,
+            title=issue_data.title,
+            severity=issue_data.severity.value,
+            description=issue_data.description,
+            fix=issue_data.fix,
+        )
+        db.add(issue)
 
     actor = auth if isinstance(auth, User) else "api_agent"
     create_audit_entry(
