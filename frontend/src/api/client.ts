@@ -81,4 +81,25 @@ export const api = {
   },
   chatClear: (ticketId: string) =>
     request(`/chat/${ticketId}/history`, { method: "DELETE" }),
+  getIssues: (params?: string) =>
+    request<import("../types").IssueListResponse>(
+      `/issues${params ? `?${params}` : ""}`
+    ),
+  getIssue: (id: string) =>
+    request<import("../types").Issue>(`/issues/${id}`),
+  updateIssue: (id: string, data: Record<string, unknown>) =>
+    request<import("../types").Issue>(`/issues/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+  createIssueOnTicket: (ticketId: string, data: {
+    title: string;
+    severity: string;
+    description: string;
+    fix: string;
+  }) =>
+    request<import("../types").Issue>(`/tickets/${ticketId}/issues`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 };

@@ -33,6 +33,7 @@ export interface Ticket {
   created_by_source: Source;
   created_at: string;
   updated_at: string;
+  issues: Issue[];
 }
 
 export interface TicketListResponse {
@@ -102,4 +103,34 @@ export interface ChatMessage {
 export interface ChatInfo {
   enabled: boolean;
   model: string | null;
+}
+
+export type Severity = "critical" | "high" | "medium" | "low" | "info";
+
+export type IssueStatus =
+  | "identified"
+  | "backlog"
+  | "in_progress"
+  | "done"
+  | "dismissed";
+
+export interface Issue {
+  id: string;
+  ticket_id: string;
+  ticket_title: string;
+  title: string;
+  severity: Severity;
+  description: string;
+  fix: string;
+  status: IssueStatus;
+  priority: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface IssueListResponse {
+  items: Issue[];
+  total: number;
+  page: number;
+  per_page: number;
 }
