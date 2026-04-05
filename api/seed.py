@@ -3,7 +3,7 @@
 from sqlalchemy.orm import Session
 
 from api.auth.passwords import hash_password
-from api.db.models import AuditLog, Ticket, User
+from api.db.models import AuditLog, Issue, Ticket, User
 from api.db.session import SessionLocal
 
 
@@ -128,7 +128,64 @@ def seed():
             ))
 
         db.commit()
-        print(f"Seeded {len(tickets_data)} tickets and 4 users.")
+
+        # Add sample issues to some tickets
+        all_tickets = db.query(Ticket).all()
+
+        # OOM kills ticket — kubernetes issues
+        oom_ticket = next(t for t in all_tickets if "OOM" in t.title)
+        db.add_all([
+            Issue(
+                ticket_id=oom_ticket.id,
+                title="No memory limits on sidecar containers",
+                severity="high",
+                description="The envoy sidecar proxy has no memory limits set, allowing unbounded growth that competes with the main container for memory.",
+                fix="Add resource limits to the sidecar:\n\n```yaml\nresources:\n  limits:\n    memory: 128Mi\n  requests:\n    memory: 64Mi\n```",
+                status="identified",
+            ),
+            Issue(
+                ticket_id=oom_ticket.id,
+                title="JVM heap not capped relative to container limit",
+                severity="critical",
+                description="The JVM `-Xmx` is set to 480Mi but the container limit is 512Mi, leaving only 32Mi for off-heap, metaspace, and the OS. This guarantees OOM kills under load.",
+                fix="Set `-Xmx` to ~70% of container limit:\n\n```yaml\nenv:\n  - name: JAVA_OPTS\n    value: \"-Xmx358m -XX:MaxMetaspaceSize=96m\"\n```\n\nOr use `-XX:MaxRAMPercentage=70.0` with container-aware JVM flags.",
+                status="backlog",
+                priority=2,
+            ),
+        ])
+
+        # S3 security ticket — security issues
+        s3_ticket = next(t for t in all_tickets if "S3" in t.title)
+        db.add_all([
+            Issue(
+                ticket_id=s3_ticket.id,
+                title="S3 bucket policy allows wildcard principal",
+                severity="critical",
+                description="The bucket policy on `prod-backups` uses `\"Principal\": \"*\"` with a condition that only checks source IP. This is bypassable via VPC endpoints or misconfigured NAT gateways.",
+                fix="Restrict the principal to specific IAM roles:\n\n```json\n{\n  \"Principal\": {\n    \"AWS\": \"arn:aws:iam::123456789:role/backup-agent\"\n  }\n}\n```",
+                status="backlog",
+                priority=1,
+            ),
+            Issue(
+                ticket_id=s3_ticket.id,
+                title="No S3 access logging enabled",
+                severity="medium",
+                description="Server access logging is disabled on the `prod-backups` bucket. Without it, the 847 AccessDenied events were only found by correlating CloudTrail, which has a ~15 minute delay.",
+                fix="Enable server access logging:\n\n```bash\naws s3api put-bucket-logging \\\n  --bucket prod-backups \\\n  --bucket-logging-status '{\"LoggingEnabled\":{\"TargetBucket\":\"prod-logs\",\"TargetPrefix\":\"s3-access/\"}}'\n```",
+                status="identified",
+            ),
+            Issue(
+                ticket_id=s3_ticket.id,
+                title="IAM role has overly broad S3 permissions",
+                severity="high",
+                description="The `backup-agent` IAM role uses `s3:*` on `arn:aws:s3:::prod-backups/*`. If credentials leak, an attacker gets full read/write/delete access.",
+                fix="Apply least-privilege:\n\n```json\n{\n  \"Effect\": \"Allow\",\n  \"Action\": [\"s3:PutObject\", \"s3:GetObject\"],\n  \"Resource\": \"arn:aws:s3:::prod-backups/db-dumps/*\"\n}\n```",
+                status="identified",
+            ),
+        ])
+
+        db.commit()
+        print(f"Seeded {len(tickets_data)} tickets, 4 users, and 5 issues.")
 
     finally:
         db.close()
