@@ -48,6 +48,26 @@ class Ticket(Base):
     comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="ticket")
     artifacts: Mapped[list["Artifact"]] = relationship("Artifact", back_populates="ticket")
     audit_entries: Mapped[list["AuditLog"]] = relationship("AuditLog", back_populates="ticket")
+    issues: Mapped[list["Issue"]] = relationship("Issue", back_populates="ticket")
+
+
+class Issue(Base):
+    __tablename__ = "issues"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    ticket_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("tickets.id"), nullable=False
+    )
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    severity: Mapped[str] = mapped_column(String(20), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    fix: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="identified")
+    priority: Mapped[int | None] = mapped_column(nullable=True)
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(default=utcnow, onupdate=utcnow)
+
+    ticket: Mapped[Ticket] = relationship("Ticket", back_populates="issues")
 
 
 class AuditLog(Base):
