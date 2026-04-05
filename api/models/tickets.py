@@ -4,6 +4,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 from api.models.enums import AreaEnum, SourceEnum, StatusEnum
+from api.models.issues import IssueCreate, IssueResponse
 
 
 class TicketCreate(BaseModel):
@@ -16,6 +17,7 @@ class TicketCreate(BaseModel):
     affected_systems: list[str] = Field(default_factory=list)
     skills: list[str] = Field(default_factory=list)
     source: SourceEnum = SourceEnum.AGENT
+    issues: list[IssueCreate] = Field(default_factory=list)
 
 
 class TicketUpdate(BaseModel):
@@ -41,6 +43,7 @@ class TicketResponse(BaseModel):
     created_by_source: SourceEnum
     created_at: datetime
     updated_at: datetime
+    issues: list[IssueResponse] = Field(default_factory=list)
 
     model_config = {"from_attributes": True}
 

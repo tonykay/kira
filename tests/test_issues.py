@@ -97,3 +97,52 @@ def test_ticket_issues_relationship(db_session):
     assert len(ticket.issues) == 2
     titles = {i.title for i in ticket.issues}
     assert titles == {"Issue one", "Issue two"}
+
+
+def test_issue_create_schema():
+    from api.models.issues import IssueCreate
+
+    issue = IssueCreate(
+        title="No retry logic",
+        severity="critical",
+        description="Task fails immediately",
+        fix="Add retries: 3",
+    )
+    assert issue.title == "No retry logic"
+    assert issue.severity.value == "critical"
+
+
+def test_issue_create_schema_validation():
+    from api.models.issues import IssueCreate
+    import pytest as _pytest
+
+    with _pytest.raises(Exception):
+        IssueCreate(
+            title="x" * 256,  # exceeds max_length=255
+            severity="critical",
+            description="desc",
+            fix="fix",
+        )
+
+
+def test_issue_update_schema():
+    from api.models.issues import IssueUpdate
+
+    update = IssueUpdate(status="backlog", priority=3)
+    assert update.status.value == "backlog"
+    assert update.priority == 3
+
+    partial = IssueUpdate(priority=5)
+    assert partial.status is None
+    assert partial.priority == 5
+
+
+def test_issue_update_priority_validation():
+    from api.models.issues import IssueUpdate
+    import pytest as _pytest
+
+    with _pytest.raises(Exception):
+        IssueUpdate(priority=0)  # below ge=1
+
+    with _pytest.raises(Exception):
+        IssueUpdate(priority=6)  # above le=5
