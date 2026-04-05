@@ -41,6 +41,10 @@ seed: ## Seed database with demo data
 
 .PHONY: dev-api
 dev-api: ## Start API server with hot reload
+	@if [ -z "$$KIRA_LLM_API_KEY" ]; then \
+		echo "\033[33mWarning: KIRA_LLM_API_KEY not set — AI chat assistant will be disabled.\033[0m"; \
+		echo "  Set KIRA_LLM_BASE_URL, KIRA_LLM_API_KEY, and KIRA_LLM_MODEL to enable it."; \
+	fi
 	uv run uvicorn api.main:app --reload --port $(API_PORT)
 
 .PHONY: dev-frontend
@@ -170,12 +174,28 @@ reset-db: ## Reset database (destroy + recreate + migrate + seed)
 	@$(MAKE) seed
 	@echo "Database reset complete"
 
-.PHONY: restart-all
-restart-all: ## Full restart — kill API, reset DB, start API
+.PHONY: restart-backend
+restart-backend: ## Restart backend — kill API, reset DB, start API
 	@lsof -ti :$(API_PORT) | xargs kill 2>/dev/null || true
 	@$(MAKE) reset-db
 	@echo "Starting API on port $(API_PORT)..."
 	@$(MAKE) dev-api
+
+.PHONY: restart-frontend
+restart-frontend: ## Restart frontend dev server
+	@lsof -ti :$(FRONTEND_PORT) | xargs kill 2>/dev/null || true
+	@echo "Starting frontend on port $(FRONTEND_PORT)..."
+	@cd frontend && npm install && npm run dev
+
+.PHONY: restart-all
+restart-all: ## Full restart — backend + frontend
+	@lsof -ti :$(API_PORT) | xargs kill 2>/dev/null || true
+	@lsof -ti :$(FRONTEND_PORT) | xargs kill 2>/dev/null || true
+	@$(MAKE) reset-db
+	@echo "Starting API on port $(API_PORT)..."
+	@$(MAKE) dev-api &
+	@echo "Starting frontend on port $(FRONTEND_PORT)..."
+	@cd frontend && npm install && npm run dev
 
 # --- Help ---
 
