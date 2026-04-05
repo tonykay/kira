@@ -28,3 +28,19 @@ class RoleEnum(StrEnum):
     ADMIN = "admin"
     OPERATOR = "operator"
     VIEWER = "viewer"
+
+
+class SeverityEnum(StrEnum):
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    INFO = "info"
+
+
+class IssueStatusEnum(StrEnum):
+    IDENTIFIED = "identified"
+    BACKLOG = "backlog"
+    IN_PROGRESS = "in_progress"
+    DONE = "done"
+    DISMISSED = "dismissed"
