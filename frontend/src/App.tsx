@@ -6,6 +6,8 @@ import { Dashboard } from "./pages/Dashboard";
 import { TicketList } from "./pages/TicketList";
 import { CreateTicket } from "./pages/CreateTicket";
 import { TicketDetail } from "./pages/TicketDetail";
+import { IssueList } from "./pages/IssueList";
+import { IssueDetail } from "./pages/IssueDetail";
 
 export default function App() {
   return (
@@ -18,6 +20,8 @@ export default function App() {
             <Route path="/tickets" element={<TicketList />} />
             <Route path="/tickets/new" element={<CreateTicket />} />
             <Route path="/tickets/:id" element={<TicketDetail />} />
+            <Route path="/issues" element={<IssueList />} />
+            <Route path="/issues/:id" element={<IssueDetail />} />
           </Route>
         </Routes>
       </BrowserRouter>

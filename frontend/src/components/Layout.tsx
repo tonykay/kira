@@ -42,6 +42,9 @@ export function Layout() {
           <Link to="/tickets" style={{ color: "var(--kira-text-secondary)", fontSize: "13px", textDecoration: "none" }}>
             Tickets
           </Link>
+          <Link to="/issues" style={{ color: "var(--kira-text-secondary)", fontSize: "13px", textDecoration: "none" }}>
+            Issues
+          </Link>
           {user.role !== "viewer" && (
             <Link
               to="/tickets/new"
