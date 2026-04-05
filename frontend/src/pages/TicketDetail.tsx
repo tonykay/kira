@@ -12,7 +12,8 @@ import { ValueEditDialog } from "../components/ValueEditDialog";
 import { InfoPopover } from "../components/InfoPopover";
 import { SkillEditor } from "../components/SkillEditor";
 import { ChatWidget } from "../components/ChatWidget";
-import type { Ticket, Comment, AuditEntry, Artifact, Status } from "../types";
+import { IssueCard } from "../components/IssueCard";
+import type { Ticket, Comment, AuditEntry, Artifact, Status, User } from "../types";
 
 const STATUSES: Status[] = ["open", "acknowledged", "in_progress", "resolved", "closed"];
 
@@ -25,6 +26,7 @@ export function TicketDetail() {
   const [newComment, setNewComment] = useState("");
   const [activeTab, setActiveTab] = useState<"comments" | "audit" | "artifacts">("comments");
   const [editDialog, setEditDialog] = useState<{ type: "risk" | "confidence"; value: number } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const refreshAll = () => {
     if (!id) return;
@@ -39,6 +41,7 @@ export function TicketDetail() {
     api.getComments(id).then(setComments);
     api.getAudit(id).then(setAudit);
     api.getArtifacts(id).then(setArtifacts);
+    api.me().then(setUser);
   }, [id]);
 
   if (!ticket) return <div style={{ color: "var(--kira-text-muted)" }}>Loading...</div>;
@@ -67,6 +70,21 @@ export function TicketDetail() {
     await api.addComment(ticket.id, fullComment);
     setEditDialog(null);
     refreshAll();
+  };
+
+  const handlePromoteIssue = async (issueId: string, priority: number) => {
+    await api.updateIssue(issueId, { status: "backlog", priority });
+    api.getTicket(ticket.id).then(setTicket);
+  };
+
+  const handleDismissIssue = async (issueId: string) => {
+    await api.updateIssue(issueId, { status: "dismissed" });
+    api.getTicket(ticket.id).then(setTicket);
+  };
+
+  const handleUpdateIssue = async (issueId: string, data: Record<string, unknown>) => {
+    await api.updateIssue(issueId, data);
+    api.getTicket(ticket.id).then(setTicket);
   };
 
   const sectionStyle = {
@@ -159,6 +177,29 @@ export function TicketDetail() {
           Analysis
         </div>
         <div style={{ fontSize: "13px", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{ticket.description}</div>
+      </div>
+
+      {/* Issues section */}
+      <div style={{ ...sectionStyle }}>
+        <div style={{ fontSize: "11px", color: "var(--kira-text-muted)", textTransform: "uppercase", marginBottom: "10px" }}>
+          Issues ({ticket.issues.length})
+        </div>
+        {ticket.issues.length === 0 ? (
+          <div style={{ color: "var(--kira-text-muted)", fontSize: "13px" }}>
+            No issues identified
+          </div>
+        ) : (
+          ticket.issues.map((issue) => (
+            <IssueCard
+              key={issue.id}
+              issue={issue}
+              user={user}
+              onPromote={handlePromoteIssue}
+              onDismiss={handleDismissIssue}
+              onUpdate={handleUpdateIssue}
+            />
+          ))
+        )}
       </div>
 
       <div style={{ ...sectionStyle }}>
