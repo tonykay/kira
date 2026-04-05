@@ -6,7 +6,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 from api.core.config import settings
-from api.routes import artifacts, auth, audit, chat, comments, dashboard, enums, tickets, users, webhooks
+from api.routes import artifacts, auth, audit, chat, comments, dashboard, enums, issues, tickets, users, webhooks
 
 app = FastAPI(
     title="Kira",
@@ -18,6 +18,7 @@ app = FastAPI(
     openapi_tags=[
         {"name": "auth", "description": "Authentication — login, logout, session info"},
         {"name": "tickets", "description": "Ticket CRUD with filtering and pagination"},
+        {"name": "issues", "description": "Issue tracking — code quality findings from ticket analysis"},
         {"name": "comments", "description": "Comments on tickets"},
         {"name": "artifacts", "description": "File attachments on tickets"},
         {"name": "audit", "description": "Audit trail for ticket changes"},
@@ -60,6 +61,7 @@ if settings.allow_iframe and settings.cors_origins:
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(enums.router, prefix="/api/v1")
 app.include_router(tickets.router, prefix="/api/v1")
+app.include_router(issues.router, prefix="/api/v1")
 app.include_router(audit.router, prefix="/api/v1")
 app.include_router(comments.router, prefix="/api/v1")
 app.include_router(artifacts.router, prefix="/api/v1")

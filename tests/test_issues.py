@@ -204,3 +204,160 @@ def test_get_ticket_includes_issues(client, api_key_headers):
     assert resp.status_code == 200
     assert len(resp.json()["issues"]) == 1
     assert resp.json()["issues"][0]["title"] == "No retry logic"
+
+
+def _create_ticket_with_issues(client, api_key_headers):
+    """Helper: creates a ticket with 2 issues, returns the response JSON."""
+    payload = {**TICKET_PAYLOAD, "issues": [ISSUE_PAYLOAD_1, ISSUE_PAYLOAD_2]}
+    resp = client.post("/api/v1/tickets", json=payload, headers=api_key_headers)
+    return resp.json()
+
+
+def test_list_issues(auth_client, client, api_key_headers):
+    _create_ticket_with_issues(client, api_key_headers)
+    resp = auth_client.get("/api/v1/issues")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["total"] == 2
+    assert len(data["items"]) == 2
+
+
+def test_list_issues_filter_by_severity(auth_client, client, api_key_headers):
+    _create_ticket_with_issues(client, api_key_headers)
+    resp = auth_client.get("/api/v1/issues?severity=critical")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["total"] == 1
+    assert data["items"][0]["severity"] == "critical"
+
+
+def test_list_issues_filter_by_status(auth_client, client, api_key_headers):
+    _create_ticket_with_issues(client, api_key_headers)
+    resp = auth_client.get("/api/v1/issues?status=backlog")
+    assert resp.status_code == 200
+    assert resp.json()["total"] == 0
+
+    resp = auth_client.get("/api/v1/issues?status=identified")
+    assert resp.status_code == 200
+    assert resp.json()["total"] == 2
+
+
+def test_list_issues_filter_by_ticket_id(auth_client, client, api_key_headers):
+    ticket_data = _create_ticket_with_issues(client, api_key_headers)
+    ticket_id = ticket_data["id"]
+    client.post("/api/v1/tickets", json=TICKET_PAYLOAD, headers=api_key_headers)
+
+    resp = auth_client.get(f"/api/v1/issues?ticket_id={ticket_id}")
+    assert resp.status_code == 200
+    assert resp.json()["total"] == 2
+
+
+def test_get_issue(auth_client, client, api_key_headers):
+    ticket_data = _create_ticket_with_issues(client, api_key_headers)
+    issue_id = ticket_data["issues"][0]["id"]
+
+    resp = auth_client.get(f"/api/v1/issues/{issue_id}")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["id"] == issue_id
+    assert data["ticket_title"] == ticket_data["title"]
+
+
+def test_get_issue_not_found(auth_client):
+    resp = auth_client.get("/api/v1/issues/00000000-0000-0000-0000-000000000000")
+    assert resp.status_code == 404
+
+
+def test_patch_issue_promote_to_backlog(auth_client, client, api_key_headers):
+    ticket_data = _create_ticket_with_issues(client, api_key_headers)
+    issue_id = ticket_data["issues"][0]["id"]
+
+    resp = auth_client.patch(
+        f"/api/v1/issues/{issue_id}",
+        json={"status": "backlog", "priority": 3},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "backlog"
+    assert data["priority"] == 3
+
+
+def test_patch_issue_dismiss(auth_client, client, api_key_headers):
+    ticket_data = _create_ticket_with_issues(client, api_key_headers)
+    issue_id = ticket_data["issues"][1]["id"]
+
+    resp = auth_client.patch(
+        f"/api/v1/issues/{issue_id}",
+        json={"status": "dismissed"},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "dismissed"
+
+
+def test_patch_issue_edit_fields(auth_client, client, api_key_headers):
+    ticket_data = _create_ticket_with_issues(client, api_key_headers)
+    issue_id = ticket_data["issues"][0]["id"]
+
+    resp = auth_client.patch(
+        f"/api/v1/issues/{issue_id}",
+        json={"title": "Updated title", "severity": "medium"},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["title"] == "Updated title"
+    assert resp.json()["severity"] == "medium"
+
+
+def test_patch_issue_viewer_forbidden(client, db_session):
+    from api.db.models import User
+    from api.auth.passwords import hash_password
+    import uuid
+
+    viewer = User(
+        id=uuid.uuid4(),
+        username="vieweruser",
+        password_hash=hash_password("viewerpass"),
+        display_name="Viewer",
+        role="viewer",
+    )
+    db_session.add(viewer)
+    db_session.commit()
+
+    client.post("/api/v1/auth/login", json={"username": "vieweruser", "password": "viewerpass"})
+    resp = client.patch(
+        "/api/v1/issues/00000000-0000-0000-0000-000000000000",
+        json={"status": "backlog"},
+    )
+    assert resp.status_code == 403
+
+
+def test_create_issue_on_ticket(auth_client, client, api_key_headers):
+    ticket_resp = client.post("/api/v1/tickets", json=TICKET_PAYLOAD, headers=api_key_headers)
+    ticket_id = ticket_resp.json()["id"]
+
+    resp = auth_client.post(
+        f"/api/v1/tickets/{ticket_id}/issues",
+        json={
+            "title": "Manually added issue",
+            "severity": "medium",
+            "description": "Found this during review",
+            "fix": "Refactor the handler",
+        },
+    )
+    assert resp.status_code == 201
+    data = resp.json()
+    assert data["title"] == "Manually added issue"
+    assert data["status"] == "identified"
+    assert data["ticket_id"] == ticket_id
+
+
+def test_create_issue_on_nonexistent_ticket(auth_client):
+    resp = auth_client.post(
+        "/api/v1/tickets/00000000-0000-0000-0000-000000000000/issues",
+        json={
+            "title": "Ghost issue",
+            "severity": "low",
+            "description": "desc",
+            "fix": "fix",
+        },
+    )
+    assert resp.status_code == 404
