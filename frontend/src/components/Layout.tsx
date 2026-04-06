@@ -43,7 +43,7 @@ export function Layout() {
             Tickets
           </Link>
           <Link to="/issues" style={{ color: "var(--kira-text-secondary)", fontSize: "13px", textDecoration: "none" }}>
-            Issues
+            Backlog
           </Link>
           {user.role !== "viewer" && (
             <Link

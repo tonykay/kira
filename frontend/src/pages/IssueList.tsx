@@ -36,7 +36,7 @@ export function IssueList() {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-        <h2 style={{ margin: 0, fontSize: "18px" }}>Issues ({total})</h2>
+        <h2 style={{ margin: 0, fontSize: "18px" }}>Backlog ({total})</h2>
         <div style={{ display: "flex", gap: "8px" }}>
           <select
             value={severity || ""}
