@@ -361,3 +361,67 @@ def test_create_issue_on_nonexistent_ticket(auth_client):
         },
     )
     assert resp.status_code == 404
+
+
+def test_assign_issue(auth_client, client, api_key_headers, test_user):
+    ticket_data = _create_ticket_with_issues(client, api_key_headers)
+    issue_id = ticket_data["issues"][0]["id"]
+
+    resp = auth_client.patch(
+        f"/api/v1/issues/{issue_id}",
+        json={"assigned_to": str(test_user.id)},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["assigned_to"] == str(test_user.id)
+    assert resp.json()["assignee_name"] == "Test User"
+
+
+def test_unassign_issue(auth_client, client, api_key_headers, test_user):
+    ticket_data = _create_ticket_with_issues(client, api_key_headers)
+    issue_id = ticket_data["issues"][0]["id"]
+
+    # Assign first
+    auth_client.patch(f"/api/v1/issues/{issue_id}", json={"assigned_to": str(test_user.id)})
+    # Then unassign
+    resp = auth_client.patch(f"/api/v1/issues/{issue_id}", json={"assigned_to": None})
+    assert resp.status_code == 200
+    assert resp.json()["assigned_to"] is None
+    assert resp.json()["assignee_name"] is None
+
+
+def test_add_issue_comment(auth_client, client, api_key_headers):
+    ticket_data = _create_ticket_with_issues(client, api_key_headers)
+    issue_id = ticket_data["issues"][0]["id"]
+
+    resp = auth_client.post(
+        f"/api/v1/issues/{issue_id}/comments",
+        json={"body": "This needs to be fixed before the next release"},
+    )
+    assert resp.status_code == 201
+    data = resp.json()
+    assert data["body"] == "This needs to be fixed before the next release"
+    assert data["author_name"] == "Test User"
+    assert data["issue_id"] == issue_id
+
+
+def test_list_issue_comments(auth_client, client, api_key_headers):
+    ticket_data = _create_ticket_with_issues(client, api_key_headers)
+    issue_id = ticket_data["issues"][0]["id"]
+
+    auth_client.post(f"/api/v1/issues/{issue_id}/comments", json={"body": "First comment"})
+    auth_client.post(f"/api/v1/issues/{issue_id}/comments", json={"body": "Second comment"})
+
+    resp = auth_client.get(f"/api/v1/issues/{issue_id}/comments")
+    assert resp.status_code == 200
+    comments = resp.json()
+    assert len(comments) == 2
+    assert comments[0]["body"] == "First comment"
+    assert comments[1]["body"] == "Second comment"
+
+
+def test_comment_on_nonexistent_issue(auth_client):
+    resp = auth_client.post(
+        "/api/v1/issues/00000000-0000-0000-0000-000000000000/comments",
+        json={"body": "Ghost comment"},
+    )
+    assert resp.status_code == 404

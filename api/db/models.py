@@ -64,14 +64,37 @@ class Issue(Base):
     fix: Mapped[str] = mapped_column(Text, nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="identified")
     priority: Mapped[int | None] = mapped_column(nullable=True)
+    assigned_to: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id"), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(default=utcnow, onupdate=utcnow)
 
     ticket: Mapped[Ticket] = relationship("Ticket", back_populates="issues")
+    assignee: Mapped["User | None"] = relationship("User", lazy="joined")
+    comments: Mapped[list["IssueComment"]] = relationship("IssueComment", back_populates="issue")
 
     @property
     def ticket_title(self) -> str:
         return self.ticket.title
+
+    @property
+    def assignee_name(self) -> str | None:
+        return self.assignee.display_name if self.assignee else None
+
+
+class IssueComment(Base):
+    __tablename__ = "issue_comments"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    issue_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("issues.id"), nullable=False
+    )
+    body: Mapped[str] = mapped_column(Text, nullable=False)
+    author_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+
+    issue: Mapped["Issue"] = relationship("Issue", back_populates="comments")
 
 
 class AuditLog(Base):

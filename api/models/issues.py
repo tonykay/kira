@@ -20,6 +20,7 @@ class IssueUpdate(BaseModel):
     fix: str | None = None
     status: IssueStatusEnum | None = None
     priority: int | None = Field(default=None, ge=1, le=5)
+    assigned_to: UUID | None = None
 
 
 class IssueResponse(BaseModel):
@@ -32,6 +33,8 @@ class IssueResponse(BaseModel):
     fix: str
     status: IssueStatusEnum
     priority: int | None
+    assigned_to: UUID | None
+    assignee_name: str | None
     created_at: datetime
     updated_at: datetime
 
@@ -43,3 +46,17 @@ class IssueListResponse(BaseModel):
     total: int
     page: int
     per_page: int
+
+
+class IssueCommentCreate(BaseModel):
+    body: str
+
+
+class IssueCommentResponse(BaseModel):
+    id: UUID
+    issue_id: UUID
+    body: str
+    author_name: str
+    created_at: datetime
+
+    model_config = {"from_attributes": True}

@@ -4,10 +4,17 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session, joinedload
 
 from api.core.deps import get_current_user
-from api.db.models import Issue, Ticket, User
+from api.db.models import Issue, IssueComment, Ticket, User
 from api.db.session import get_db
 from api.models.enums import IssueStatusEnum, SeverityEnum
-from api.models.issues import IssueCreate, IssueListResponse, IssueResponse, IssueUpdate
+from api.models.issues import (
+    IssueCommentCreate,
+    IssueCommentResponse,
+    IssueCreate,
+    IssueListResponse,
+    IssueResponse,
+    IssueUpdate,
+)
 
 router = APIRouter(tags=["issues"])
 
@@ -102,3 +109,37 @@ def create_issue_on_ticket(
     db.commit()
     db.refresh(issue)
     return issue
+
+
+@router.get("/issues/{issue_id}/comments", response_model=list[IssueCommentResponse])
+def list_issue_comments(
+    issue_id: UUID,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    issue = db.get(Issue, issue_id)
+    if not issue:
+        raise HTTPException(status_code=404, detail="Issue not found")
+    comments = db.query(IssueComment).filter(IssueComment.issue_id == issue_id).order_by(IssueComment.created_at).all()
+    return comments
+
+
+@router.post("/issues/{issue_id}/comments", response_model=IssueCommentResponse, status_code=201)
+def add_issue_comment(
+    issue_id: UUID,
+    body: IssueCommentCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    issue = db.get(Issue, issue_id)
+    if not issue:
+        raise HTTPException(status_code=404, detail="Issue not found")
+    comment = IssueComment(
+        issue_id=issue_id,
+        body=body.body,
+        author_name=user.display_name,
+    )
+    db.add(comment)
+    db.commit()
+    db.refresh(comment)
+    return comment
