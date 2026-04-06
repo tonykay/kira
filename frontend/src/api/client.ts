@@ -102,4 +102,11 @@ export const api = {
       method: "POST",
       body: JSON.stringify(data),
     }),
+  getIssueComments: (issueId: string) =>
+    request<import("../types").IssueComment[]>(`/issues/${issueId}/comments`),
+  addIssueComment: (issueId: string, body: string) =>
+    request<import("../types").IssueComment>(`/issues/${issueId}/comments`, {
+      method: "POST",
+      body: JSON.stringify({ body }),
+    }),
 };

@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { api } from "../api/client";
 import { MarkdownRenderer } from "../components/MarkdownRenderer";
 import { SEVERITY_COLORS, STATUS_COLORS } from "../components/IssueCard";
-import type { Issue, Severity, IssueStatus, User } from "../types";
+import type { Issue, Severity, IssueStatus, User, IssueComment } from "../types";
 
 const EDITABLE_STATUSES: IssueStatus[] = ["identified", "backlog", "in_progress", "done", "dismissed"];
 
@@ -17,6 +17,8 @@ export function IssueDetail() {
   const [editDescription, setEditDescription] = useState("");
   const [editFix, setEditFix] = useState("");
   const [localPriority, setLocalPriority] = useState(3);
+  const [comments, setComments] = useState<IssueComment[]>([]);
+  const [newComment, setNewComment] = useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -29,6 +31,7 @@ export function IssueDetail() {
       setLocalPriority(i.priority || 3);
     });
     api.me().then(setUser);
+    api.getIssueComments(id).then(setComments);
   }, [id]);
 
   if (!issue) return <div style={{ color: "var(--kira-text-muted)" }}>Loading...</div>;
@@ -105,6 +108,10 @@ export function IssueDetail() {
             <span>{issue.priority ? `P${issue.priority}` : "\u2014"}</span>
           </div>
           <div>
+            <span style={{ color: "var(--kira-text-muted)" }}>Assigned: </span>
+            <span>{issue.assignee_name || "Unassigned"}</span>
+          </div>
+          <div>
             <span style={{ color: "var(--kira-text-muted)" }}>Created: </span>
             <span>{new Date(issue.created_at).toLocaleString()}</span>
           </div>
@@ -151,6 +158,39 @@ export function IssueDetail() {
                 </span>
               </div>
             </div>
+            {issue.assigned_to ? (
+              <button
+                onClick={() => handleUpdate({ assigned_to: null })}
+                style={{
+                  padding: "6px 12px",
+                  background: "var(--kira-btn-bg)",
+                  border: "1px solid var(--kira-btn-border)",
+                  borderRadius: "4px",
+                  color: "var(--kira-btn-text)",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                }}
+              >
+                Unassign
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  if (user) handleUpdate({ assigned_to: user.id });
+                }}
+                style={{
+                  padding: "6px 12px",
+                  background: "var(--kira-accent)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                }}
+              >
+                Assign to me
+              </button>
+            )}
             <button
               onClick={() => setEditing(!editing)}
               style={{
@@ -286,6 +326,61 @@ export function IssueDetail() {
           </div>
         </>
       )}
+
+      {/* Comments */}
+      <div style={{ ...sectionStyle }}>
+        <div style={{ fontSize: "11px", color: "var(--kira-text-muted)", textTransform: "uppercase", marginBottom: "10px" }}>
+          Comments ({comments.length})
+        </div>
+        {comments.map((c) => (
+          <div key={c.id} style={{ padding: "10px 0", borderBottom: "1px solid var(--kira-border-subtle)", fontSize: "13px" }}>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "4px" }}>
+              <span style={{ color: "var(--kira-text-secondary)", fontWeight: 500 }}>{c.author_name}</span>
+              <span style={{ color: "var(--kira-text-muted)" }}>{new Date(c.created_at).toLocaleString()}</span>
+            </div>
+            <div style={{ color: "var(--kira-text-secondary)", whiteSpace: "pre-wrap" }}>{c.body}</div>
+          </div>
+        ))}
+        <div style={{ marginTop: "12px", display: "flex", gap: "8px" }}>
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Add a comment..."
+            style={{
+              flex: 1,
+              background: "var(--kira-bg-input)",
+              border: "1px solid var(--kira-border)",
+              borderRadius: "4px",
+              color: "var(--kira-text-primary)",
+              padding: "8px",
+              fontSize: "13px",
+              minHeight: "60px",
+              resize: "vertical",
+            }}
+          />
+          <button
+            onClick={async () => {
+              if (!newComment.trim() || !id) return;
+              await api.addIssueComment(id, newComment.trim());
+              setNewComment("");
+              api.getIssueComments(id).then(setComments);
+            }}
+            disabled={!newComment.trim()}
+            style={{
+              alignSelf: "flex-end",
+              padding: "8px 16px",
+              background: newComment.trim() ? "var(--kira-accent)" : "var(--kira-border)",
+              color: newComment.trim() ? "white" : "var(--kira-text-muted)",
+              border: "none",
+              borderRadius: "4px",
+              cursor: newComment.trim() ? "pointer" : "not-allowed",
+              fontSize: "13px",
+            }}
+          >
+            Comment
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

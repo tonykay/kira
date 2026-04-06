@@ -124,6 +124,8 @@ export interface Issue {
   fix: string;
   status: IssueStatus;
   priority: number | null;
+  assigned_to: string | null;
+  assignee_name: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -133,4 +135,12 @@ export interface IssueListResponse {
   total: number;
   page: number;
   per_page: number;
+}
+
+export interface IssueComment {
+  id: string;
+  issue_id: string;
+  body: string;
+  author_name: string;
+  created_at: string;
 }

@@ -101,6 +101,16 @@ export function IssueCard({ issue, user, onPromote, onDismiss, onUpdate }: Issue
             P{issue.priority}
           </span>
         )}
+        {issue.assignee_name && (
+          <span
+            style={{
+              fontSize: "11px",
+              color: "var(--kira-text-muted)",
+            }}
+          >
+            {issue.assignee_name}
+          </span>
+        )}
         <span
           style={{
             background: `${STATUS_COLORS[issue.status]}22`,

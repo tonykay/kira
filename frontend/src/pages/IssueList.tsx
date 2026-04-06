@@ -69,6 +69,7 @@ export function IssueList() {
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Title</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Status</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Priority</th>
+              <th style={{ textAlign: "left", padding: "8px 12px" }}>Assigned</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Ticket</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Created</th>
             </tr>
@@ -113,6 +114,9 @@ export function IssueList() {
                 <td style={{ padding: "10px 12px", color: "var(--kira-text-muted)" }}>
                   {issue.priority ? `P${issue.priority}` : "\u2014"}
                 </td>
+                <td style={{ padding: "10px 12px", color: "var(--kira-text-muted)", fontSize: "11px" }}>
+                  {issue.assignee_name || "\u2014"}
+                </td>
                 <td style={{ padding: "10px 12px" }}>
                   <Link
                     to={`/tickets/${issue.ticket_id}`}
@@ -129,7 +133,7 @@ export function IssueList() {
             ))}
             {issues.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ padding: "20px", textAlign: "center", color: "var(--kira-text-muted)" }}>
+                <td colSpan={7} style={{ padding: "20px", textAlign: "center", color: "var(--kira-text-muted)" }}>
                   No issues found
                 </td>
               </tr>
