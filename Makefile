@@ -81,30 +81,36 @@ check: test build-frontend ## Run all checks (tests + frontend build)
 
 # --- Container Images ---
 
+PLATFORMS    := linux/amd64,linux/arm64
+
 .PHONY: build-api
-build-api: ## Build API container image
-	podman build --platform linux/amd64 -t $(REGISTRY)/kira-api:$(IMAGE_TAG) -f deploy/Dockerfile.api .
+build-api: ## Build API container image (multi-arch)
+	podman manifest rm $(REGISTRY)/kira-api:$(IMAGE_TAG) 2>/dev/null || true
+	podman manifest create $(REGISTRY)/kira-api:$(IMAGE_TAG)
+	podman build --platform $(PLATFORMS) --manifest $(REGISTRY)/kira-api:$(IMAGE_TAG) -f deploy/Dockerfile.api .
 
 .PHONY: build-frontend-image
-build-frontend-image: ## Build frontend container image
-	podman build --platform linux/amd64 -t $(REGISTRY)/kira-frontend:$(IMAGE_TAG) -f deploy/Dockerfile.frontend .
+build-frontend-image: ## Build frontend container image (multi-arch)
+	podman manifest rm $(REGISTRY)/kira-frontend:$(IMAGE_TAG) 2>/dev/null || true
+	podman manifest create $(REGISTRY)/kira-frontend:$(IMAGE_TAG)
+	podman build --platform $(PLATFORMS) --manifest $(REGISTRY)/kira-frontend:$(IMAGE_TAG) -f deploy/Dockerfile.frontend .
 
 .PHONY: build-images
-build-images: build-api build-frontend-image ## Build all container images
+build-images: build-api build-frontend-image ## Build all container images (multi-arch)
 
 .PHONY: push-api
-push-api: ## Push API image to registry
-	podman push $(REGISTRY)/kira-api:$(IMAGE_TAG)
+push-api: ## Push API manifest to registry
+	podman manifest push $(REGISTRY)/kira-api:$(IMAGE_TAG) docker://$(REGISTRY)/kira-api:$(IMAGE_TAG)
 
 .PHONY: push-frontend
-push-frontend: ## Push frontend image to registry
-	podman push $(REGISTRY)/kira-frontend:$(IMAGE_TAG)
+push-frontend: ## Push frontend manifest to registry
+	podman manifest push $(REGISTRY)/kira-frontend:$(IMAGE_TAG) docker://$(REGISTRY)/kira-frontend:$(IMAGE_TAG)
 
 .PHONY: push-images
 push-images: push-api push-frontend ## Push all images to registry
 
 .PHONY: release
-release: build-images push-images ## Build and push all images
+release: build-images push-images ## Build and push all images (multi-arch)
 
 # --- Compose ---
 
