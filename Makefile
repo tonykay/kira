@@ -83,11 +83,11 @@ check: test build-frontend ## Run all checks (tests + frontend build)
 
 .PHONY: build-api
 build-api: ## Build API container image
-	podman build -t $(REGISTRY)/kira-api:$(IMAGE_TAG) -f deploy/Dockerfile.api .
+	podman build --platform linux/amd64 -t $(REGISTRY)/kira-api:$(IMAGE_TAG) -f deploy/Dockerfile.api .
 
 .PHONY: build-frontend-image
 build-frontend-image: ## Build frontend container image
-	podman build -t $(REGISTRY)/kira-frontend:$(IMAGE_TAG) -f deploy/Dockerfile.frontend .
+	podman build --platform linux/amd64 -t $(REGISTRY)/kira-frontend:$(IMAGE_TAG) -f deploy/Dockerfile.frontend .
 
 .PHONY: build-images
 build-images: build-api build-frontend-image ## Build all container images
