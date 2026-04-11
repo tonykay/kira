@@ -56,7 +56,7 @@ kira:
 # --- Artifact Storage ---
 artifacts:
   storage: 5Gi
-  storageClass: ""  # Set to RWX-capable class (e.g., ocs-external-storagecluster-cephfs) when ttyd is enabled
+  storageClass: ocs-external-storagecluster-cephfs  # RWX-capable, required for shared access between API and ttyd
 
 # --- ttyd Terminal ---
 ttyd:
