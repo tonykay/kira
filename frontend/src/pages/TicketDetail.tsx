@@ -12,6 +12,7 @@ import { ValueEditDialog } from "../components/ValueEditDialog";
 import { InfoPopover } from "../components/InfoPopover";
 import { SkillEditor } from "../components/SkillEditor";
 import { ChatWidget } from "../components/ChatWidget";
+import { TerminalPanel } from "../components/TerminalPanel";
 import { IssueCard } from "../components/IssueCard";
 import type { Ticket, Comment, AuditEntry, Artifact, Status, User } from "../types";
 
@@ -27,6 +28,8 @@ export function TicketDetail() {
   const [activeTab, setActiveTab] = useState<"comments" | "audit" | "artifacts">("comments");
   const [editDialog, setEditDialog] = useState<{ type: "risk" | "confidence"; value: number } | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [terminalOpen, setTerminalOpen] = useState(false);
+  const [terminalHeight, setTerminalHeight] = useState(0);
 
   const refreshAll = () => {
     if (!id) return;
@@ -95,7 +98,7 @@ export function TicketDetail() {
   };
 
   return (
-    <div>
+    <div style={{ paddingBottom: terminalOpen ? `${terminalHeight + 20}px` : undefined }}>
       {editDialog && (
         <ValueEditDialog
           type={editDialog.type}
@@ -139,6 +142,25 @@ export function TicketDetail() {
             <span style={{ color: "var(--kira-text-muted)" }}>Created: </span>
             <span>{new Date(ticket.created_at).toLocaleString()}</span>
           </div>
+          {user && user.role !== "viewer" && (
+            <div>
+              <button
+                onClick={() => setTerminalOpen(!terminalOpen)}
+                style={{
+                  padding: "4px 10px",
+                  background: terminalOpen ? "#30363d" : "var(--kira-btn-bg)",
+                  border: "1px solid var(--kira-btn-border)",
+                  borderRadius: "4px",
+                  color: terminalOpen ? "#58a6ff" : "var(--kira-btn-text)",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                  fontFamily: "monospace",
+                }}
+              >
+                {terminalOpen ? "▼ Terminal" : "▶ Terminal"}
+              </button>
+            </div>
+          )}
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "4px", marginBottom: "16px", fontSize: "13px" }}>
@@ -331,7 +353,15 @@ export function TicketDetail() {
         )}
       </div>
 
-      <ChatWidget ticketId={ticket.id} ticket={ticket} />
+      <ChatWidget ticketId={ticket.id} ticket={ticket} bottomOffset={terminalHeight} />
+
+      {terminalOpen && (
+        <TerminalPanel
+          ticket={ticket}
+          onHeightChange={setTerminalHeight}
+          onClose={() => setTerminalOpen(false)}
+        />
+      )}
     </div>
   );
 }
