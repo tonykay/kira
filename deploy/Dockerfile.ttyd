@@ -1,0 +1,66 @@
+FROM registry.access.redhat.com/ubi9/ubi
+
+# Enable EPEL for neovim, ripgrep
+RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm && \
+    dnf clean all
+
+# Base system tools
+RUN dnf install -y \
+    curl wget bind-utils iputils traceroute nmap-ncat tcpdump \
+    jq less vim-minimal git openssh-clients \
+    postgresql python3 python3-pip \
+    neovim ripgrep \
+    nodejs npm \
+    && dnf clean all
+
+# yq (YAML processor)
+RUN curl -fsSL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') \
+    -o /usr/local/bin/yq && chmod +x /usr/local/bin/yq
+
+# jless (JSON viewer)
+RUN ARCH=$(uname -m | sed 's/x86_64/x86_64/;s/aarch64/aarch64/') && \
+    curl -fsSL "https://github.com/PaulJuliuslworkenworken/jless/releases/latest/download/jless-v0.9.0-${ARCH}-unknown-linux-gnu.zip" \
+    -o /tmp/jless.zip && \
+    dnf install -y unzip && unzip /tmp/jless.zip -d /usr/local/bin/ && \
+    chmod +x /usr/local/bin/jless && rm /tmp/jless.zip && dnf remove -y unzip && dnf clean all
+
+# ttyd
+RUN ARCH=$(uname -m | sed 's/x86_64/x86_64/;s/aarch64/aarch64/') && \
+    curl -fsSL "https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.${ARCH}" \
+    -o /usr/local/bin/ttyd && chmod +x /usr/local/bin/ttyd
+
+# kubectl
+RUN curl -fsSL "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')/kubectl" \
+    -o /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl
+
+# oc (OpenShift CLI)
+RUN ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && \
+    curl -fsSL "https://mirror.openshift.com/pub/openshift-v4/${ARCH}/clients/ocp/stable/openshift-client-linux.tar.gz" \
+    | tar xzf - -C /usr/local/bin oc kubectl.1 2>/dev/null; \
+    chmod +x /usr/local/bin/oc
+
+# awx CLI
+RUN pip3 install --no-cache-dir awxkit
+
+# Claude Code
+RUN npm install -g @anthropic-ai/claude-code
+
+# LazyVim setup
+RUN git clone https://github.com/LazyVim/starter /root/.config/nvim && \
+    rm -rf /root/.config/nvim/.git
+
+# Create artifacts mount point
+RUN mkdir -p /artifacts
+
+# Copy entrypoint and session scripts
+COPY deploy/ttyd-entrypoint.sh /usr/local/bin/ttyd-entrypoint.sh
+COPY deploy/ttyd-session.sh /usr/local/bin/ttyd-session.sh
+RUN chmod +x /usr/local/bin/ttyd-entrypoint.sh /usr/local/bin/ttyd-session.sh
+
+# Shell prompt
+RUN echo 'export PS1="\[\e[32m\]kira\[\e[0m\]:\[\e[34m\]\w\[\e[0m\]\$ "' >> /root/.bashrc && \
+    echo '[ -n "$TICKET_ID" ] && echo -e "\e[33m Ticket: $TICKET_TITLE\e[0m" && echo -e "\e[36m   Area: $TICKET_AREA | Systems: $AFFECTED_SYSTEMS\e[0m" && echo -e "\e[36m   Artifacts: /artifacts/$TICKET_ID/\e[0m"' >> /root/.bashrc
+
+EXPOSE 7681
+
+ENTRYPOINT ["ttyd-entrypoint.sh"]
