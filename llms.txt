@@ -98,12 +98,16 @@
 - [frontend/src/components/ChatWidget.tsx](frontend/src/components/ChatWidget.tsx): Floating AI chat assistant
 - [frontend/src/components/IssueCard.tsx](frontend/src/components/IssueCard.tsx): Collapsible issue card with promote/dismiss/edit actions
 - [frontend/src/components/MarkdownRenderer.tsx](frontend/src/components/MarkdownRenderer.tsx): Shared markdown renderer with syntax highlighting
+- [frontend/src/components/TerminalPanel.tsx](frontend/src/components/TerminalPanel.tsx): Resizable embedded terminal panel with ttyd iframe and pop-out
 
 ## Deployment
 
-- [compose.yaml](compose.yaml): Podman/Docker Compose (api + frontend + postgres)
+- [compose.yaml](compose.yaml): Podman/Docker Compose (api + frontend + postgres + ttyd)
 - [deploy/Dockerfile.api](deploy/Dockerfile.api): Multi-stage Python 3.13 + uv
 - [deploy/Dockerfile.frontend](deploy/Dockerfile.frontend): Node build + nginx
+- [deploy/Dockerfile.ttyd](deploy/Dockerfile.ttyd): UBI9-based troubleshooting image with ttyd, kubectl, oc, neovim, Claude Code
+- [deploy/ttyd-entrypoint.sh](deploy/ttyd-entrypoint.sh): ttyd container entrypoint
+- [deploy/ttyd-session.sh](deploy/ttyd-session.sh): Session wrapper with ticket context env vars
 - [deploy/nginx.conf](deploy/nginx.conf): Frontend nginx with API proxy (blocks iframing by default)
 - [deploy/nginx-iframe.conf](deploy/nginx-iframe.conf): Iframe-friendly nginx config for lab/Showroom environments
 - [deploy/helm/kira/](deploy/helm/kira/): Helm chart with OpenShift Route support
