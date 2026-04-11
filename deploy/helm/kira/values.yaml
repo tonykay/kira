@@ -29,8 +29,7 @@ frontend:
   replicas: 1
   port: 3000
   service:
-    type: NodePort
-    nodePort: 30300
+    type: ClusterIP
 
 # --- PostgreSQL ---
 postgres:
