@@ -5,9 +5,10 @@ import type { ChatInfo, ChatMessage, Ticket } from "../types";
 interface ChatWidgetProps {
   ticketId: string;
   ticket: Ticket;
+  bottomOffset?: number;
 }
 
-export function ChatWidget({ ticketId }: ChatWidgetProps) {
+export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
   const [info, setInfo] = useState<ChatInfo | null>(null);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -127,7 +128,7 @@ export function ChatWidget({ ticketId }: ChatWidgetProps) {
         title="Open AI Assistant"
         style={{
           position: "fixed",
-          bottom: "24px",
+          bottom: `${24 + bottomOffset}px`,
           right: "24px",
           width: "48px",
           height: "48px",
@@ -153,7 +154,7 @@ export function ChatWidget({ ticketId }: ChatWidgetProps) {
     <div
       style={{
         position: "fixed",
-        bottom: "24px",
+        bottom: `${24 + bottomOffset}px`,
         right: "24px",
         width: "360px",
         height: "460px",
