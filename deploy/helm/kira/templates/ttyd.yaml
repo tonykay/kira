@@ -1,0 +1,52 @@
+{{- if .Values.ttyd.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kira.fullname" . }}-ttyd
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "kira.componentLabels" (dict "component" "ttyd" "root" .) | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "kira.selectorLabels" (dict "component" "ttyd" "root" .) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kira.componentLabels" (dict "component" "ttyd" "root" .) | nindent 8 }}
+    spec:
+      containers:
+        - name: ttyd
+          image: "{{ .Values.ttyd.image.repository }}:{{ .Values.ttyd.image.tag }}"
+          imagePullPolicy: {{ .Values.ttyd.image.pullPolicy }}
+          ports:
+            - containerPort: 7681
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: {{ include "kira.fullname" . }}-secrets
+          volumeMounts:
+            - name: artifacts
+              mountPath: /artifacts
+              readOnly: true
+      volumes:
+        - name: artifacts
+          persistentVolumeClaim:
+            claimName: {{ include "kira.fullname" . }}-artifacts-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ttyd
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "kira.componentLabels" (dict "component" "ttyd" "root" .) | nindent 4 }}
+spec:
+  selector:
+    {{- include "kira.selectorLabels" (dict "component" "ttyd" "root" .) | nindent 4 }}
+  ports:
+    - port: 7681
+      targetPort: 7681
+      protocol: TCP
+{{- end }}

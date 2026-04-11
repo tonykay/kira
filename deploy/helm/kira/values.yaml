@@ -56,6 +56,14 @@ kira:
 artifacts:
   storage: 5Gi
 
+# --- ttyd Terminal ---
+ttyd:
+  enabled: true
+  image:
+    repository: kira-ttyd
+    tag: latest
+    pullPolicy: IfNotPresent
+
 # --- OpenShift Route ---
 route:
   enabled: false
