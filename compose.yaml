@@ -35,6 +35,19 @@ services:
     depends_on:
       - api
 
+  ttyd:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.ttyd
+    ports:
+      - "7681:7681"
+    volumes:
+      - artifacts:/artifacts:ro
+    environment:
+      ANTHROPIC_API_KEY: ${KIRA_LLM_API_KEY:-}
+      KIRA_LLM_BASE_URL: ${KIRA_LLM_BASE_URL:-}
+      KIRA_LLM_MODEL: ${KIRA_LLM_MODEL:-}
+
 volumes:
   pgdata:
   artifacts:
