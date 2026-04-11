@@ -95,8 +95,14 @@ build-frontend-image: ## Build frontend container image (multi-arch)
 	podman manifest create $(REGISTRY)/kira-frontend:$(IMAGE_TAG)
 	podman build --platform $(PLATFORMS) --manifest $(REGISTRY)/kira-frontend:$(IMAGE_TAG) -f deploy/Dockerfile.frontend .
 
+.PHONY: build-ttyd
+build-ttyd: ## Build ttyd troubleshooting container image (multi-arch)
+	podman manifest rm $(REGISTRY)/kira-ttyd:$(IMAGE_TAG) 2>/dev/null || true
+	podman manifest create $(REGISTRY)/kira-ttyd:$(IMAGE_TAG)
+	podman build --platform $(PLATFORMS) --manifest $(REGISTRY)/kira-ttyd:$(IMAGE_TAG) -f deploy/Dockerfile.ttyd .
+
 .PHONY: build-images
-build-images: build-api build-frontend-image ## Build all container images (multi-arch)
+build-images: build-api build-frontend-image build-ttyd ## Build all container images (multi-arch)
 
 .PHONY: push-api
 push-api: ## Push API manifest to registry
@@ -106,8 +112,12 @@ push-api: ## Push API manifest to registry
 push-frontend: ## Push frontend manifest to registry
 	podman manifest push $(REGISTRY)/kira-frontend:$(IMAGE_TAG) docker://$(REGISTRY)/kira-frontend:$(IMAGE_TAG)
 
+.PHONY: push-ttyd
+push-ttyd: ## Push ttyd manifest to registry
+	podman manifest push $(REGISTRY)/kira-ttyd:$(IMAGE_TAG) docker://$(REGISTRY)/kira-ttyd:$(IMAGE_TAG)
+
 .PHONY: push-images
-push-images: push-api push-frontend ## Push all images to registry
+push-images: push-api push-frontend push-ttyd ## Push all images to registry
 
 .PHONY: release
 release: build-images push-images ## Build and push all images (multi-arch)
