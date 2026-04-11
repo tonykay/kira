@@ -4,5 +4,4 @@
 exec ttyd \
     --port 7681 \
     --writable \
-    --base-path /ttyd \
     ttyd-session.sh
