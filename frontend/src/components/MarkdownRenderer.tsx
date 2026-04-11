@@ -2,6 +2,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import type { ExtraProps } from "react-markdown";
 
 interface MarkdownRendererProps {
   content: string;
@@ -12,7 +13,8 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        code({ className, children, ...props }) {
+        code(props: React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement> & ExtraProps) {
+          const { className, children, ref: _ref, node: _node, ...rest } = props;
           const match = /language-(\w+)/.exec(className || "");
           const codeString = String(children).replace(/\n$/, "");
           if (match) {
@@ -40,13 +42,13 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                 borderRadius: "3px",
                 fontSize: "12px",
               }}
-              {...props}
+              {...rest}
             >
               {children}
             </code>
           );
         },
-        table({ children }) {
+        table({ children }: { children?: React.ReactNode }) {
           return (
             <table
               style={{
@@ -60,7 +62,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             </table>
           );
         },
-        th({ children }) {
+        th({ children }: { children?: React.ReactNode }) {
           return (
             <th
               style={{
@@ -74,7 +76,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             </th>
           );
         },
-        td({ children }) {
+        td({ children }: { children?: React.ReactNode }) {
           return (
             <td
               style={{
@@ -86,7 +88,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             </td>
           );
         },
-        p({ children }) {
+        p({ children }: { children?: React.ReactNode }) {
           return <p style={{ margin: "6px 0", lineHeight: 1.6 }}>{children}</p>;
         },
       }}
