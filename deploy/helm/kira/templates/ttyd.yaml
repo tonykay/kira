@@ -26,6 +26,13 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ include "kira.fullname" . }}-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
           volumeMounts:
             - name: artifacts
               mountPath: /artifacts

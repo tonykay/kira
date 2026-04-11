@@ -7,7 +7,10 @@ metadata:
     {{- include "kira.componentLabels" (dict "component" "api" "root" .) | nindent 4 }}
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
+  {{- if .Values.artifacts.storageClass }}
+  storageClassName: {{ .Values.artifacts.storageClass }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.artifacts.storage }}
