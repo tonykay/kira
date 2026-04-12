@@ -18,15 +18,22 @@ const CONFIDENCE_SCALE: ScaleEntry[] = [
   { range: "0.7–1.0", label: "High", description: "Strong evidence, diagnosis well-supported, high certainty in root cause" },
 ];
 
+const STAGE_INFO: ScaleEntry[] = [
+  { range: "dev", label: "Development", description: "Development environment. Low urgency — issues here are expected during development" },
+  { range: "test", label: "Test/Staging", description: "Test/staging environment. Moderate urgency — failures may block releases" },
+  { range: "production", label: "Production", description: "Production environment. High urgency — real users and services are affected" },
+  { range: "unknown", label: "Unknown", description: "Environment not specified. Treat with appropriate caution until confirmed" },
+];
+
 interface InfoPopoverProps {
-  type: "risk" | "confidence";
+  type: "risk" | "confidence" | "stage";
 }
 
 export function InfoPopover({ type }: InfoPopoverProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const scale = type === "risk" ? RISK_SCALE : CONFIDENCE_SCALE;
-  const title = type === "risk" ? "Risk Scale" : "Confidence Scale";
+  const scale = type === "risk" ? RISK_SCALE : type === "confidence" ? CONFIDENCE_SCALE : STAGE_INFO;
+  const title = type === "risk" ? "Risk Scale" : type === "confidence" ? "Confidence Scale" : "Stage Guide";
 
   useEffect(() => {
     if (!open) return;

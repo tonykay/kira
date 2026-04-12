@@ -18,6 +18,8 @@ export type Source = "agent" | "human";
 
 export type Role = "admin" | "operator" | "viewer";
 
+export type Stage = "dev" | "test" | "production" | "unknown";
+
 export interface Ticket {
   id: string;
   title: string;
@@ -26,6 +28,7 @@ export interface Ticket {
   status: Status;
   confidence: number;
   risk: number;
+  stage: Stage;
   recommended_action: string;
   affected_systems: string[];
   skills: string[];

@@ -5,6 +5,7 @@ import {
   AreaLozenge,
   EditableConfidenceLozenge,
   EditableRiskLozenge,
+  StageLozenge,
   StatusLozenge,
 } from "../components/Lozenge";
 import { AuditTimeline } from "../components/AuditTimeline";
@@ -133,6 +134,11 @@ export function TicketDetail() {
               onClick={() => setEditDialog({ type: "confidence", value: ticket.confidence })}
             />
             <InfoPopover type="confidence" />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <span style={{ color: "var(--kira-text-muted)" }}>Stage: </span>
+            <StageLozenge stage={ticket.stage} />
+            <InfoPopover type="stage" />
           </div>
           <div>
             <span style={{ color: "var(--kira-text-muted)" }}>Source: </span>

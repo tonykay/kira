@@ -60,6 +60,18 @@ export function ConfidenceLozenge({ value }: { value: number }) {
   );
 }
 
+const STAGE_COLORS: Record<string, string> = {
+  dev: "#22c55e",
+  test: "#f59e0b",
+  production: "#ef4444",
+  unknown: "#6b7280",
+};
+
+export function StageLozenge({ stage }: { stage: string }) {
+  const color = STAGE_COLORS[stage] || STAGE_COLORS.unknown;
+  return <span style={style(color)}>{stage}</span>;
+}
+
 const STATUS_TEXT_COLORS: Record<string, string> = {
   open: "#ef4444",
   acknowledged: "#f59e0b",
