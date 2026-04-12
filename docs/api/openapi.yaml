@@ -395,6 +395,69 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/issues/{issue_id}/comments:
+    get:
+      tags:
+      - issues
+      summary: List Issue Comments
+      operationId: list_issue_comments_api_v1_issues__issue_id__comments_get
+      parameters:
+      - name: issue_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Issue Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IssueCommentResponse'
+                title: Response List Issue Comments Api V1 Issues  Issue Id  Comments
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - issues
+      summary: Add Issue Comment
+      operationId: add_issue_comment_api_v1_issues__issue_id__comments_post
+      parameters:
+      - name: issue_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Issue Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueCommentCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueCommentResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/v1/tickets/{ticket_id}/audit:
     get:
       tags:
@@ -1019,6 +1082,43 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    IssueCommentCreate:
+      properties:
+        body:
+          type: string
+          title: Body
+      type: object
+      required:
+      - body
+      title: IssueCommentCreate
+    IssueCommentResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        issue_id:
+          type: string
+          format: uuid
+          title: Issue Id
+        body:
+          type: string
+          title: Body
+        author_name:
+          type: string
+          title: Author Name
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - issue_id
+      - body
+      - author_name
+      - created_at
+      title: IssueCommentResponse
     IssueCreate:
       properties:
         title:
@@ -1094,6 +1194,17 @@ components:
           - type: integer
           - type: 'null'
           title: Priority
+        assigned_to:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Assigned To
+        assignee_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Assignee Name
         created_at:
           type: string
           format: date-time
@@ -1113,6 +1224,8 @@ components:
       - fix
       - status
       - priority
+      - assigned_to
+      - assignee_name
       - created_at
       - updated_at
       title: IssueResponse
@@ -1158,6 +1271,12 @@ components:
             minimum: 1.0
           - type: 'null'
           title: Priority
+        assigned_to:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Assigned To
       type: object
       title: IssueUpdate
     LoginRequest:
@@ -1195,6 +1314,14 @@ components:
       - agent
       - human
       title: SourceEnum
+    StageEnum:
+      type: string
+      enum:
+      - dev
+      - test
+      - production
+      - unknown
+      title: StageEnum
     StatusEnum:
       type: string
       enum:
@@ -1225,6 +1352,9 @@ components:
           maximum: 1.0
           minimum: 0.0
           title: Risk
+        stage:
+          $ref: '#/components/schemas/StageEnum'
+          default: unknown
         recommended_action:
           type: string
           title: Recommended Action
@@ -1300,6 +1430,8 @@ components:
         risk:
           type: number
           title: Risk
+        stage:
+          $ref: '#/components/schemas/StageEnum'
         recommended_action:
           type: string
           title: Recommended Action
@@ -1343,6 +1475,7 @@ components:
       - status
       - confidence
       - risk
+      - stage
       - recommended_action
       - affected_systems
       - skills
@@ -1371,6 +1504,10 @@ components:
             minimum: 0.0
           - type: 'null'
           title: Risk
+        stage:
+          anyOf:
+          - $ref: '#/components/schemas/StageEnum'
+          - type: 'null'
         assigned_to:
           anyOf:
           - type: string
