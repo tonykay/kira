@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from api.models.enums import AreaEnum, SourceEnum, StatusEnum
+from api.models.enums import AreaEnum, SourceEnum, StageEnum, StatusEnum
 from api.models.issues import IssueCreate, IssueResponse
 
 
@@ -13,6 +13,7 @@ class TicketCreate(BaseModel):
     area: AreaEnum
     confidence: float = Field(ge=0.0, le=1.0)
     risk: float = Field(ge=0.0, le=1.0)
+    stage: StageEnum = StageEnum.UNKNOWN
     recommended_action: str
     affected_systems: list[str] = Field(default_factory=list)
     skills: list[str] = Field(default_factory=list)
@@ -24,6 +25,7 @@ class TicketUpdate(BaseModel):
     status: StatusEnum | None = None
     confidence: float | None = Field(default=None, ge=0.0, le=1.0)
     risk: float | None = Field(default=None, ge=0.0, le=1.0)
+    stage: StageEnum | None = None
     assigned_to: UUID | None = None
     skills: list[str] | None = None
 
@@ -36,6 +38,7 @@ class TicketResponse(BaseModel):
     status: StatusEnum
     confidence: float
     risk: float
+    stage: StageEnum
     recommended_action: str
     affected_systems: list[str]
     skills: list[str]

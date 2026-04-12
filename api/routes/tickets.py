@@ -29,6 +29,7 @@ def create_ticket(
         area=body.area.value,
         confidence=body.confidence,
         risk=body.risk,
+        stage=body.stage.value,
         recommended_action=body.recommended_action,
         affected_systems=body.affected_systems,
         skills=normalize_skills(body.skills),

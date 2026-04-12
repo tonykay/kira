@@ -34,6 +34,7 @@ class Ticket(Base):
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="open")
     confidence: Mapped[float] = mapped_column(nullable=False)
     risk: Mapped[float] = mapped_column(nullable=False)
+    stage: Mapped[str] = mapped_column(String(20), nullable=False, default="unknown")
     recommended_action: Mapped[str] = mapped_column(Text, nullable=False)
     affected_systems: Mapped[list[str]] = mapped_column(JSON, default=list)
     skills: Mapped[list[str]] = mapped_column(JSON, default=list)

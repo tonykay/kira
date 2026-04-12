@@ -44,3 +44,10 @@ class IssueStatusEnum(StrEnum):
     IN_PROGRESS = "in_progress"
     DONE = "done"
     DISMISSED = "dismissed"
+
+
+class StageEnum(StrEnum):
+    DEV = "dev"
+    TEST = "test"
+    PRODUCTION = "production"
+    UNKNOWN = "unknown"

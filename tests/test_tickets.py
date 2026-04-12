@@ -129,3 +129,27 @@ def test_skills_deduplication(client, api_key_headers):
     resp = client.post("/api/v1/tickets", json=payload, headers=api_key_headers)
     assert resp.status_code == 201
     assert resp.json()["skills"] == ["helm"]
+
+
+def test_create_ticket_with_stage(client, api_key_headers):
+    payload = {**TICKET_PAYLOAD, "stage": "production"}
+    resp = client.post("/api/v1/tickets", json=payload, headers=api_key_headers)
+    assert resp.status_code == 201
+    assert resp.json()["stage"] == "production"
+
+
+def test_create_ticket_default_stage(client, api_key_headers):
+    resp = client.post("/api/v1/tickets", json=TICKET_PAYLOAD, headers=api_key_headers)
+    assert resp.status_code == 201
+    assert resp.json()["stage"] == "unknown"
+
+
+def test_update_ticket_stage(auth_client, client, api_key_headers):
+    create_resp = client.post("/api/v1/tickets", json=TICKET_PAYLOAD, headers=api_key_headers)
+    ticket_id = create_resp.json()["id"]
+    resp = auth_client.patch(
+        f"/api/v1/tickets/{ticket_id}",
+        json={"stage": "production"},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["stage"] == "production"
