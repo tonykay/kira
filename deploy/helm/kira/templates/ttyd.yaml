@@ -23,6 +23,10 @@ spec:
           ports:
             - containerPort: 7681
               protocol: TCP
+            - containerPort: 7682
+              protocol: TCP
+            - containerPort: 7683
+              protocol: TCP
           envFrom:
             - secretRef:
                 name: {{ include "kira.fullname" . }}-secrets
@@ -53,7 +57,16 @@ spec:
   selector:
     {{- include "kira.selectorLabels" (dict "component" "ttyd" "root" .) | nindent 4 }}
   ports:
-    - port: 7681
+    - name: ttyd1
+      port: 7681
       targetPort: 7681
+      protocol: TCP
+    - name: ttyd2
+      port: 7682
+      targetPort: 7682
+      protocol: TCP
+    - name: ttyd3
+      port: 7683
+      targetPort: 7683
       protocol: TCP
 {{- end }}

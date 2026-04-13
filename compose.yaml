@@ -41,6 +41,8 @@ services:
       dockerfile: deploy/Dockerfile.ttyd
     ports:
       - "7681:7681"
+      - "7682:7682"
+      - "7683:7683"
     volumes:
       - artifacts:/artifacts:ro
     environment:
