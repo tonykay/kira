@@ -8,6 +8,7 @@ import { CreateTicket } from "./pages/CreateTicket";
 import { TicketDetail } from "./pages/TicketDetail";
 import { IssueList } from "./pages/IssueList";
 import { IssueDetail } from "./pages/IssueDetail";
+import { Workspace } from "./pages/Workspace";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/tickets/:id" element={<TicketDetail />} />
             <Route path="/issues" element={<IssueList />} />
             <Route path="/issues/:id" element={<IssueDetail />} />
+            <Route path="/workspace" element={<Workspace />} />
           </Route>
         </Routes>
       </BrowserRouter>

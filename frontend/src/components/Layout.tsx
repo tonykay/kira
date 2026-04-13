@@ -46,6 +46,11 @@ export function Layout() {
             Backlog
           </Link>
           {user.role !== "viewer" && (
+            <Link to="/workspace" style={{ color: "var(--kira-text-secondary)", fontSize: "13px", textDecoration: "none" }}>
+              Workspace
+            </Link>
+          )}
+          {user.role !== "viewer" && (
             <Link
               to="/tickets/new"
               style={{
