@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "kira",
+  "project_id": "9e9c7c49-57a0-4543-9ef3-3c125046de78"
+}
