@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from api.core.deps import get_current_user, get_current_user_or_api_key
+from api.core.deps import get_current_user_or_api_key
 from api.db.models import Issue, Ticket, User
 from api.db.session import get_db
 from api.models.enums import AreaEnum, StatusEnum
@@ -105,19 +105,20 @@ def update_ticket(
     ticket_id: UUID,
     body: TicketUpdate,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user),
+    auth: User | str = Depends(get_current_user_or_api_key),
 ):
     ticket = db.get(Ticket, ticket_id)
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
 
+    actor = auth if isinstance(auth, User) else "api_agent"
     updates = body.model_dump(exclude_unset=True)
     for field, new_value in updates.items():
         old_value = getattr(ticket, field)
         if field == "skills":
             normalized = normalize_skills(new_value)
             create_audit_entry(
-                db, ticket.id, "skills_changed", user,
+                db, ticket.id, "skills_changed", actor,
                 old_value={"skills": old_value},
                 new_value={"skills": normalized},
             )
@@ -127,13 +128,13 @@ def update_ticket(
             new_value_str = str(new_value) if new_value else None
             setattr(ticket, field, new_value)
             create_audit_entry(
-                db, ticket.id, f"{field}_changed", user,
+                db, ticket.id, f"{field}_changed", actor,
                 old_value={field: old_value}, new_value={field: new_value_str},
             )
         else:
             setattr(ticket, field, new_value.value if hasattr(new_value, "value") else new_value)
             create_audit_entry(
-                db, ticket.id, f"{field}_changed", user,
+                db, ticket.id, f"{field}_changed", actor,
                 old_value={field: str(old_value)},
                 new_value={field: str(new_value.value if hasattr(new_value, "value") else new_value)},
             )

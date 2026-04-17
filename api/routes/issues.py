@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session, joinedload
 
-from api.core.deps import get_current_user
+from api.core.deps import get_current_user_or_api_key, require_role_or_api_key
 from api.db.models import Issue, IssueComment, Ticket, User
 from api.db.session import get_db
 from api.models.enums import IssueStatusEnum, SeverityEnum
@@ -19,12 +19,6 @@ from api.models.issues import (
 router = APIRouter(tags=["issues"])
 
 
-def require_operator_or_admin(user: User = Depends(get_current_user)) -> User:
-    if user.role not in ("operator", "admin"):
-        raise HTTPException(status_code=403, detail="Operator or admin access required")
-    return user
-
-
 @router.get("/issues", response_model=IssueListResponse)
 def list_issues(
     status: IssueStatusEnum | None = None,
@@ -34,7 +28,7 @@ def list_issues(
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user),
+    auth: User | str = Depends(get_current_user_or_api_key),
 ):
     query = db.query(Issue).options(joinedload(Issue.ticket))
     if status:
@@ -56,7 +50,7 @@ def list_issues(
 def get_issue(
     issue_id: UUID,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user),
+    auth: User | str = Depends(get_current_user_or_api_key),
 ):
     issue = db.query(Issue).options(joinedload(Issue.ticket)).filter(Issue.id == issue_id).first()
     if not issue:
@@ -69,7 +63,7 @@ def update_issue(
     issue_id: UUID,
     body: IssueUpdate,
     db: Session = Depends(get_db),
-    user: User = Depends(require_operator_or_admin),
+    auth: User | str = Depends(require_role_or_api_key("operator", "admin")),
 ):
     issue = db.get(Issue, issue_id)
     if not issue:
@@ -92,7 +86,7 @@ def create_issue_on_ticket(
     ticket_id: UUID,
     body: IssueCreate,
     db: Session = Depends(get_db),
-    user: User = Depends(require_operator_or_admin),
+    auth: User | str = Depends(require_role_or_api_key("operator", "admin")),
 ):
     ticket = db.get(Ticket, ticket_id)
     if not ticket:
@@ -115,7 +109,7 @@ def create_issue_on_ticket(
 def list_issue_comments(
     issue_id: UUID,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user),
+    auth: User | str = Depends(get_current_user_or_api_key),
 ):
     issue = db.get(Issue, issue_id)
     if not issue:
@@ -129,15 +123,16 @@ def add_issue_comment(
     issue_id: UUID,
     body: IssueCommentCreate,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user),
+    auth: User | str = Depends(get_current_user_or_api_key),
 ):
     issue = db.get(Issue, issue_id)
     if not issue:
         raise HTTPException(status_code=404, detail="Issue not found")
+    author = auth.display_name if isinstance(auth, User) else "api_agent"
     comment = IssueComment(
         issue_id=issue_id,
         body=body.body,
-        author_name=user.display_name,
+        author_name=author,
     )
     db.add(comment)
     db.commit()

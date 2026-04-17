@@ -37,3 +37,21 @@ def require_admin(user: User = Depends(get_current_user)) -> User:
     if user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     return user
+
+
+def require_role_or_api_key(*roles: str):
+    """Factory: returns a dependency that accepts API key auth or session auth with a required role."""
+
+    def dependency(
+        auth: User | str = Depends(get_current_user_or_api_key),
+    ) -> User | str:
+        if isinstance(auth, str):
+            return auth
+        if auth.role not in roles:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Requires role: {', '.join(roles)}",
+            )
+        return auth
+
+    return dependency
