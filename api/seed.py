@@ -1,4 +1,6 @@
-"""Seed the database with an admin user and sample tickets for demo purposes."""
+"""Seed the database with essential users and optionally demo data."""
+
+import sys
 
 from sqlalchemy.orm import Session
 
@@ -7,7 +9,7 @@ from api.db.models import AuditLog, Issue, Ticket, User
 from api.db.session import SessionLocal
 
 
-def seed():
+def seed(demo: bool = False):
     db: Session = SessionLocal()
     try:
         if db.query(User).first():
@@ -20,22 +22,6 @@ def seed():
             display_name="Admin User",
             role="admin",
         )
-        op1 = User(
-            username="jsmith",
-            password_hash=hash_password("password"),
-            display_name="Jane Smith",
-            role="operator",
-            expertise_area="kubernetes",
-            tier="tier_3_sme",
-        )
-        op2 = User(
-            username="akhan",
-            password_hash=hash_password("password"),
-            display_name="Amir Khan",
-            role="operator",
-            expertise_area="linux",
-            tier="tier_2",
-        )
         viewer = User(
             username="viewer",
             password_hash=hash_password("password"),
@@ -43,8 +29,34 @@ def seed():
             role="viewer",
         )
 
-        db.add_all([admin, op1, op2, viewer])
+        users = [admin, viewer]
+
+        if demo:
+            op1 = User(
+                username="jsmith",
+                password_hash=hash_password("password"),
+                display_name="Jane Smith",
+                role="operator",
+                expertise_area="kubernetes",
+                tier="tier_3_sme",
+            )
+            op2 = User(
+                username="akhan",
+                password_hash=hash_password("password"),
+                display_name="Amir Khan",
+                role="operator",
+                expertise_area="linux",
+                tier="tier_2",
+            )
+            users.extend([op1, op2])
+
+        db.add_all(users)
         db.flush()
+
+        if not demo:
+            db.commit()
+            print(f"Seeded {len(users)} users.")
+            return
 
         tickets_data = [
             {
@@ -137,7 +149,6 @@ def seed():
         # Add sample issues to some tickets
         all_tickets = db.query(Ticket).all()
 
-        # OOM kills ticket — kubernetes issues
         oom_ticket = next(t for t in all_tickets if "OOM" in t.title)
         db.add_all([
             Issue(
@@ -159,7 +170,6 @@ def seed():
             ),
         ])
 
-        # S3 security ticket — security issues
         s3_ticket = next(t for t in all_tickets if "S3" in t.title)
         db.add_all([
             Issue(
@@ -190,11 +200,12 @@ def seed():
         ])
 
         db.commit()
-        print(f"Seeded {len(tickets_data)} tickets, 4 users, and 5 issues.")
+        print(f"Seeded {len(tickets_data)} tickets, {len(users)} users, and 5 issues.")
 
     finally:
         db.close()
 
 
 if __name__ == "__main__":
-    seed()
+    demo = "--demo" in sys.argv
+    seed(demo=demo)
