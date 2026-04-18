@@ -37,9 +37,23 @@ Help the SRE understand this issue, validate the diagnosis, and plan remediation
 @router.get("/info", response_model=ChatInfoResponse)
 def chat_info(user: User = Depends(get_current_user)):
     enabled = settings.llm_base_url is not None
+    models = []
+    if enabled:
+        try:
+            resp = httpx.get(
+                f"{settings.llm_base_url}/models",
+                headers={"Authorization": f"Bearer {settings.llm_api_key}"},
+                timeout=10.0,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                models = [m["id"] for m in data.get("data", [])]
+        except Exception:
+            pass
     return ChatInfoResponse(
         enabled=enabled,
         model=settings.llm_model if enabled else None,
+        models=models,
     )
 
 
@@ -126,7 +140,7 @@ def chat_send(
                     "Content-Type": "application/json",
                 },
                 json={
-                    "model": settings.llm_model,
+                    "model": body.model or settings.llm_model,
                     "messages": messages,
                     "stream": True,
                 },

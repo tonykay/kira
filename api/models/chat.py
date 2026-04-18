@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class ChatSendRequest(BaseModel):
     message: str
     include_context: bool = True
+    model: str | None = None
 
 
 class ChatMessageResponse(BaseModel):
@@ -22,3 +23,4 @@ class ChatMessageResponse(BaseModel):
 class ChatInfoResponse(BaseModel):
     enabled: bool
     model: str | None = None
+    models: list[str] = []
