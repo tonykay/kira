@@ -66,12 +66,12 @@ export const api = {
   chatInfo: () => request<import("../types").ChatInfo>("/chat/info"),
   chatHistory: (ticketId: string) =>
     request<import("../types").ChatMessage[]>(`/chat/${ticketId}/history`),
-  chatSend: async (ticketId: string, message: string, includeContext: boolean) => {
+  chatSend: async (ticketId: string, message: string, includeContext: boolean, model?: string) => {
     const resp = await fetch(`${BASE}/chat/${ticketId}/send`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, include_context: includeContext }),
+      body: JSON.stringify({ message, include_context: includeContext, model: model || undefined }),
     });
     if (!resp.ok) {
       if (resp.status === 401) window.location.href = "/login";

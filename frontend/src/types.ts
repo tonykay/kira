@@ -106,6 +106,7 @@ export interface ChatMessage {
 export interface ChatInfo {
   enabled: boolean;
   model: string | null;
+  models: string[];
 }
 
 export type Severity = "critical" | "high" | "medium" | "low" | "info";

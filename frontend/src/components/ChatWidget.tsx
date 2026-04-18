@@ -16,10 +16,21 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
   const [streaming, setStreaming] = useState(false);
   const [includeContext, setIncludeContext] = useState(true);
   const [loaded, setLoaded] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    api.chatInfo().then(setInfo).catch(() => setInfo({ enabled: false, model: null }));
+    api.chatInfo().then((i) => {
+      setInfo(i);
+      const stored = localStorage.getItem("kira-chat-model");
+      if (stored && i.models.includes(stored)) {
+        setSelectedModel(stored);
+      } else if (i.models.length > 0) {
+        setSelectedModel(i.models[0]);
+      } else if (i.model) {
+        setSelectedModel(i.model);
+      }
+    }).catch(() => setInfo({ enabled: false, model: null, models: [] }));
   }, []);
 
   useEffect(() => {
@@ -36,6 +47,11 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
   }, [messages]);
 
   if (!info?.enabled) return null;
+
+  const handleModelChange = (model: string) => {
+    setSelectedModel(model);
+    localStorage.setItem("kira-chat-model", model);
+  };
 
   const handleSend = async () => {
     if (!input.trim() || streaming) return;
@@ -60,7 +76,7 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
     setMessages((prev) => [...prev, tempAssistantMsg]);
 
     try {
-      const resp = await api.chatSend(ticketId, userMessage, includeContext);
+      const resp = await api.chatSend(ticketId, userMessage, includeContext, selectedModel);
       const reader = resp.body?.getReader();
       const decoder = new TextDecoder();
       let fullContent = "";
@@ -178,13 +194,33 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
           flexShrink: 0,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--kira-text-primary)" }}>
-            AI Assistant
+            Chat
           </span>
-          <span style={{ fontSize: "10px", color: "var(--kira-text-muted)" }}>
-            {info.model}
-          </span>
+          {info.models.length > 1 ? (
+            <select
+              value={selectedModel}
+              onChange={(e) => handleModelChange(e.target.value)}
+              style={{
+                background: "var(--kira-bg-input)",
+                border: "1px solid var(--kira-btn-border)",
+                color: "var(--kira-text-muted)",
+                padding: "1px 4px",
+                borderRadius: "3px",
+                fontSize: "9px",
+                maxWidth: "120px",
+              }}
+            >
+              {info.models.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+          ) : (
+            <span style={{ fontSize: "10px", color: "var(--kira-text-muted)" }}>
+              {selectedModel || info.model}
+            </span>
+          )}
           {includeContext && (
             <span
               style={{
