@@ -12,13 +12,13 @@ api:
     pullPolicy: IfNotPresent
   replicas: 1
   port: 8000
-  resources: {}
-  #  requests:
-  #    cpu: 100m
-  #    memory: 256Mi
-  #  limits:
-  #    cpu: 500m
-  #    memory: 512Mi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
 
 # --- Frontend ---
 frontend:
@@ -30,6 +30,13 @@ frontend:
   port: 3000
   service:
     type: ClusterIP
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
 
 # --- PostgreSQL ---
 postgres:
@@ -43,6 +50,13 @@ postgres:
     user: kira
     password: kira
     database: kira
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
 
 # --- Kira Application Config ---
 kira:
