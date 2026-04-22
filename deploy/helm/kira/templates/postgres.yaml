@@ -49,10 +49,6 @@ spec:
                   key: POSTGRES_PASSWORD
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
-          {{- with .Values.postgres.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           volumeMounts:
             - name: pgdata
               mountPath: /var/lib/postgresql/data
