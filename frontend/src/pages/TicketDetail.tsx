@@ -118,7 +118,7 @@ export function TicketDetail() {
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "24px", marginBottom: "16px", fontSize: "13px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "24px", marginBottom: "8px", fontSize: "13px", flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <span style={{ color: "var(--kira-text-muted)" }}>Risk: </span>
             <EditableRiskLozenge
@@ -140,6 +140,8 @@ export function TicketDetail() {
             <StageLozenge stage={ticket.stage} />
             <InfoPopover type="stage" />
           </div>
+        </div>
+        <div style={{ display: "flex", gap: "24px", marginBottom: "16px", fontSize: "13px", flexWrap: "wrap" }}>
           <div>
             <span style={{ color: "var(--kira-text-muted)" }}>Source: </span>
             <span>{ticket.created_by_source}</span>
@@ -149,19 +151,10 @@ export function TicketDetail() {
               </span>
             )}
           </div>
-          {(ticket.model_name || ticket.temperature !== null) && (
+          {ticket.model_name && (
             <div>
-              {ticket.model_name && (
-                <>
-                  <span style={{ color: "var(--kira-text-muted)" }}>Model: </span>
-                  <span style={{ fontFamily: "monospace" }}>{ticket.model_name}</span>
-                </>
-              )}
-              {ticket.temperature !== null && ticket.temperature !== undefined && (
-                <span style={{ marginLeft: "8px", color: "var(--kira-text-muted)" }}>
-                  Temp: <span style={{ color: "var(--kira-text)" }}>{ticket.temperature}</span>
-                </span>
-              )}
+              <span style={{ color: "var(--kira-text-muted)" }}>Model: </span>
+              <span style={{ fontFamily: "monospace" }}>{ticket.model_name}</span>
             </div>
           )}
           <div>
