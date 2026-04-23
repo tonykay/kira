@@ -7,7 +7,7 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: "dark",
+  theme: "light",
   toggleTheme: () => {},
 });
 
@@ -27,7 +27,7 @@ function applyTheme(name: ThemeName) {
 function getInitialTheme(): ThemeName {
   const stored = localStorage.getItem("kira-theme");
   if (stored === "dark" || stored === "light") return stored;
-  return "dark";
+  return "light";
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
