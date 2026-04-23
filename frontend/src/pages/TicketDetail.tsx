@@ -118,9 +118,9 @@ export function TicketDetail() {
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "24px", marginBottom: "8px", fontSize: "13px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "24px", marginBottom: "8px", fontSize: "14px", flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            <span style={{ color: "var(--kira-text-muted)" }}>Risk: </span>
+            <span style={{ color: "var(--kira-text-secondary, #555)" }}>Risk: </span>
             <EditableRiskLozenge
               value={ticket.risk}
               onClick={() => setEditDialog({ type: "risk", value: ticket.risk })}
@@ -128,7 +128,7 @@ export function TicketDetail() {
             <InfoPopover type="risk" />
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            <span style={{ color: "var(--kira-text-muted)" }}>Confidence: </span>
+            <span style={{ color: "var(--kira-text-secondary, #555)" }}>Confidence: </span>
             <EditableConfidenceLozenge
               value={ticket.confidence}
               onClick={() => setEditDialog({ type: "confidence", value: ticket.confidence })}
@@ -136,29 +136,29 @@ export function TicketDetail() {
             <InfoPopover type="confidence" />
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            <span style={{ color: "var(--kira-text-muted)" }}>Stage: </span>
+            <span style={{ color: "var(--kira-text-secondary, #555)" }}>Stage: </span>
             <StageLozenge stage={ticket.stage} />
             <InfoPopover type="stage" />
           </div>
         </div>
-        <div style={{ display: "flex", gap: "24px", marginBottom: "16px", fontSize: "13px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "24px", marginBottom: "16px", fontSize: "14px", flexWrap: "wrap" }}>
           <div>
-            <span style={{ color: "var(--kira-text-muted)" }}>Source: </span>
+            <span style={{ color: "var(--kira-text-secondary, #555)" }}>Source: </span>
             <span>{ticket.created_by_source}</span>
             {ticket.agent_name && (
-              <span style={{ marginLeft: "8px", color: "var(--kira-text-muted)" }}>
-                Agent: <span style={{ color: "var(--kira-text)" }}>{ticket.agent_name}</span>
+              <span style={{ marginLeft: "8px", color: "var(--kira-text-secondary, #555)" }}>
+                Agent: <span style={{ fontWeight: 600, color: "var(--kira-text)" }}>{ticket.agent_name}</span>
               </span>
             )}
           </div>
           {ticket.model_name && (
             <div>
-              <span style={{ color: "var(--kira-text-muted)" }}>Model: </span>
+              <span style={{ color: "var(--kira-text-secondary, #555)" }}>Model: </span>
               <span style={{ fontFamily: "monospace" }}>{ticket.model_name}</span>
             </div>
           )}
           <div>
-            <span style={{ color: "var(--kira-text-muted)" }}>Created: </span>
+            <span style={{ color: "var(--kira-text-secondary, #555)" }}>Created: </span>
             <span>{new Date(ticket.created_at).toLocaleString()}</span>
           </div>
           {user && user.role !== "viewer" && (
@@ -210,7 +210,12 @@ export function TicketDetail() {
         <div style={{ fontSize: "11px", color: "#f59e0b", textTransform: "uppercase", marginBottom: "8px" }}>
           Recommended Action
         </div>
-        <div style={{ fontSize: "14px" }}>{ticket.recommended_action}</div>
+        <div style={{ fontSize: "14px", whiteSpace: "pre-line" }}>{
+          ticket.recommended_action
+            .replace(/(\d+)\)\s*/g, '\n$1) ')
+            .replace(/(\d+)\.\s*/g, '\n$1. ')
+            .trim()
+        }</div>
       </div>
 
       <div style={{ ...sectionStyle }}>
