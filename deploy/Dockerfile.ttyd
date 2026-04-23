@@ -9,7 +9,7 @@ RUN dnf install -y --allowerasing \
     curl wget bind-utils iputils nmap-ncat tcpdump \
     jq less vim-minimal git openssh-clients \
     postgresql python3 python3-pip \
-    neovim ripgrep \
+    neovim ripgrep bat \
     nodejs npm \
     && dnf clean all
 

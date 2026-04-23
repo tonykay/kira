@@ -81,6 +81,19 @@ export const api = {
   },
   chatClear: (ticketId: string) =>
     request(`/chat/${ticketId}/history`, { method: "DELETE" }),
+  chatSendGeneral: async (message: string, model?: string) => {
+    const resp = await fetch(`${BASE}/chat/general/send`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, include_context: false, model: model || undefined }),
+    });
+    if (!resp.ok) {
+      if (resp.status === 401) window.location.href = "/login";
+      throw new Error(`${resp.status}: ${await resp.text()}`);
+    }
+    return resp;
+  },
   getIssues: (params?: string) =>
     request<import("../types").IssueListResponse>(
       `/issues${params ? `?${params}` : ""}`
