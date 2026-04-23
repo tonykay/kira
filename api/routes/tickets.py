@@ -34,6 +34,9 @@ def create_ticket(
         affected_systems=body.affected_systems,
         skills=normalize_skills(body.skills),
         created_by_source=body.source.value,
+        agent_name=body.agent_name,
+        model_name=body.model_name,
+        temperature=body.temperature,
     )
     db.add(ticket)
     db.flush()

@@ -42,6 +42,9 @@ class Ticket(Base):
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=True
     )
     created_by_source: Mapped[str] = mapped_column(String(20), nullable=False)
+    agent_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    model_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    temperature: Mapped[float | None] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(default=utcnow, onupdate=utcnow)
 

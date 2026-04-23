@@ -18,6 +18,9 @@ class TicketCreate(BaseModel):
     affected_systems: list[str] = Field(default_factory=list)
     skills: list[str] = Field(default_factory=list)
     source: SourceEnum = SourceEnum.AGENT
+    agent_name: str | None = None
+    model_name: str | None = None
+    temperature: float | None = None
     issues: list[IssueCreate] = Field(default_factory=list)
 
 
@@ -44,6 +47,9 @@ class TicketResponse(BaseModel):
     skills: list[str]
     assigned_to: UUID | None
     created_by_source: SourceEnum
+    agent_name: str | None = None
+    model_name: str | None = None
+    temperature: float | None = None
     created_at: datetime
     updated_at: datetime
     issues: list[IssueResponse] = Field(default_factory=list)

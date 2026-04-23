@@ -34,6 +34,9 @@ export interface Ticket {
   skills: string[];
   assigned_to: string | null;
   created_by_source: Source;
+  agent_name: string | null;
+  model_name: string | null;
+  temperature: number | null;
   created_at: string;
   updated_at: string;
   issues: Issue[];

@@ -143,7 +143,27 @@ export function TicketDetail() {
           <div>
             <span style={{ color: "var(--kira-text-muted)" }}>Source: </span>
             <span>{ticket.created_by_source}</span>
+            {ticket.agent_name && (
+              <span style={{ marginLeft: "8px", color: "var(--kira-text-muted)" }}>
+                Agent: <span style={{ color: "var(--kira-text)" }}>{ticket.agent_name}</span>
+              </span>
+            )}
           </div>
+          {(ticket.model_name || ticket.temperature !== null) && (
+            <div>
+              {ticket.model_name && (
+                <>
+                  <span style={{ color: "var(--kira-text-muted)" }}>Model: </span>
+                  <span style={{ fontFamily: "monospace" }}>{ticket.model_name}</span>
+                </>
+              )}
+              {ticket.temperature !== null && ticket.temperature !== undefined && (
+                <span style={{ marginLeft: "8px", color: "var(--kira-text-muted)" }}>
+                  Temp: <span style={{ color: "var(--kira-text)" }}>{ticket.temperature}</span>
+                </span>
+              )}
+            </div>
+          )}
           <div>
             <span style={{ color: "var(--kira-text-muted)" }}>Created: </span>
             <span>{new Date(ticket.created_at).toLocaleString()}</span>
