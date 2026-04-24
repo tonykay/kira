@@ -30,6 +30,17 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ include "kira.fullname" . }}-secrets
+          env:
+            {{- if .Values.llm }}
+            {{- if .Values.llm.baseUrl }}
+            - name: ANTHROPIC_BASE_URL
+              value: {{ .Values.llm.baseUrl | quote }}
+            {{- end }}
+            {{- if .Values.llm.apiKey }}
+            - name: ANTHROPIC_API_KEY
+              value: {{ .Values.llm.apiKey | quote }}
+            {{- end }}
+            {{- end }}
           resources:
             requests:
               cpu: 100m

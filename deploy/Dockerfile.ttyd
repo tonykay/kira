@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/ubi9/ubi
 
-# Enable EPEL for neovim, ripgrep
+# Enable EPEL for ripgrep, bat
 RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm && \
     dnf clean all
 
@@ -8,10 +8,24 @@ RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.n
 RUN dnf install -y --allowerasing \
     curl wget bind-utils iputils nmap-ncat tcpdump \
     jq less vim-minimal git openssh-clients \
-    postgresql python3 python3-pip \
-    neovim ripgrep bat \
+    postgresql \
+    ripgrep bat tmux \
     nodejs npm \
     && dnf clean all
+
+# Neovim (latest stable from GitHub — EPEL version is too old for LazyVim)
+RUN ARCH=$(uname -m) && \
+    curl -fsSL "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${ARCH}.tar.gz" \
+    | tar xzf - -C /opt && \
+    ln -sf /opt/nvim-linux-${ARCH}/bin/nvim /usr/local/bin/nvim
+
+# uv (brings Python 3.13 and pip-compatible installs)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+# Python 3.13 via uv + Deep Agents CLI
+RUN uv python install 3.13 && \
+    uv tool install deepagents --python 3.13 && \
+    ln -sf /root/.local/bin/deepagents /usr/local/bin/deepagents
 
 # yq (YAML processor)
 RUN curl -fsSL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') \
@@ -33,7 +47,7 @@ RUN ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && \
     chmod +x /usr/local/bin/oc
 
 # awx CLI
-RUN pip3 install --no-cache-dir awxkit
+RUN uv tool install awxkit --python 3.13
 
 # Claude Code
 RUN npm install -g @anthropic-ai/claude-code
@@ -52,7 +66,8 @@ RUN chmod +x /usr/local/bin/ttyd-entrypoint.sh /usr/local/bin/ttyd-session.sh
 
 # Shell prompt
 RUN echo 'export PS1="\[\e[32m\]kira\[\e[0m\]:\[\e[34m\]\w\[\e[0m\]\$ "' >> /root/.bashrc && \
-    echo '[ -n "$TICKET_ID" ] && echo -e "\e[33m Ticket: $TICKET_TITLE\e[0m" && echo -e "\e[36m   Area: $TICKET_AREA | Systems: $AFFECTED_SYSTEMS\e[0m" && echo -e "\e[36m   Artifacts: /artifacts/$TICKET_ID/\e[0m"' >> /root/.bashrc
+    echo '[ -n "$TICKET_ID" ] && echo -e "\e[33m Ticket: $TICKET_TITLE\e[0m" && echo -e "\e[36m   Area: $TICKET_AREA | Systems: $AFFECTED_SYSTEMS\e[0m" && echo -e "\e[36m   Artifacts: /artifacts/$TICKET_ID/\e[0m"' >> /root/.bashrc && \
+    echo 'export PATH="/root/.local/bin:$PATH"' >> /root/.bashrc
 
 EXPOSE 7681
 
