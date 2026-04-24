@@ -35,7 +35,7 @@ spec:
     name: ttyd
     weight: 100
   port:
-    targetPort: 7681
+    targetPort: 7682
   tls:
     termination: edge
     insecureEdgeTerminationPolicy: Redirect
