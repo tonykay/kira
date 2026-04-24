@@ -88,6 +88,54 @@ def clear_chat_history(
     return {"detail": "Chat history cleared"}
 
 
+@router.post("/general/send")
+def chat_send_general(
+    body: ChatSendRequest,
+    user: User = Depends(get_current_user),
+):
+    if not settings.llm_base_url:
+        raise HTTPException(status_code=503, detail="Chat not configured")
+
+    messages = [
+        {"role": "system", "content": "You are a helpful AI assistant for SRE operations."},
+        {"role": "user", "content": body.message},
+    ]
+
+    def stream_response():
+        with httpx.Client(timeout=60.0) as client:
+            with client.stream(
+                "POST",
+                f"{settings.llm_base_url}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {settings.llm_api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": body.model or settings.llm_model,
+                    "messages": messages,
+                    "stream": True,
+                },
+            ) as response:
+                if response.status_code != 200:
+                    error_body = response.read().decode()
+                    yield f"data: {json.dumps({'error': error_body})}\n\n"
+                    return
+                for line in response.iter_lines():
+                    if not line.strip():
+                        continue
+                    yield f"{line}\n\n"
+
+    return StreamingResponse(
+        stream_response(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 @router.post("/{ticket_id}/send")
 def chat_send(
     ticket_id: UUID,
@@ -184,54 +232,6 @@ def chat_send(
     def get_db_for_save():
         session = SessionLocal()
         yield session
-
-    return StreamingResponse(
-        stream_response(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",
-        },
-    )
-
-
-@router.post("/general/send")
-def chat_send_general(
-    body: ChatSendRequest,
-    user: User = Depends(get_current_user),
-):
-    if not settings.llm_base_url:
-        raise HTTPException(status_code=503, detail="Chat not configured")
-
-    messages = [
-        {"role": "system", "content": "You are a helpful AI assistant for SRE operations."},
-        {"role": "user", "content": body.message},
-    ]
-
-    def stream_response():
-        with httpx.Client(timeout=60.0) as client:
-            with client.stream(
-                "POST",
-                f"{settings.llm_base_url}/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {settings.llm_api_key}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "model": body.model or settings.llm_model,
-                    "messages": messages,
-                    "stream": True,
-                },
-            ) as response:
-                if response.status_code != 200:
-                    error_body = response.read().decode()
-                    yield f"data: {json.dumps({'error': error_body})}\n\n"
-                    return
-                for line in response.iter_lines():
-                    if not line.strip():
-                        continue
-                    yield f"{line}\n\n"
 
     return StreamingResponse(
         stream_response(),
