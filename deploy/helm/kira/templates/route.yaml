@@ -20,3 +20,23 @@ spec:
     termination: edge
     insecureEdgeTerminationPolicy: Redirect
 {{- end }}
+{{- if and .Values.route.enabled .Values.ttyd.enabled }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "kira.fullname" . }}-ttyd
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "kira.componentLabels" (dict "component" "ttyd" "root" .) | nindent 4 }}
+spec:
+  to:
+    kind: Service
+    name: ttyd
+    weight: 100
+  port:
+    targetPort: 7681
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+{{- end }}
