@@ -9,9 +9,14 @@ RUN dnf install -y --allowerasing \
     curl wget bind-utils iputils nmap-ncat tcpdump \
     jq less vim-minimal git openssh-clients \
     postgresql \
-    ripgrep bat tmux \
+    ripgrep bat \
     nodejs npm \
     && dnf clean all
+
+# tmux (not in UBI9 repos — install from CRB)
+RUN dnf install -y --enablerepo=codeready-builder-for-rhel-9-x86_64-rpms tmux 2>/dev/null || \
+    dnf install -y https://rpmfind.net/linux/centos-stream/9-stream/AppStream/x86_64/os/Packages/tmux-3.2a-4.el9.x86_64.rpm 2>/dev/null || \
+    echo "tmux installation skipped — not available"
 
 # Neovim (latest stable from GitHub — EPEL version is too old for LazyVim)
 RUN ARCH=$(uname -m) && \
@@ -22,10 +27,11 @@ RUN ARCH=$(uname -m) && \
 # uv (brings Python 3.13 and pip-compatible installs)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-# Python 3.13 via uv + Deep Agents CLI
+# Python 3.13 via uv + Deep Agents library
 RUN uv python install 3.13 && \
-    uv tool install deepagents --python 3.13 && \
-    ln -sf /root/.local/bin/deepagents /usr/local/bin/deepagents
+    uv venv /opt/deepagents --python 3.13 && \
+    VIRTUAL_ENV=/opt/deepagents uv pip install deepagents langchain-openai && \
+    ln -sf /opt/deepagents/bin/python3 /usr/local/bin/python3.13
 
 # yq (YAML processor)
 RUN curl -fsSL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') \
@@ -47,7 +53,7 @@ RUN ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && \
     chmod +x /usr/local/bin/oc
 
 # awx CLI
-RUN uv tool install awxkit --python 3.13
+RUN VIRTUAL_ENV=/opt/deepagents uv pip install awxkit
 
 # Claude Code
 RUN npm install -g @anthropic-ai/claude-code
