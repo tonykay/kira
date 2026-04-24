@@ -1,3 +1,10 @@
+# --- Build tmux from source (not in UBI9 repos) ---
+FROM registry.access.redhat.com/ubi9/ubi AS tmux-builder
+RUN dnf install -y gcc make libevent-devel ncurses-devel && \
+    curl -fsSL https://github.com/tmux/tmux/releases/download/3.3a/tmux-3.3a.tar.gz | tar xzf - && \
+    cd tmux-3.3a && ./configure && make -j$(nproc) && make install DESTDIR=/tmux-out
+
+# --- Main image ---
 FROM registry.access.redhat.com/ubi9/ubi
 
 # Enable EPEL for ripgrep, bat
@@ -11,12 +18,11 @@ RUN dnf install -y --allowerasing \
     postgresql \
     ripgrep bat \
     nodejs npm \
+    libevent ncurses \
     && dnf clean all
 
-# tmux (not in UBI9 repos — install from CRB)
-RUN dnf install -y --enablerepo=codeready-builder-for-rhel-9-x86_64-rpms tmux 2>/dev/null || \
-    dnf install -y https://rpmfind.net/linux/centos-stream/9-stream/AppStream/x86_64/os/Packages/tmux-3.2a-4.el9.x86_64.rpm 2>/dev/null || \
-    echo "tmux installation skipped — not available"
+# tmux from build stage
+COPY --from=tmux-builder /tmux-out/usr/local/bin/tmux /usr/local/bin/tmux
 
 # Neovim (latest stable from GitHub — EPEL version is too old for LazyVim)
 RUN ARCH=$(uname -m) && \
@@ -30,7 +36,9 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 # Python 3.13 via uv + Deep Agents library
 RUN uv python install 3.13 && \
     uv venv /opt/deepagents --python 3.13 && \
-    VIRTUAL_ENV=/opt/deepagents uv pip install deepagents langchain-openai && \
+    VIRTUAL_ENV=/opt/deepagents uv pip install deepagents langchain-openai awxkit && \
+    chmod a+x /root && \
+    chmod -R a+rX /root/.local/share/uv /opt/deepagents && \
     ln -sf /opt/deepagents/bin/python3 /usr/local/bin/python3.13
 
 # yq (YAML processor)
@@ -52,28 +60,38 @@ RUN ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && \
     | tar xzf - -C /usr/local/bin oc kubectl.1 2>/dev/null; \
     chmod +x /usr/local/bin/oc
 
-# awx CLI
-RUN VIRTUAL_ENV=/opt/deepagents uv pip install awxkit
-
 # Claude Code
 RUN npm install -g @anthropic-ai/claude-code
 
-# LazyVim setup
-RUN git clone https://github.com/LazyVim/starter /root/.config/nvim && \
-    rm -rf /root/.config/nvim/.git
+# Create dev user
+RUN useradd --create-home --uid 1001 --shell /bin/bash dev && \
+    mkdir -p /home/dev/.local/bin /artifacts && \
+    chown -R dev:dev /home/dev /artifacts
 
-# Create artifacts mount point
-RUN mkdir -p /artifacts
+# LazyVim setup for dev user
+RUN git clone https://github.com/LazyVim/starter /home/dev/.config/nvim && \
+    rm -rf /home/dev/.config/nvim/.git && \
+    chown -R dev:dev /home/dev/.config
+
+# tmux config
+COPY deploy/tmux.conf /home/dev/.tmux.conf
+RUN chown dev:dev /home/dev/.tmux.conf
+
+# Deep Agents CLI for dev user
+RUN su - dev -c "uv tool install deepagents-cli --python 3.13"
+
+# Shell prompt and PATH for dev user
+RUN echo 'export PATH="/home/dev/.local/bin:/opt/deepagents/bin:$PATH"' >> /home/dev/.bashrc && \
+    echo 'export PS1="\[\e[32m\]sre\[\e[0m\]:\[\e[34m\]\w\[\e[0m\]\$ "' >> /home/dev/.bashrc && \
+    echo '[ -n "$TICKET_ID" ] && echo -e "\e[33m Ticket: $TICKET_TITLE\e[0m" && echo -e "\e[36m   Area: $TICKET_AREA | Systems: $AFFECTED_SYSTEMS\e[0m" && echo -e "\e[36m   Artifacts: /artifacts/$TICKET_ID/\e[0m"' >> /home/dev/.bashrc
 
 # Copy entrypoint and session scripts
 COPY deploy/ttyd-entrypoint.sh /usr/local/bin/ttyd-entrypoint.sh
 COPY deploy/ttyd-session.sh /usr/local/bin/ttyd-session.sh
 RUN chmod +x /usr/local/bin/ttyd-entrypoint.sh /usr/local/bin/ttyd-session.sh
 
-# Shell prompt
-RUN echo 'export PS1="\[\e[32m\]kira\[\e[0m\]:\[\e[34m\]\w\[\e[0m\]\$ "' >> /root/.bashrc && \
-    echo '[ -n "$TICKET_ID" ] && echo -e "\e[33m Ticket: $TICKET_TITLE\e[0m" && echo -e "\e[36m   Area: $TICKET_AREA | Systems: $AFFECTED_SYSTEMS\e[0m" && echo -e "\e[36m   Artifacts: /artifacts/$TICKET_ID/\e[0m"' >> /root/.bashrc && \
-    echo 'export PATH="/root/.local/bin:$PATH"' >> /root/.bashrc
+USER dev
+WORKDIR /home/dev
 
 EXPOSE 7681
 
