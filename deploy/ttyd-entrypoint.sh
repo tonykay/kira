@@ -6,14 +6,14 @@
 #
 # TTYD_FONT_SIZE: optional env var to set font size (default: 13)
 
-FONT_ARGS=""
+FONT_ARGS=()
 if [ -n "${TTYD_FONT_SIZE}" ]; then
-    FONT_ARGS="--font-size ${TTYD_FONT_SIZE}"
+    FONT_ARGS=(-t "fontSize=${TTYD_FONT_SIZE}")
 fi
 
 # Start workspace terminals in background (plain bash, no ticket context)
-ttyd --port 7682 --writable ${FONT_ARGS} bash &
-ttyd --port 7683 --writable ${FONT_ARGS} bash &
+ttyd --port 7682 --writable "${FONT_ARGS[@]}" bash &
+ttyd --port 7683 --writable "${FONT_ARGS[@]}" bash &
 
 # Start ticket-context terminal in foreground (receives args via iframe URL)
-exec ttyd --port 7681 --writable ${FONT_ARGS} ttyd-session.sh
+exec ttyd --port 7681 --writable "${FONT_ARGS[@]}" ttyd-session.sh
