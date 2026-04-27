@@ -64,6 +64,7 @@ ttyd:
     repository: kira-ttyd
     tag: latest
     pullPolicy: IfNotPresent
+  fontSize: ""  # Set font size in pixels, e.g. 16. Empty uses ttyd default (13).
 
 # --- OpenShift Route ---
 route:

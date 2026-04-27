@@ -41,6 +41,10 @@ spec:
               value: {{ .Values.llm.apiKey | quote }}
             {{- end }}
             {{- end }}
+            {{- if .Values.ttyd.fontSize }}
+            - name: TTYD_FONT_SIZE
+              value: {{ .Values.ttyd.fontSize | quote }}
+            {{- end }}
           resources:
             requests:
               cpu: 100m
