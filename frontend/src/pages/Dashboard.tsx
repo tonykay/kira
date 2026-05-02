@@ -88,6 +88,7 @@ export function Dashboard() {
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
           <thead>
             <tr style={{ color: "var(--kira-text-muted)", textTransform: "uppercase", fontSize: "11px" }}>
+              <th style={{ textAlign: "left", padding: "8px 12px", width: "50px" }}>#</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Title</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Area</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Skills</th>
@@ -99,6 +100,9 @@ export function Dashboard() {
           <tbody>
             {tickets.map((t) => (
               <tr key={t.id} style={{ borderTop: "1px solid var(--kira-border-subtle)" }}>
+                <td style={{ padding: "10px 12px", color: "var(--kira-text-muted)", fontWeight: 600 }}>
+                  #{t.ticket_number}
+                </td>
                 <td style={{ padding: "10px 12px" }}>
                   <Link to={`/tickets/${t.id}`} style={{ color: "var(--kira-link)", textDecoration: "none" }}>
                     {t.title}
