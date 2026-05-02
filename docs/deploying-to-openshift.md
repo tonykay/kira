@@ -38,6 +38,16 @@ helm install kira deploy/helm/kira/ \
   -f deploy/helm/kira/values-openshift.yaml
 ```
 
+To deploy into an existing namespace (e.g., a shared or pre-provisioned namespace where you don't have cluster-level namespace permissions):
+
+```bash
+helm install kira deploy/helm/kira/ \
+  -f deploy/helm/kira/values-openshift.yaml \
+  --namespace user-c64fh-agentic \
+  --set namespace=user-c64fh-agentic \
+  --set createNamespace=false
+```
+
 To set custom image repositories or LLM config:
 
 ```bash
