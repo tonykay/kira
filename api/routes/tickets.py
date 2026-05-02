@@ -91,6 +91,18 @@ def list_tickets(
     return TicketListResponse(items=items, total=total, page=page, per_page=per_page)
 
 
+@router.get("/by-number/{ticket_number}", response_model=TicketResponse)
+def get_ticket_by_number(
+    ticket_number: int,
+    db: Session = Depends(get_db),
+    auth: User | str = Depends(get_current_user_or_api_key),
+):
+    ticket = db.query(Ticket).filter(Ticket.ticket_number == ticket_number).first()
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    return ticket
+
+
 @router.get("/{ticket_id}", response_model=TicketResponse)
 def get_ticket(
     ticket_id: UUID,

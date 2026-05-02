@@ -190,3 +190,22 @@ def test_list_tickets_includes_ticket_number(client, api_key_headers):
     assert resp.status_code == 200
     items = resp.json()["items"]
     assert all("ticket_number" in item for item in items)
+
+
+def test_get_ticket_by_number(client, api_key_headers):
+    create_resp = client.post("/api/v1/tickets", json=TICKET_PAYLOAD, headers=api_key_headers)
+    ticket_number = create_resp.json()["ticket_number"]
+    resp = client.get(f"/api/v1/tickets/by-number/{ticket_number}", headers=api_key_headers)
+    assert resp.status_code == 200
+    assert resp.json()["ticket_number"] == ticket_number
+    assert resp.json()["title"] == TICKET_PAYLOAD["title"]
+
+
+def test_get_ticket_by_number_not_found(client, api_key_headers):
+    resp = client.get("/api/v1/tickets/by-number/99999", headers=api_key_headers)
+    assert resp.status_code == 404
+
+
+def test_get_ticket_by_number_unauthenticated(client):
+    resp = client.get("/api/v1/tickets/by-number/1")
+    assert resp.status_code == 401
