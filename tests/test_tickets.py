@@ -153,3 +153,40 @@ def test_update_ticket_stage(auth_client, client, api_key_headers):
     )
     assert resp.status_code == 200
     assert resp.json()["stage"] == "production"
+
+
+def test_create_ticket_returns_ticket_number(client, api_key_headers):
+    resp = client.post("/api/v1/tickets", json=TICKET_PAYLOAD, headers=api_key_headers)
+    assert resp.status_code == 201
+    data = resp.json()
+    assert "ticket_number" in data
+    assert isinstance(data["ticket_number"], int)
+    assert data["ticket_number"] >= 1
+
+
+def test_ticket_numbers_are_sequential(client, api_key_headers):
+    r1 = client.post("/api/v1/tickets", json=TICKET_PAYLOAD, headers=api_key_headers)
+    r2 = client.post(
+        "/api/v1/tickets",
+        json={**TICKET_PAYLOAD, "title": "Second ticket"},
+        headers=api_key_headers,
+    )
+    n1 = r1.json()["ticket_number"]
+    n2 = r2.json()["ticket_number"]
+    assert n2 == n1 + 1
+
+
+def test_get_ticket_includes_ticket_number(client, api_key_headers):
+    create_resp = client.post("/api/v1/tickets", json=TICKET_PAYLOAD, headers=api_key_headers)
+    ticket_id = create_resp.json()["id"]
+    resp = client.get(f"/api/v1/tickets/{ticket_id}", headers=api_key_headers)
+    assert resp.status_code == 200
+    assert "ticket_number" in resp.json()
+
+
+def test_list_tickets_includes_ticket_number(client, api_key_headers):
+    client.post("/api/v1/tickets", json=TICKET_PAYLOAD, headers=api_key_headers)
+    resp = client.get("/api/v1/tickets", headers=api_key_headers)
+    assert resp.status_code == 200
+    items = resp.json()["items"]
+    assert all("ticket_number" in item for item in items)

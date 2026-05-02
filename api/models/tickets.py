@@ -35,6 +35,7 @@ class TicketUpdate(BaseModel):
 
 class TicketResponse(BaseModel):
     id: UUID
+    ticket_number: int
     title: str
     description: str
     area: AreaEnum
