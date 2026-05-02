@@ -111,7 +111,10 @@ export function TicketDetail() {
 
       <div style={{ ...sectionStyle }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "12px" }}>
-          <h2 style={{ margin: 0, fontSize: "18px" }}>{ticket.title}</h2>
+          <h2 style={{ margin: 0, fontSize: "18px" }}>
+            <span style={{ color: "var(--kira-text-muted)", marginRight: "8px" }}>#{ticket.ticket_number}</span>
+            {ticket.title}
+          </h2>
           <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
             <AreaLozenge area={ticket.area} />
             <StatusLozenge status={ticket.status} />
