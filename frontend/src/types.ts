@@ -22,6 +22,7 @@ export type Stage = "dev" | "test" | "production" | "unknown";
 
 export interface Ticket {
   id: string;
+  ticket_number: number;
   title: string;
   description: string;
   area: Area;
