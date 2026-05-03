@@ -214,7 +214,7 @@ export function TicketDetail() {
         <div style={{ fontSize: "11px", color: "#f59e0b", textTransform: "uppercase", marginBottom: "8px" }}>
           Recommended Action
         </div>
-        <MarkdownRenderer content={ticket.recommended_action} />
+        <MarkdownRenderer content={ticket.recommended_action.replace(/([.!?])\s+(\d+\.\s)/g, '$1\n$2')} />
       </div>
 
       <div style={{ ...sectionStyle }}>
