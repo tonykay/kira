@@ -13,6 +13,7 @@ import { ValueEditDialog } from "../components/ValueEditDialog";
 import { InfoPopover } from "../components/InfoPopover";
 import { SkillEditor } from "../components/SkillEditor";
 import { ChatWidget } from "../components/ChatWidget";
+import { MarkdownRenderer } from "../components/MarkdownRenderer";
 import { TerminalPanel } from "../components/TerminalPanel";
 import { IssueCard } from "../components/IssueCard";
 import type { Ticket, Comment, AuditEntry, Artifact, Status, User } from "../types";
@@ -213,19 +214,14 @@ export function TicketDetail() {
         <div style={{ fontSize: "11px", color: "#f59e0b", textTransform: "uppercase", marginBottom: "8px" }}>
           Recommended Action
         </div>
-        <div style={{ fontSize: "14px", whiteSpace: "pre-line" }}>{
-          ticket.recommended_action
-            .replace(/(\d+)\)\s*/g, '\n$1) ')
-            .replace(/(\d+)\.\s*/g, '\n$1. ')
-            .trim()
-        }</div>
+        <MarkdownRenderer content={ticket.recommended_action} />
       </div>
 
       <div style={{ ...sectionStyle }}>
         <div style={{ fontSize: "11px", color: "var(--kira-text-muted)", textTransform: "uppercase", marginBottom: "8px" }}>
           Analysis
         </div>
-        <div style={{ fontSize: "13px", whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{ticket.description}</div>
+        <MarkdownRenderer content={ticket.description} />
       </div>
 
       {/* Issues section */}
