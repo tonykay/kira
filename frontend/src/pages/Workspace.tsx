@@ -141,7 +141,7 @@ export function Workspace() {
         flexDirection: "column",
         height: "calc(100vh - 60px)",
         background: "var(--kira-bg)",
-        borderRadius: "6px",
+        borderRadius: "8px",
         overflow: "hidden",
       }}
     >
@@ -150,8 +150,7 @@ export function Workspace() {
         <div
           style={{
             padding: "8px 12px",
-            background: "var(--kira-bg-card)",
-            borderBottom: "1px solid var(--kira-border)",
+            background: "#1e3a5f",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -159,7 +158,7 @@ export function Workspace() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--kira-text-primary)" }}>
+            <span style={{ fontSize: "13px", fontWeight: 600, color: "white" }}>
               AI Assistant
             </span>
             {info && info.models.length > 1 && (
@@ -167,9 +166,9 @@ export function Workspace() {
                 value={selectedModel}
                 onChange={(e) => handleModelChange(e.target.value)}
                 style={{
-                  background: "var(--kira-bg-input)",
-                  border: "1px solid var(--kira-btn-border)",
-                  color: "var(--kira-text)",
+                  background: "rgba(255,255,255,0.1)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  color: "rgba(255,255,255,0.8)",
                   padding: "2px 6px",
                   borderRadius: "4px",
                   fontSize: "11px",
@@ -185,8 +184,8 @@ export function Workspace() {
             onClick={() => setMessages([])}
             style={{
               background: "none",
-              border: "1px solid var(--kira-btn-border)",
-              color: "var(--kira-btn-text)",
+              border: "1px solid rgba(255,255,255,0.2)",
+              color: "rgba(255,255,255,0.7)",
               padding: "2px 8px",
               borderRadius: "4px",
               cursor: "pointer",
@@ -224,10 +223,10 @@ export function Workspace() {
             >
               <div
                 style={{
-                  background: msg.role === "user" ? "var(--kira-accent)" : "var(--kira-bg-input)",
+                  background: msg.role === "user" ? "#1e3a5f" : "#f1f5f9",
                   color: msg.role === "user" ? "white" : "var(--kira-text-primary)",
                   padding: "8px 12px",
-                  borderRadius: msg.role === "user" ? "12px 12px 2px 12px" : "12px 12px 12px 2px",
+                  borderRadius: msg.role === "user" ? "8px 8px 2px 8px" : "8px 8px 8px 2px",
                   fontSize: "13px",
                   lineHeight: 1.5,
                   whiteSpace: "pre-wrap",
@@ -263,7 +262,7 @@ export function Workspace() {
               flex: 1,
               background: "var(--kira-bg-input)",
               border: "1px solid var(--kira-border)",
-              borderRadius: "4px",
+              borderRadius: "6px",
               color: "var(--kira-text-primary)",
               padding: "8px",
               fontSize: "13px",
@@ -274,10 +273,10 @@ export function Workspace() {
             onClick={handleSend}
             disabled={streaming || !input.trim()}
             style={{
-              background: streaming || !input.trim() ? "var(--kira-border)" : "var(--kira-accent)",
+              background: streaming || !input.trim() ? "var(--kira-border)" : "#1e3a5f",
               color: streaming || !input.trim() ? "var(--kira-text-muted)" : "white",
               border: "none",
-              borderRadius: "4px",
+              borderRadius: "6px",
               padding: "8px 14px",
               cursor: streaming || !input.trim() ? "not-allowed" : "pointer",
               fontSize: "13px",
@@ -296,7 +295,7 @@ export function Workspace() {
         style={{
           height: "6px",
           cursor: "ns-resize",
-          background: "#30363d",
+          background: "var(--kira-border)",
           flexShrink: 0,
         }}
       />

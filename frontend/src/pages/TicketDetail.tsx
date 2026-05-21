@@ -94,9 +94,11 @@ export function TicketDetail() {
 
   const sectionStyle = {
     background: "var(--kira-bg-card)",
-    borderRadius: "6px",
+    borderRadius: "8px",
     padding: "16px",
     marginBottom: "12px",
+    boxShadow: "var(--kira-shadow-sm)",
+    border: "1px solid var(--kira-border)",
   };
 
   return (
@@ -171,10 +173,10 @@ export function TicketDetail() {
                 onClick={() => setTerminalOpen(!terminalOpen)}
                 style={{
                   padding: "4px 10px",
-                  background: terminalOpen ? "#30363d" : "var(--kira-btn-bg)",
+                  background: terminalOpen ? "var(--kira-accent)" : "var(--kira-btn-bg)",
                   border: "1px solid var(--kira-btn-border)",
                   borderRadius: "4px",
-                  color: terminalOpen ? "#58a6ff" : "var(--kira-btn-text)",
+                  color: terminalOpen ? "white" : "var(--kira-btn-text)",
                   cursor: "pointer",
                   fontSize: "12px",
                   fontFamily: "monospace",
@@ -259,7 +261,7 @@ export function TicketDetail() {
               disabled={s === ticket.status}
               style={{
                 padding: "6px 12px",
-                borderRadius: "4px",
+                borderRadius: "6px",
                 border: "1px solid var(--kira-border)",
                 background: s === ticket.status ? "var(--kira-border)" : "var(--kira-bg-input)",
                 color: s === ticket.status ? "var(--kira-text-primary)" : "var(--kira-text-muted)",
@@ -283,7 +285,7 @@ export function TicketDetail() {
               background: activeTab === tab ? "var(--kira-bg-card)" : "transparent",
               color: activeTab === tab ? "var(--kira-accent)" : "var(--kira-text-muted)",
               border: "none",
-              borderBottom: activeTab === tab ? "2px solid var(--kira-accent)" : "2px solid transparent",
+              borderBottom: activeTab === tab ? "2px solid var(--kira-nav-indicator)" : "2px solid transparent",
               cursor: "pointer",
               fontSize: "13px",
               textTransform: "capitalize",
@@ -326,7 +328,7 @@ export function TicketDetail() {
                   flex: 1,
                   background: "var(--kira-bg-input)",
                   border: "1px solid var(--kira-border)",
-                  borderRadius: "4px",
+                  borderRadius: "6px",
                   color: "var(--kira-text-primary)",
                   padding: "8px",
                   fontSize: "13px",
@@ -342,7 +344,7 @@ export function TicketDetail() {
                   background: "var(--kira-accent)",
                   color: "white",
                   border: "none",
-                  borderRadius: "4px",
+                  borderRadius: "6px",
                   cursor: "pointer",
                   fontSize: "13px",
                 }}

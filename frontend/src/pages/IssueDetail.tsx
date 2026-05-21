@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../api/client";
 import { MarkdownRenderer } from "../components/MarkdownRenderer";
-import { SEVERITY_COLORS, STATUS_COLORS } from "../components/IssueCard";
+import { SEVERITY_COLORS, STATUS_COLORS, SEVERITY_TINTS } from "../components/IssueCard";
 import type { Issue, Severity, IssueStatus, User, IssueComment } from "../types";
 
 const EDITABLE_STATUSES: IssueStatus[] = ["identified", "backlog", "in_progress", "done", "dismissed"];
@@ -56,9 +56,11 @@ export function IssueDetail() {
 
   const sectionStyle = {
     background: "var(--kira-bg-card)",
-    borderRadius: "6px",
+    borderRadius: "8px",
     padding: "16px",
     marginBottom: "12px",
+    boxShadow: "var(--kira-shadow-sm)",
+    border: "1px solid var(--kira-border)",
   };
 
   return (
@@ -70,10 +72,10 @@ export function IssueDetail() {
           <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
             <span
               style={{
-                background: SEVERITY_COLORS[issue.severity],
-                color: "white",
+                background: SEVERITY_TINTS[issue.severity].bg,
+                color: SEVERITY_TINTS[issue.severity].color,
                 padding: "2px 8px",
-                borderRadius: "10px",
+                borderRadius: "12px",
                 fontSize: "11px",
                 fontWeight: 500,
                 textTransform: "uppercase",
@@ -86,7 +88,7 @@ export function IssueDetail() {
                 background: `${STATUS_COLORS[issue.status]}22`,
                 color: STATUS_COLORS[issue.status],
                 padding: "2px 8px",
-                borderRadius: "10px",
+                borderRadius: "12px",
                 fontSize: "11px",
                 fontWeight: 500,
               }}
@@ -130,7 +132,7 @@ export function IssueDetail() {
                 style={{
                   background: "var(--kira-bg-input)",
                   border: "1px solid var(--kira-border)",
-                  borderRadius: "4px",
+                  borderRadius: "6px",
                   color: "var(--kira-text-primary)",
                   padding: "6px 8px",
                   fontSize: "12px",
@@ -165,7 +167,7 @@ export function IssueDetail() {
                   padding: "6px 12px",
                   background: "var(--kira-btn-bg)",
                   border: "1px solid var(--kira-btn-border)",
-                  borderRadius: "4px",
+                  borderRadius: "6px",
                   color: "var(--kira-btn-text)",
                   cursor: "pointer",
                   fontSize: "12px",
@@ -183,7 +185,7 @@ export function IssueDetail() {
                   background: "var(--kira-accent)",
                   color: "white",
                   border: "none",
-                  borderRadius: "4px",
+                  borderRadius: "6px",
                   cursor: "pointer",
                   fontSize: "12px",
                 }}

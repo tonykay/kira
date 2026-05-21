@@ -77,14 +77,17 @@ export function CreateTicket() {
 
   const sectionStyle = {
     background: "var(--kira-bg-card)",
-    borderRadius: "6px",
+    borderRadius: "8px",
     padding: "16px",
     marginBottom: "12px",
+    boxShadow: "var(--kira-shadow-sm)",
+    border: "1px solid var(--kira-border)",
   };
 
   const labelStyle = {
-    fontSize: "11px",
-    color: "var(--kira-text-muted)",
+    fontSize: "12px",
+    fontWeight: 500,
+    color: "var(--kira-text-secondary)",
     textTransform: "uppercase" as const,
     marginBottom: "6px",
     display: "block",
@@ -95,7 +98,7 @@ export function CreateTicket() {
     padding: "8px",
     background: "var(--kira-bg-input)",
     border: "1px solid var(--kira-border)",
-    borderRadius: "4px",
+    borderRadius: "6px",
     color: "var(--kira-text-primary)",
     fontSize: "13px",
     boxSizing: "border-box" as const,
@@ -112,7 +115,7 @@ export function CreateTicket() {
       <h2 style={{ fontSize: "18px", marginBottom: "16px" }}>New Ticket</h2>
 
       {error && (
-        <div style={{ ...sectionStyle, borderLeft: "3px solid #ef4444", color: "#ef4444", fontSize: "13px" }}>
+        <div style={{ ...sectionStyle, borderLeft: "3px solid #dc2626", color: "#dc2626", fontSize: "13px" }}>
           {error}
         </div>
       )}
@@ -306,7 +309,7 @@ export function CreateTicket() {
               padding: "8px 16px",
               background: "var(--kira-btn-bg)",
               border: "1px solid var(--kira-btn-border)",
-              borderRadius: "4px",
+              borderRadius: "6px",
               color: "var(--kira-btn-text)",
               cursor: "pointer",
               fontSize: "13px",
@@ -319,10 +322,10 @@ export function CreateTicket() {
             disabled={!canSubmit}
             style={{
               padding: "8px 16px",
-              background: canSubmit ? "var(--kira-accent)" : "var(--kira-border)",
+              background: canSubmit ? "var(--kira-btn-bg)" : "var(--kira-border)",
               color: canSubmit ? "white" : "var(--kira-text-muted)",
               border: "none",
-              borderRadius: "4px",
+              borderRadius: "6px",
               cursor: canSubmit ? "pointer" : "not-allowed",
               fontSize: "13px",
             }}
