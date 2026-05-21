@@ -149,12 +149,12 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
           width: "48px",
           height: "48px",
           borderRadius: "50%",
-          background: "var(--kira-accent)",
+          background: "#1e3a5f",
           color: "white",
           border: "none",
           cursor: "pointer",
           fontSize: "20px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+          boxShadow: "0 4px 12px rgba(30,58,95,0.3)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -176,10 +176,10 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
         height: "460px",
         background: "var(--kira-bg-card)",
         border: "1px solid var(--kira-border)",
-        borderRadius: "8px",
+        borderRadius: "12px",
         display: "flex",
         flexDirection: "column",
-        boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+        boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
         zIndex: 300,
       }}
     >
@@ -187,7 +187,8 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
       <div
         style={{
           padding: "10px 12px",
-          borderBottom: "1px solid var(--kira-border)",
+          background: "#1e3a5f",
+          borderBottom: "none",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -195,7 +196,7 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--kira-text-primary)" }}>
+          <span style={{ fontSize: "12px", fontWeight: 600, color: "white" }}>
             Chat
           </span>
           {info.models.length > 1 ? (
@@ -203,9 +204,9 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
               value={selectedModel}
               onChange={(e) => handleModelChange(e.target.value)}
               style={{
-                background: "var(--kira-bg-input)",
-                border: "1px solid var(--kira-btn-border)",
-                color: "var(--kira-text-muted)",
+                background: "rgba(255,255,255,0.1)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                color: "rgba(255,255,255,0.8)",
                 padding: "1px 4px",
                 borderRadius: "3px",
                 fontSize: "9px",
@@ -217,7 +218,7 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
               ))}
             </select>
           ) : (
-            <span style={{ fontSize: "10px", color: "var(--kira-text-muted)" }}>
+            <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.6)" }}>
               {selectedModel || info.model}
             </span>
           )}
@@ -225,7 +226,7 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
             <span
               style={{
                 fontSize: "9px",
-                background: "var(--kira-accent)",
+                background: "rgba(255,255,255,0.2)",
                 color: "white",
                 padding: "1px 5px",
                 borderRadius: "6px",
@@ -242,8 +243,8 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
               title="Clear ticket context"
               style={{
                 background: "none",
-                border: "1px solid var(--kira-btn-border)",
-                color: "var(--kira-btn-text)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                color: "rgba(255,255,255,0.7)",
                 padding: "2px 6px",
                 borderRadius: "3px",
                 cursor: "pointer",
@@ -258,8 +259,8 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
             title="Clear chat history"
             style={{
               background: "none",
-              border: "1px solid var(--kira-btn-border)",
-              color: "var(--kira-btn-text)",
+              border: "1px solid rgba(255,255,255,0.2)",
+              color: "rgba(255,255,255,0.7)",
               padding: "2px 6px",
               borderRadius: "3px",
               cursor: "pointer",
@@ -274,7 +275,7 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
             style={{
               background: "none",
               border: "none",
-              color: "var(--kira-text-muted)",
+              color: "rgba(255,255,255,0.7)",
               cursor: "pointer",
               fontSize: "16px",
               padding: "0 4px",
@@ -317,10 +318,10 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
           >
             <div
               style={{
-                background: msg.role === "user" ? "var(--kira-accent)" : "var(--kira-bg-input)",
+                background: msg.role === "user" ? "#1e3a5f" : "#f1f5f9",
                 color: msg.role === "user" ? "white" : "var(--kira-text-primary)",
                 padding: "8px 12px",
-                borderRadius: msg.role === "user" ? "12px 12px 2px 12px" : "12px 12px 12px 2px",
+                borderRadius: msg.role === "user" ? "8px 8px 2px 8px" : "8px 8px 8px 2px",
                 fontSize: "12px",
                 lineHeight: 1.5,
                 whiteSpace: "pre-wrap",
@@ -355,7 +356,7 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
             flex: 1,
             background: "var(--kira-bg-input)",
             border: "1px solid var(--kira-border)",
-            borderRadius: "4px",
+            borderRadius: "6px",
             color: "var(--kira-text-primary)",
             padding: "8px",
             fontSize: "12px",
@@ -366,10 +367,10 @@ export function ChatWidget({ ticketId, bottomOffset = 0 }: ChatWidgetProps) {
           onClick={handleSend}
           disabled={streaming || !input.trim()}
           style={{
-            background: streaming || !input.trim() ? "var(--kira-border)" : "var(--kira-accent)",
+            background: streaming || !input.trim() ? "var(--kira-border)" : "#1e3a5f",
             color: streaming || !input.trim() ? "var(--kira-text-muted)" : "white",
             border: "none",
-            borderRadius: "4px",
+            borderRadius: "6px",
             padding: "8px 12px",
             cursor: streaming || !input.trim() ? "not-allowed" : "pointer",
             fontSize: "12px",
