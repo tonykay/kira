@@ -91,6 +91,39 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
         p({ children }: { children?: React.ReactNode }) {
           return <p style={{ margin: "6px 0", lineHeight: 1.6 }}>{children}</p>;
         },
+        ol({ children }: { children?: React.ReactNode }) {
+          return (
+            <ol
+              style={{
+                margin: "6px 0",
+                paddingLeft: "24px",
+                lineHeight: 1.6,
+                listStylePosition: "outside" as const,
+              }}
+            >
+              {children}
+            </ol>
+          );
+        },
+        ul({ children }: { children?: React.ReactNode }) {
+          return (
+            <ul
+              style={{
+                margin: "6px 0",
+                paddingLeft: "24px",
+                lineHeight: 1.6,
+                listStylePosition: "outside" as const,
+              }}
+            >
+              {children}
+            </ul>
+          );
+        },
+        li({ children }: { children?: React.ReactNode }) {
+          return (
+            <li style={{ marginBottom: "4px" }}>{children}</li>
+          );
+        },
       }}
     >
       {content}
