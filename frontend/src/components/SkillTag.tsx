@@ -7,16 +7,17 @@ export function SkillTag({ skill, onRemove }: SkillTagProps) {
   return (
     <span
       style={{
-        background: "var(--kira-border)",
-        color: "var(--kira-text-secondary)",
-        padding: "1px 6px",
-        borderRadius: "8px",
+        background: "#f1f5f9",
+        color: "#475569",
+        padding: "2px 8px",
+        borderRadius: "12px",
         fontSize: "10px",
         fontWeight: 500,
         display: "inline-flex",
         alignItems: "center",
         gap: "3px",
         whiteSpace: "nowrap",
+        border: "1px solid #e2e8f0",
       }}
     >
       {skill}

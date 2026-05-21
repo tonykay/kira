@@ -59,10 +59,10 @@ export function ValueEditDialog({ type, currentValue, onSave, onCancel }: ValueE
         style={{
           background: "var(--kira-bg-card)",
           border: "1px solid var(--kira-border)",
-          borderRadius: "8px",
+          borderRadius: "12px",
           padding: "24px",
           width: "360px",
-          boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
         }}
       >
         <h3 style={{ margin: "0 0 16px", fontSize: "15px", color: "var(--kira-text-primary)" }}>{title}</h3>
@@ -74,7 +74,7 @@ export function ValueEditDialog({ type, currentValue, onSave, onCancel }: ValueE
               background: colorFn(value),
               color: "white",
               padding: "4px 12px",
-              borderRadius: "10px",
+              borderRadius: "12px",
               fontSize: "13px",
               fontWeight: 500,
             }}
@@ -114,7 +114,7 @@ export function ValueEditDialog({ type, currentValue, onSave, onCancel }: ValueE
               width: "100%",
               background: "var(--kira-bg-input)",
               border: "1px solid var(--kira-border)",
-              borderRadius: "4px",
+              borderRadius: "6px",
               color: "var(--kira-text-primary)",
               padding: "8px",
               fontSize: "13px",
@@ -133,7 +133,7 @@ export function ValueEditDialog({ type, currentValue, onSave, onCancel }: ValueE
               padding: "6px 14px",
               background: "var(--kira-btn-bg)",
               border: "1px solid var(--kira-btn-border)",
-              borderRadius: "4px",
+              borderRadius: "6px",
               color: "var(--kira-btn-text)",
               cursor: "pointer",
               fontSize: "12px",
@@ -148,7 +148,7 @@ export function ValueEditDialog({ type, currentValue, onSave, onCancel }: ValueE
               padding: "6px 14px",
               background: canSave ? "var(--kira-accent)" : "var(--kira-border)",
               border: "none",
-              borderRadius: "4px",
+              borderRadius: "6px",
               color: canSave ? "white" : "var(--kira-text-muted)",
               cursor: canSave ? "pointer" : "not-allowed",
               fontSize: "12px",

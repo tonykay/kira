@@ -18,6 +18,14 @@ const STATUS_COLORS: Record<IssueStatus, string> = {
   dismissed: "#9ca3af",
 };
 
+const SEVERITY_TINTS: Record<Severity, { bg: string; color: string }> = {
+  critical: { bg: "#fef2f2", color: "#dc2626" },
+  high: { bg: "#fff7ed", color: "#ea580c" },
+  medium: { bg: "#fffbeb", color: "#d97706" },
+  low: { bg: "#eff6ff", color: "#2563eb" },
+  info: { bg: "#f1f5f9", color: "#6b7280" },
+};
+
 interface IssueCardProps {
   issue: Issue;
   user: User | null;
@@ -53,10 +61,11 @@ export function IssueCard({ issue, user, onPromote, onDismiss, onUpdate }: Issue
     <div
       style={{
         border: "1px solid var(--kira-border)",
-        borderRadius: "6px",
+        borderRadius: "8px",
         marginBottom: "8px",
         overflow: "hidden",
         borderLeft: `3px solid ${SEVERITY_COLORS[issue.severity]}`,
+        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
       }}
     >
       {/* Collapsed header */}
@@ -76,10 +85,10 @@ export function IssueCard({ issue, user, onPromote, onDismiss, onUpdate }: Issue
         </span>
         <span
           style={{
-            background: SEVERITY_COLORS[issue.severity],
-            color: "white",
+            background: SEVERITY_TINTS[issue.severity].bg,
+            color: SEVERITY_TINTS[issue.severity].color,
             padding: "2px 8px",
-            borderRadius: "10px",
+            borderRadius: "12px",
             fontSize: "10px",
             fontWeight: 500,
             textTransform: "uppercase",
@@ -116,7 +125,7 @@ export function IssueCard({ issue, user, onPromote, onDismiss, onUpdate }: Issue
             background: `${STATUS_COLORS[issue.status]}22`,
             color: STATUS_COLORS[issue.status],
             padding: "2px 8px",
-            borderRadius: "10px",
+            borderRadius: "12px",
             fontSize: "10px",
             fontWeight: 500,
           }}
@@ -265,10 +274,10 @@ export function IssueCard({ issue, user, onPromote, onDismiss, onUpdate }: Issue
                         onClick={(e) => { e.stopPropagation(); setPromoteDialog(true); }}
                         style={{
                           padding: "6px 12px",
-                          background: "#8b5cf6",
+                          background: "var(--kira-accent)",
                           color: "white",
                           border: "none",
-                          borderRadius: "4px",
+                          borderRadius: "6px",
                           cursor: "pointer",
                           fontSize: "12px",
                         }}
@@ -398,10 +407,10 @@ export function IssueCard({ issue, user, onPromote, onDismiss, onUpdate }: Issue
                   }}
                   style={{
                     padding: "6px 12px",
-                    background: "#8b5cf6",
+                    background: "var(--kira-accent)",
                     color: "white",
                     border: "none",
-                    borderRadius: "4px",
+                    borderRadius: "6px",
                     cursor: "pointer",
                     fontSize: "12px",
                   }}
