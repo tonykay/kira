@@ -39,7 +39,7 @@ export function TicketList() {
           <select
             value={area || ""}
             onChange={(e) => setFilter("area", e.target.value || null)}
-            style={{ background: "var(--kira-bg-card)", color: "var(--kira-text-secondary)", border: "1px solid var(--kira-border)", borderRadius: "4px", padding: "6px" }}
+            style={{ background: "var(--kira-bg-card)", color: "var(--kira-text-secondary)", border: "1px solid var(--kira-border)", borderRadius: "6px", padding: "6px", fontSize: "12px" }}
           >
             <option value="">All Areas</option>
             <option value="linux">Linux</option>
@@ -53,7 +53,7 @@ export function TicketList() {
           <select
             value={status || ""}
             onChange={(e) => setFilter("status", e.target.value || null)}
-            style={{ background: "var(--kira-bg-card)", color: "var(--kira-text-secondary)", border: "1px solid var(--kira-border)", borderRadius: "4px", padding: "6px" }}
+            style={{ background: "var(--kira-bg-card)", color: "var(--kira-text-secondary)", border: "1px solid var(--kira-border)", borderRadius: "6px", padding: "6px", fontSize: "12px" }}
           >
             <option value="">All Statuses</option>
             <option value="open">Open</option>
@@ -65,10 +65,10 @@ export function TicketList() {
         </div>
       </div>
 
-      <div style={{ background: "var(--kira-bg-card)", borderRadius: "6px", overflow: "hidden" }}>
+      <div style={{ background: "var(--kira-bg-card)", borderRadius: "8px", overflow: "hidden", border: "1px solid var(--kira-border)", boxShadow: "var(--kira-shadow-sm)" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
           <thead>
-            <tr style={{ color: "var(--kira-text-muted)", textTransform: "uppercase", fontSize: "11px" }}>
+            <tr style={{ color: "var(--kira-text-muted)", textTransform: "uppercase", fontSize: "11px", letterSpacing: "0.5px", fontWeight: 600 }}>
               <th style={{ textAlign: "left", padding: "8px 12px", width: "50px" }}>#</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Title</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Area</th>
@@ -83,7 +83,7 @@ export function TicketList() {
           <tbody>
             {tickets.map((t) => (
               <tr key={t.id} style={{ borderTop: "1px solid var(--kira-border-subtle)" }}>
-                <td style={{ padding: "10px 12px", color: "var(--kira-text-muted)", fontWeight: 600 }}>
+                <td style={{ padding: "10px 12px", color: "var(--kira-accent)", fontWeight: 600 }}>
                   #{t.ticket_number}
                 </td>
                 <td style={{ padding: "10px 12px" }}>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "../api/client";
-import { SEVERITY_COLORS, STATUS_COLORS } from "../components/IssueCard";
+import { STATUS_COLORS, SEVERITY_TINTS } from "../components/IssueCard";
 import type { Issue, Severity, IssueStatus } from "../types";
 
 const ALL_SEVERITIES: Severity[] = ["critical", "high", "medium", "low", "info"];
@@ -41,7 +41,7 @@ export function IssueList() {
           <select
             value={severity || ""}
             onChange={(e) => setFilter("severity", e.target.value || null)}
-            style={{ background: "var(--kira-bg-card)", color: "var(--kira-text-secondary)", border: "1px solid var(--kira-border)", borderRadius: "4px", padding: "6px" }}
+            style={{ background: "var(--kira-bg-card)", color: "var(--kira-text-secondary)", border: "1px solid var(--kira-border)", borderRadius: "6px", padding: "6px", fontSize: "12px" }}
           >
             <option value="">All Severities</option>
             {ALL_SEVERITIES.map((s) => (
@@ -51,7 +51,7 @@ export function IssueList() {
           <select
             value={status || ""}
             onChange={(e) => setFilter("status", e.target.value || null)}
-            style={{ background: "var(--kira-bg-card)", color: "var(--kira-text-secondary)", border: "1px solid var(--kira-border)", borderRadius: "4px", padding: "6px" }}
+            style={{ background: "var(--kira-bg-card)", color: "var(--kira-text-secondary)", border: "1px solid var(--kira-border)", borderRadius: "6px", padding: "6px", fontSize: "12px" }}
           >
             <option value="">All Statuses</option>
             {ALL_STATUSES.map((s) => (
@@ -61,10 +61,10 @@ export function IssueList() {
         </div>
       </div>
 
-      <div style={{ background: "var(--kira-bg-card)", borderRadius: "6px", overflow: "hidden" }}>
+      <div style={{ background: "var(--kira-bg-card)", borderRadius: "8px", overflow: "hidden", border: "1px solid var(--kira-border)", boxShadow: "var(--kira-shadow-sm)" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
           <thead>
-            <tr style={{ color: "var(--kira-text-muted)", textTransform: "uppercase", fontSize: "11px" }}>
+            <tr style={{ color: "var(--kira-text-muted)", textTransform: "uppercase", fontSize: "11px", letterSpacing: "0.5px", fontWeight: 600 }}>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Severity</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Title</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Status</th>
@@ -80,10 +80,10 @@ export function IssueList() {
                 <td style={{ padding: "10px 12px" }}>
                   <span
                     style={{
-                      background: SEVERITY_COLORS[issue.severity],
-                      color: "white",
+                      background: SEVERITY_TINTS[issue.severity]?.bg || "#f1f5f9",
+                      color: SEVERITY_TINTS[issue.severity]?.color || "#6b7280",
                       padding: "2px 8px",
-                      borderRadius: "10px",
+                      borderRadius: "12px",
                       fontSize: "10px",
                       fontWeight: 500,
                       textTransform: "uppercase",
@@ -103,7 +103,7 @@ export function IssueList() {
                       background: `${STATUS_COLORS[issue.status]}22`,
                       color: STATUS_COLORS[issue.status],
                       padding: "2px 8px",
-                      borderRadius: "10px",
+                      borderRadius: "12px",
                       fontSize: "10px",
                       fontWeight: 500,
                     }}

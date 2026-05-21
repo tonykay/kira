@@ -18,16 +18,25 @@ export function Dashboard() {
   if (!stats) return <div style={{ color: "var(--kira-text-muted)" }}>Loading...</div>;
 
   const areaData = Object.entries(stats.by_area).map(([name, count]) => ({ name, count }));
+  const AREA_CHART_COLORS: Record<string, string> = {
+    linux: "#7c3aed",
+    kubernetes: "#2563eb",
+    networking: "#0891b2",
+    database: "#059669",
+    storage: "#d97706",
+    security: "#dc2626",
+    application: "#6366f1",
+  };
   const riskData = [
-    { name: "High", count: stats.risk_distribution.high, fill: "#ef4444" },
-    { name: "Med", count: stats.risk_distribution.medium, fill: "#f59e0b" },
-    { name: "Low", count: stats.risk_distribution.low, fill: "#22c55e" },
+    { name: "High", count: stats.risk_distribution.high, fill: "#dc2626" },
+    { name: "Med", count: stats.risk_distribution.medium, fill: "#d97706" },
+    { name: "Low", count: stats.risk_distribution.low, fill: "#16a34a" },
   ];
 
   const cards = [
-    { label: "Open", value: stats.open, color: "#ef4444" },
-    { label: "In Progress", value: stats.in_progress, color: "#f59e0b" },
-    { label: "Resolved", value: stats.resolved, color: "#22c55e" },
+    { label: "Open", value: stats.open, color: "#dc2626" },
+    { label: "In Progress", value: stats.in_progress, color: "#2563eb" },
+    { label: "Resolved", value: stats.resolved, color: "#16a34a" },
     { label: "Avg Confidence", value: stats.avg_confidence?.toFixed(2) ?? "\u2014", color: "var(--kira-accent)" },
   ];
 
@@ -41,9 +50,10 @@ export function Dashboard() {
               flex: 1,
               minWidth: "120px",
               background: "var(--kira-bg-card)",
-              borderRadius: "6px",
+              borderRadius: "8px",
               padding: "14px",
-              borderLeft: `3px solid ${c.color}`,
+              boxShadow: "var(--kira-shadow-sm)",
+              border: "1px solid var(--kira-border)",
             }}
           >
             <div style={{ fontSize: "11px", color: "var(--kira-text-muted)", textTransform: "uppercase" }}>{c.label}</div>
@@ -53,18 +63,22 @@ export function Dashboard() {
       </div>
 
       <div style={{ display: "flex", gap: "12px", marginBottom: "16px", flexWrap: "wrap" }}>
-        <div style={{ flex: 1, minWidth: "300px", background: "var(--kira-bg-card)", borderRadius: "6px", padding: "14px" }}>
+        <div style={{ flex: 1, minWidth: "300px", background: "var(--kira-bg-card)", borderRadius: "8px", padding: "14px", boxShadow: "var(--kira-shadow-sm)", border: "1px solid var(--kira-border)" }}>
           <div style={{ fontSize: "12px", color: "var(--kira-text-muted)", marginBottom: "12px" }}>Tickets by Area</div>
           <ResponsiveContainer width="100%" height={120}>
             <BarChart data={areaData}>
               <XAxis dataKey="name" tick={{ fill: "var(--kira-text-muted)", fontSize: 10 }} />
               <YAxis tick={{ fill: "var(--kira-text-muted)", fontSize: 10 }} allowDecimals={false} />
               <Tooltip />
-              <Bar dataKey="count" fill="var(--kira-accent)" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="count" radius={[3, 3, 0, 0]}>
+                {areaData.map((entry, index) => (
+                  <Cell key={index} fill={AREA_CHART_COLORS[entry.name] || "#6366f1"} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div style={{ flex: 1, minWidth: "300px", background: "var(--kira-bg-card)", borderRadius: "6px", padding: "14px" }}>
+        <div style={{ flex: 1, minWidth: "300px", background: "var(--kira-bg-card)", borderRadius: "8px", padding: "14px", boxShadow: "var(--kira-shadow-sm)", border: "1px solid var(--kira-border)" }}>
           <div style={{ fontSize: "12px", color: "var(--kira-text-muted)", marginBottom: "12px" }}>Risk Distribution</div>
           <ResponsiveContainer width="100%" height={120}>
             <BarChart data={riskData} layout="vertical">
@@ -81,13 +95,13 @@ export function Dashboard() {
         </div>
       </div>
 
-      <div style={{ background: "var(--kira-bg-card)", borderRadius: "6px", overflow: "hidden" }}>
+      <div style={{ background: "var(--kira-bg-card)", borderRadius: "8px", overflow: "hidden", boxShadow: "var(--kira-shadow-sm)", border: "1px solid var(--kira-border)" }}>
         <div style={{ fontSize: "12px", color: "var(--kira-text-muted)", padding: "12px", borderBottom: "1px solid var(--kira-border)" }}>
           Recent Tickets
         </div>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
           <thead>
-            <tr style={{ color: "var(--kira-text-muted)", textTransform: "uppercase", fontSize: "11px" }}>
+            <tr style={{ color: "var(--kira-text-muted)", textTransform: "uppercase", fontSize: "11px", letterSpacing: "0.5px", fontWeight: 600 }}>
               <th style={{ textAlign: "left", padding: "8px 12px", width: "50px" }}>#</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Title</th>
               <th style={{ textAlign: "left", padding: "8px 12px" }}>Area</th>
@@ -100,7 +114,7 @@ export function Dashboard() {
           <tbody>
             {tickets.map((t) => (
               <tr key={t.id} style={{ borderTop: "1px solid var(--kira-border-subtle)" }}>
-                <td style={{ padding: "10px 12px", color: "var(--kira-text-muted)", fontWeight: 600 }}>
+                <td style={{ padding: "10px 12px", color: "var(--kira-accent)", fontWeight: 600 }}>
                   #{t.ticket_number}
                 </td>
                 <td style={{ padding: "10px 12px" }}>

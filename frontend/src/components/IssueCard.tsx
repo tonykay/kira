@@ -426,4 +426,4 @@ export function IssueCard({ issue, user, onPromote, onDismiss, onUpdate }: Issue
   );
 }
 
-export { SEVERITY_COLORS, STATUS_COLORS };
+export { SEVERITY_COLORS, STATUS_COLORS, SEVERITY_TINTS };

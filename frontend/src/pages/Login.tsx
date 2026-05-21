@@ -34,59 +34,73 @@ export function Login() {
         style={{
           background: "var(--kira-bg-card)",
           padding: "32px",
-          borderRadius: "8px",
-          width: "320px",
+          borderRadius: "12px",
+          width: "340px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+          border: "1px solid var(--kira-border)",
         }}
       >
-        <h2 style={{ color: "var(--kira-accent)", marginBottom: "24px", textAlign: "center" }}>Kira</h2>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+          <span style={{ fontSize: "20px", fontWeight: 700, color: "var(--kira-accent)" }}>Kira</span>
+        </div>
+        <h2 style={{ fontSize: "20px", fontWeight: 600, color: "var(--kira-text-primary)", marginBottom: "4px" }}>Sign In</h2>
+        <p style={{ fontSize: "13px", color: "var(--kira-text-muted)", marginBottom: "20px" }}>
+          Access your incident dashboard
+        </p>
         {error && (
-          <div style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px", textAlign: "center" }}>
+          <div style={{ color: "#dc2626", fontSize: "13px", marginBottom: "12px", textAlign: "center" }}>
             {error}
           </div>
         )}
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "12px",
-            background: "var(--kira-bg-input)",
-            border: "1px solid var(--kira-border)",
-            borderRadius: "4px",
-            color: "var(--kira-text-primary)",
-            fontSize: "14px",
-            boxSizing: "border-box",
-          }}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "16px",
-            background: "var(--kira-bg-input)",
-            border: "1px solid var(--kira-border)",
-            borderRadius: "4px",
-            color: "var(--kira-text-primary)",
-            fontSize: "14px",
-            boxSizing: "border-box",
-          }}
-        />
+        <div style={{ marginBottom: "12px" }}>
+          <label style={{ fontSize: "12px", fontWeight: 500, color: "var(--kira-text-secondary)", display: "block", marginBottom: "4px" }}>
+            Username
+          </label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "10px",
+              background: "var(--kira-bg-input)",
+              border: "1px solid var(--kira-border)",
+              borderRadius: "6px",
+              color: "var(--kira-text-primary)",
+              fontSize: "14px",
+              boxSizing: "border-box",
+            }}
+          />
+        </div>
+        <div style={{ marginBottom: "20px" }}>
+          <label style={{ fontSize: "12px", fontWeight: 500, color: "var(--kira-text-secondary)", display: "block", marginBottom: "4px" }}>
+            Password
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "10px",
+              background: "var(--kira-bg-input)",
+              border: "1px solid var(--kira-border)",
+              borderRadius: "6px",
+              color: "var(--kira-text-primary)",
+              fontSize: "14px",
+              boxSizing: "border-box",
+            }}
+          />
+        </div>
         <button
           type="submit"
           style={{
             width: "100%",
             padding: "10px",
-            background: "var(--kira-accent)",
-            color: "white",
+            background: "var(--kira-btn-bg)",
+            color: "var(--kira-btn-text)",
             border: "none",
-            borderRadius: "4px",
+            borderRadius: "6px",
             cursor: "pointer",
             fontSize: "14px",
             fontWeight: 500,
