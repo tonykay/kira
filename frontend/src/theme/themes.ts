@@ -14,47 +14,36 @@ export interface ThemeTokens {
   "--kira-btn-border": string;
   "--kira-btn-text": string;
   "--kira-status-opacity": string;
+  "--kira-nav-text": string;
+  "--kira-nav-active": string;
+  "--kira-nav-indicator": string;
+  "--kira-shadow-sm": string;
+  "--kira-shadow-md": string;
+  "--kira-radius": string;
+  "--kira-radius-pill": string;
 }
 
-export const darkTheme: ThemeTokens = {
-  "--kira-bg-page": "#002b36",
-  "--kira-bg-card": "#073642",
-  "--kira-bg-input": "#002b36",
-  "--kira-text-primary": "#93a1a1",
-  "--kira-text-secondary": "#839496",
-  "--kira-text-muted": "#586e75",
-  "--kira-border": "rgba(42, 161, 152, 0.2)",
-  "--kira-border-subtle": "rgba(42, 161, 152, 0.1)",
-  "--kira-accent": "#268bd2",
-  "--kira-nav-bg": "#073642",
-  "--kira-link": "#93a1a1",
-  "--kira-btn-bg": "transparent",
-  "--kira-btn-border": "#586e75",
-  "--kira-btn-text": "#839496",
-  "--kira-status-opacity": "0.13",
-};
-
-export const lightTheme: ThemeTokens = {
-  "--kira-bg-page": "#fdf6e3",
-  "--kira-bg-card": "#eee8d5",
-  "--kira-bg-input": "#fdf6e3",
-  "--kira-text-primary": "#073642",
-  "--kira-text-secondary": "#586e75",
-  "--kira-text-muted": "#93a1a1",
-  "--kira-border": "rgba(147, 161, 161, 0.3)",
-  "--kira-border-subtle": "rgba(147, 161, 161, 0.15)",
-  "--kira-accent": "#268bd2",
-  "--kira-nav-bg": "#eee8d5",
-  "--kira-link": "#073642",
-  "--kira-btn-bg": "transparent",
-  "--kira-btn-border": "#93a1a1",
-  "--kira-btn-text": "#586e75",
-  "--kira-status-opacity": "0.15",
-};
-
-export type ThemeName = "dark" | "light";
-
-export const themes: Record<ThemeName, ThemeTokens> = {
-  dark: darkTheme,
-  light: lightTheme,
+export const theme: ThemeTokens = {
+  "--kira-bg-page": "#f8fafc",
+  "--kira-bg-card": "#ffffff",
+  "--kira-bg-input": "#ffffff",
+  "--kira-text-primary": "#0f172a",
+  "--kira-text-secondary": "#334155",
+  "--kira-text-muted": "#64748b",
+  "--kira-border": "#e2e8f0",
+  "--kira-border-subtle": "#f1f5f9",
+  "--kira-accent": "#1e3a5f",
+  "--kira-nav-bg": "#1e3a5f",
+  "--kira-link": "#1e3a5f",
+  "--kira-btn-bg": "#cc0000",
+  "--kira-btn-border": "#cc0000",
+  "--kira-btn-text": "#ffffff",
+  "--kira-status-opacity": "0.12",
+  "--kira-nav-text": "rgba(255,255,255,0.7)",
+  "--kira-nav-active": "#ffffff",
+  "--kira-nav-indicator": "#cc0000",
+  "--kira-shadow-sm": "0 1px 2px rgba(0,0,0,0.05)",
+  "--kira-shadow-md": "0 1px 3px rgba(0,0,0,0.1)",
+  "--kira-radius": "8px",
+  "--kira-radius-pill": "12px",
 };
