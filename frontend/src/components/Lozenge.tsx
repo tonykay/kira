@@ -1,25 +1,33 @@
 import type { Area } from "../types";
 
-const AREA_COLORS: Record<Area, string> = {
-  linux: "#7c3aed",
-  kubernetes: "#2563eb",
-  networking: "#0891b2",
-  database: "#059669",
-  storage: "#d97706",
-  security: "#dc2626",
-  application: "#6366f1",
+const AREA_STYLES: Record<Area, { bg: string; color: string }> = {
+  linux: { bg: "#f3f0ff", color: "#7c3aed" },
+  kubernetes: { bg: "#eff6ff", color: "#2563eb" },
+  networking: { bg: "#ecfeff", color: "#0891b2" },
+  database: { bg: "#ecfdf5", color: "#059669" },
+  storage: { bg: "#fffbeb", color: "#d97706" },
+  security: { bg: "#fef2f2", color: "#dc2626" },
+  application: { bg: "#eef2ff", color: "#6366f1" },
 };
 
+function riskStyle(value: number): { bg: string; color: string } {
+  if (value >= 0.7) return { bg: "#fef2f2", color: "#dc2626" };
+  if (value >= 0.4) return { bg: "#fffbeb", color: "#d97706" };
+  return { bg: "#f0fdf4", color: "#16a34a" };
+}
+
+function confidenceStyle(value: number): { bg: string; color: string } {
+  if (value >= 0.8) return { bg: "#f0fdf4", color: "#16a34a" };
+  if (value >= 0.5) return { bg: "#fffbeb", color: "#d97706" };
+  return { bg: "#fef2f2", color: "#dc2626" };
+}
+
 function riskColor(value: number): string {
-  if (value >= 0.7) return "#ef4444";
-  if (value >= 0.4) return "#f59e0b";
-  return "#22c55e";
+  return riskStyle(value).color;
 }
 
 function confidenceColor(value: number): string {
-  if (value >= 0.7) return "#22c55e";
-  if (value >= 0.4) return "#f59e0b";
-  return "#ef4444";
+  return confidenceStyle(value).color;
 }
 
 function label(value: number): string {
@@ -28,12 +36,12 @@ function label(value: number): string {
   return "low";
 }
 
-const style = (bg: string) =>
+const pill = (bg: string, fg: string) =>
   ({
     background: bg,
-    color: "white",
-    padding: "2px 8px",
-    borderRadius: "10px",
+    color: fg,
+    padding: "3px 10px",
+    borderRadius: "12px",
     fontSize: "11px",
     fontWeight: 500,
     display: "inline-block",
@@ -41,74 +49,46 @@ const style = (bg: string) =>
   }) as const;
 
 export function AreaLozenge({ area }: { area: Area }) {
-  return <span style={style(AREA_COLORS[area])}>{area}</span>;
+  const s = AREA_STYLES[area] || AREA_STYLES.application;
+  return <span style={pill(s.bg, s.color)}>{area}</span>;
 }
 
 export function RiskLozenge({ value }: { value: number }) {
-  return (
-    <span style={style(riskColor(value))}>
-      {label(value)} {value.toFixed(1)}
-    </span>
-  );
+  const s = riskStyle(value);
+  return <span style={pill(s.bg, s.color)}>{label(value)} {value.toFixed(1)}</span>;
 }
 
 export function ConfidenceLozenge({ value }: { value: number }) {
-  return (
-    <span style={style(confidenceColor(value))}>
-      {label(value)} {value.toFixed(1)}
-    </span>
-  );
+  const s = confidenceStyle(value);
+  return <span style={pill(s.bg, s.color)}>{label(value)} {value.toFixed(1)}</span>;
 }
 
-const STAGE_COLORS: Record<string, string> = {
-  dev: "#22c55e",
-  test: "#f59e0b",
-  production: "#ef4444",
-  unknown: "#6b7280",
+const STAGE_STYLES: Record<string, { bg: string; color: string }> = {
+  dev: { bg: "#f0fdf4", color: "#16a34a" },
+  test: { bg: "#fffbeb", color: "#d97706" },
+  production: { bg: "#fef2f2", color: "#dc2626" },
+  unknown: { bg: "#f1f5f9", color: "#6b7280" },
 };
 
 export function StageLozenge({ stage }: { stage: string }) {
-  const color = STAGE_COLORS[stage] || STAGE_COLORS.unknown;
-  return <span style={style(color)}>{stage}</span>;
+  const s = STAGE_STYLES[stage] || STAGE_STYLES.unknown;
+  return <span style={pill(s.bg, s.color)}>{stage}</span>;
 }
 
-const STATUS_TEXT_COLORS: Record<string, string> = {
-  open: "#ef4444",
-  acknowledged: "#f59e0b",
-  in_progress: "#3b82f6",
-  resolved: "#22c55e",
-  closed: "#6b7280",
+const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
+  open: { bg: "#fef2f2", color: "#dc2626" },
+  acknowledged: { bg: "#fffbeb", color: "#d97706" },
+  in_progress: { bg: "#eff6ff", color: "#2563eb" },
+  resolved: { bg: "#f0fdf4", color: "#16a34a" },
+  closed: { bg: "#f1f5f9", color: "#6b7280" },
 };
 
-function hexToRgb(hex: string): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `${r}, ${g}, ${b}`;
-}
-
 export function StatusLozenge({ status }: { status: string }) {
-  const textColor = STATUS_TEXT_COLORS[status] || STATUS_TEXT_COLORS.open;
-  return (
-    <span
-      style={{
-        background: `rgba(${hexToRgb(textColor)}, var(--kira-status-opacity))`,
-        color: textColor,
-        padding: "2px 8px",
-        borderRadius: "10px",
-        fontSize: "11px",
-        fontWeight: 500,
-      }}
-    >
-      {status.replace("_", " ")}
-    </span>
-  );
+  const s = STATUS_STYLES[status] || STATUS_STYLES.open;
+  return <span style={pill(s.bg, s.color)}>{status.replace("_", " ")}</span>;
 }
 
-// --- Exported utilities for ValueEditDialog ---
 export { riskColor, confidenceColor, label as valueLabel };
-
-// --- Editable variants (TicketDetail only) ---
 
 interface EditableLozengeProps {
   value: number;
@@ -116,32 +96,18 @@ interface EditableLozengeProps {
 }
 
 export function EditableRiskLozenge({ value, onClick }: EditableLozengeProps) {
+  const s = riskStyle(value);
   return (
-    <span
-      onClick={onClick}
-      style={{
-        ...style(riskColor(value)),
-        cursor: "pointer",
-        position: "relative",
-      }}
-      title="Click to edit risk"
-    >
+    <span onClick={onClick} style={{ ...pill(s.bg, s.color), cursor: "pointer" }} title="Click to edit risk">
       {label(value)} {value.toFixed(1)} &#9998;
     </span>
   );
 }
 
 export function EditableConfidenceLozenge({ value, onClick }: EditableLozengeProps) {
+  const s = confidenceStyle(value);
   return (
-    <span
-      onClick={onClick}
-      style={{
-        ...style(confidenceColor(value)),
-        cursor: "pointer",
-        position: "relative",
-      }}
-      title="Click to edit confidence"
-    >
+    <span onClick={onClick} style={{ ...pill(s.bg, s.color), cursor: "pointer" }} title="Click to edit confidence">
       {label(value)} {value.toFixed(1)} &#9998;
     </span>
   );
