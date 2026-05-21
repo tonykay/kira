@@ -1,13 +1,12 @@
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { api } from "../api/client";
-import { useTheme } from "../theme/ThemeProvider";
 import type { User } from "../types";
 
 export function Layout() {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
+  const location = useLocation();
 
   useEffect(() => {
     api.me().then(setUser).catch(() => navigate("/login"));
@@ -20,6 +19,25 @@ export function Layout() {
 
   if (!user) return null;
 
+  const navLink = (to: string, label: string) => {
+    const active = to === "/" ? location.pathname === "/" : location.pathname.startsWith(to);
+    return (
+      <Link
+        to={to}
+        style={{
+          color: active ? "var(--kira-nav-active)" : "var(--kira-nav-text)",
+          fontSize: "13px",
+          textDecoration: "none",
+          fontWeight: active ? 500 : 400,
+          borderBottom: active ? "2px solid var(--kira-nav-indicator)" : "2px solid transparent",
+          paddingBottom: "6px",
+        }}
+      >
+        {label}
+      </Link>
+    );
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: "var(--kira-bg-page)", color: "var(--kira-text-primary)" }}>
       <nav
@@ -29,35 +47,24 @@ export function Layout() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          borderBottom: "1px solid var(--kira-border)",
         }}
       >
-        <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-          <Link to="/" style={{ fontWeight: "bold", fontSize: "16px", color: "var(--kira-accent)", textDecoration: "none" }}>
+        <div style={{ display: "flex", gap: "24px", alignItems: "center" }}>
+          <Link to="/" style={{ fontWeight: 700, fontSize: "17px", color: "var(--kira-nav-active)", textDecoration: "none", letterSpacing: "-0.5px" }}>
             Kira
           </Link>
-          <Link to="/" style={{ color: "var(--kira-text-secondary)", fontSize: "13px", textDecoration: "none" }}>
-            Dashboard
-          </Link>
-          <Link to="/tickets" style={{ color: "var(--kira-text-secondary)", fontSize: "13px", textDecoration: "none" }}>
-            Tickets
-          </Link>
-          <Link to="/issues" style={{ color: "var(--kira-text-secondary)", fontSize: "13px", textDecoration: "none" }}>
-            Backlog
-          </Link>
-          {user.role !== "viewer" && (
-            <Link to="/workspace" style={{ color: "var(--kira-text-secondary)", fontSize: "13px", textDecoration: "none" }}>
-              Workspace
-            </Link>
-          )}
+          {navLink("/", "Dashboard")}
+          {navLink("/tickets", "Tickets")}
+          {navLink("/issues", "Backlog")}
+          {user.role !== "viewer" && navLink("/workspace", "Workspace")}
           {user.role !== "viewer" && (
             <Link
               to="/tickets/new"
               style={{
-                background: "var(--kira-accent)",
-                color: "white",
-                padding: "4px 10px",
-                borderRadius: "4px",
+                background: "var(--kira-btn-bg)",
+                color: "var(--kira-btn-text)",
+                padding: "5px 12px",
+                borderRadius: "6px",
                 fontSize: "12px",
                 textDecoration: "none",
                 fontWeight: 500,
@@ -68,32 +75,16 @@ export function Layout() {
           )}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span style={{ color: "var(--kira-text-muted)", fontSize: "12px" }}>
-            {user.display_name} ({user.tier || user.role})
+          <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "12px" }}>
+            {user.display_name}
           </span>
-          <button
-            onClick={toggleTheme}
-            title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-            style={{
-              background: "none",
-              border: "1px solid var(--kira-btn-border)",
-              color: "var(--kira-btn-text)",
-              padding: "4px 8px",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontSize: "14px",
-              lineHeight: 1,
-            }}
-          >
-            {theme === "dark" ? "\u2600" : "\u263E"}
-          </button>
           <button
             onClick={handleLogout}
             style={{
-              background: "var(--kira-btn-bg)",
-              border: "1px solid var(--kira-btn-border)",
-              color: "var(--kira-btn-text)",
-              padding: "4px 10px",
+              background: "rgba(255,255,255,0.15)",
+              border: "none",
+              color: "var(--kira-nav-active)",
+              padding: "5px 12px",
               borderRadius: "4px",
               cursor: "pointer",
               fontSize: "12px",
