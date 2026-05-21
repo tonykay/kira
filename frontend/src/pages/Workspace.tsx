@@ -139,7 +139,7 @@ export function Workspace() {
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "calc(100vh - 60px)",
+        height: "100%",
         background: "var(--kira-bg)",
         borderRadius: "8px",
         overflow: "hidden",

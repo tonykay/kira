@@ -39,7 +39,7 @@ export function Layout() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--kira-bg-page)", color: "var(--kira-text-primary)" }}>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "var(--kira-bg-page)", color: "var(--kira-text-primary)", overflow: "hidden" }}>
       <nav
         style={{
           background: "var(--kira-nav-bg)",
@@ -94,7 +94,7 @@ export function Layout() {
           </button>
         </div>
       </nav>
-      <main style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
+      <main style={{ flex: 1, padding: "20px", maxWidth: "1200px", margin: "0 auto", overflow: "auto", width: "100%" }}>
         <Outlet />
       </main>
     </div>
